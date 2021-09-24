@@ -37,6 +37,8 @@ ods listing close;
 %include "&macros.\ELIG_build.sas"     / nosource2;
 %include "&macros.\DM_build.sas"       / nosource2;
 %include "&macros.\MH_build.sas"       / nosource2;
+%include "&macros.\SV_build.sas"       / nosource2;
+%include "&macros.\UNS_build.sas"       / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -256,8 +258,10 @@ proc format;
 	value $domainord
 	"INFCON_report_Informed Consent.sas" = 1
 	"ELIG_report_Eligibility.sas"        = 2
-	"DM_report_Demographics.sas"		 = 3
-	"MH_report_Medical History.sas"		 = 4;
+	"SV_report_Visit Date.sas"			 = 3
+	"UNS_report_Unscheduled Visit.sas"	 = 4
+	"DM_report_Demographics.sas"		 = 5
+	"MH_report_Medical History.sas"		 = 6;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -560,7 +564,7 @@ options mprint mlogic symbolgen;
 					%end;
 				%mend offset_anchors;
 				%offset_anchors;	
-/*
+
 				***********************************************;
 				** FROZEN COLUMNS TITLES MUST SPAN CORRECTLY **;
 				***********************************************;
@@ -585,16 +589,7 @@ options mprint mlogic symbolgen;
 					_infile_=tranwrd(_infile_,%unquote(%nrbquote('</table></div></div></div></div><div style="padding-bottom: 8px; padding-top: 1px"><hr class="pagebreak"/><span class="anchor" id="IDX&idx.">')),%unquote(%nrbquote('</table></div></div></div></div></div><div style="padding-bottom: 8px; padding-top: 1px"><hr class="pagebreak"/><span class="anchor" id="IDX&idx.">')));
 					_infile_=tranwrd(_infile_,%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px">')),%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px"><div class="table-container">')));
 				%mend frozen_columns;
-				%frozen_columns(idx=5, key_good=%str(>Unscheduled),key_bad=,colspan_frz=4);
-				%frozen_columns(idx=10, key_good=%str(>Prior&#160;Cancer&#160;Therapy),key_bad=,colspan_frz=6);
-				%frozen_columns(idx=19, key_good=%str(>Adverse),key_bad=,colspan_frz=6);
-				%frozen_columns(idx=20, key_good=%str(>Concomitant),key_bad=,colspan_frz=6);
-				%frozen_columns(idx=42, key_good=%str(>Electrocardiogram),key_bad=,colspan_frz=3);
-				%frozen_columns(idx=44, key_good=%str(>Target),key_bad=Non,colspan_frz=8);
-				%frozen_columns(idx=45, key_good=%str(>Non-),key_bad=,colspan_frz=6);
-				%frozen_columns(idx=46, key_good=%str(>Response),key_bad=,colspan_frz=11);
-				%frozen_columns(idx=48, key_good=%str(>Protocol),key_bad=,colspan_frz=3);
-*/
+				%frozen_columns(idx=4, key_good=%str(>Unscheduled),key_bad=,colspan_frz=5);
 /*
 				*************************;
 				** TOGGLING of columns **;
@@ -738,7 +733,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 *%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=1,ept=5,spn=1,epn=&num_domains.);
+%patients_domains(spt=39,ept=39,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
