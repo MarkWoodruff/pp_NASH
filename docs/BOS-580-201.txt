@@ -1,0 +1,43 @@
+For Etienne:
+	1) values that represent stopping criteria, as defined in the protocol
+	2) listing of G3 or G4 safety labs
+	3) listing of ECGs
+	3) AEs of Special Interest
+	4) listing of G3 or G4 vital signs
+	5) other things listed in Medical Monitor reports that he did not specifically call out
+		a) listing of physical exam
+		b) graph of QTcF (might as well do all)
+		c) listing of demographics
+	6) Shelley will provide table of site number and time zone, use that and TIME OF SYRINGE LOADED (will be added to DB) to determine timing difference between dose administration adn time of syringe loaded.  Flag those later than 24 hours.
+In Profiles:
+	1) external MRI data from BioTel Research - comes monthly
+	2) external lab data from LabConnect
+
+DS dataset
+	-End of Study (5316860) (DSSTDAT, DSCOMP, DSDECOD_PRIM, DSTERM, DSDTHDAT, DSAENO, DSPDNO, DSDECOD_COVID, DSDECDOT)
+	-End of Treatment (5740868) (DSEXDAT, DSSTDAT, COMPLET, DSDECOD, DSAENO, DTHDAT, DSWSOOTH, DSPDOTH, DSPDNO, COVIDSP, DSTERMOT, DABLIND)
+	-Informed Consent (5731148) (DSSTDAT, DSICF_G, DSSTDAT_G, PVER, PART)
+	-Randomization (5316892)
+	-Reconsent (5656976)
+
+
+Patient Cards
+	Part: Cohort + Dose (lower left)
+	Latest Visit (upper right)
+	Status: Active/Discontinued/Screen Fail (upper left)
+
+Study Setup
+	Part A: 5 cohorts (A1 - A4, A5 randomized separately) - approximately 75 subjects.
+		A1: 300 mg Q4W or PBO
+		A2: 150 mg Q2W or PBO
+		A3: 75 mg Q2W or PBO
+		A4: 75 mg Q4W or PBO
+		A5: 30 mg Q4W or PBO
+	Part B: MAYBE, after Week 6 interim analysis for A1-A4 are reviewed by FDA.
+		Bx: up to ~30 subjects
+
+	Screening 1 (Day -35 to Day -10)
+	Screening 2 (Day -28 to Day -4) - Imaging Evaluation
+	Study Treatment Period
+	Post-Treatment Follow-up, including a visit 4 weeks after last dose.
+	Total Duration for each subject is approximately 21 weeks
