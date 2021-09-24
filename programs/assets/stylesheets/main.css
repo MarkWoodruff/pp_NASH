@@ -1,0 +1,521 @@
+/*****************************************************************************************
+* Program Name  : main.css
+* Project       :  
+* Programmer    : Mark Woodruff
+* Creation Date : 2019-09-11
+* Description   : create stylesheet for non-profile pages
+*
+* Revision History (not including development changes before 2019-10-25)
+* Date       By            Description of Change
+* 2020-05-26 Mark Woodruff update card grid width to 100%
+* 2020-12-11 Mark Woodruff add green-text and db-locked-card
+* 2021-03-01 Mark Woodruff add p-smaller for 356-101 description now that locked
+* 2021-04-09 Mark Woodruff change green-text to db-locked-text
+******************************************************************************************/
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+
+   This is the Meyer reset, used to make sure all browsers' default settings are overridden and set to 0, so that
+   things will ultimately be rendered consistently across all browsers.
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	/*list-style: none;*/
+	padding-left: 20px;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+html {
+	scroll-behavior: smooth;
+}
+
+/*=============================================
+	Typograpyhy
+==============================================*/
+h1, h3, h4, h5, p {
+	margin-bottom: 22px;
+}
+h1, h2, h3, h4 {
+	color: #fff;
+}
+h1 {
+	font-size: 36px;
+	line-height: 44px;
+}
+h2 {
+	font-size: 26px;
+	line-height: 44px;
+	margin-bottom: 9px;
+}
+h3 {
+	font-size: 21px;
+	font-weight: 400;
+}
+h4 {
+	font-size: 18px;
+}
+h5 {
+	color: #a9b2b9;
+	font-size: 14px;
+	font-weight: 400;
+	text-transform: uppercase;
+}
+
+.db-locked-text {
+	color: green;
+	font-size: 19px;
+}
+
+sup {
+	vertical-align: super;
+	font-size: smaller;
+}
+
+.nav {
+	font-size: 15px;
+	font-weight: 400;
+	letter-spacing: .5px;
+	text-transform: none;
+}
+
+/**********************************************
+	HEADER
+**********************************************/
+.header-container {
+	background-color: #293f50;
+	display: flex;
+	justify-content: center;
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+.header-header {
+	width: 960px;
+	height: 120px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: row wrap;
+}
+
+.header-right {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	margin-left: auto;
+}
+
+.nav {
+	word-spacing: 14px;
+}
+
+body {
+	background: #293f50;
+	font: 300 16px/22px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.header-container a {
+	color: #fff;
+	text-decoration: none;
+}
+
+.header-container a:hover  {
+	color: #39B54A;
+}
+
+.logo img {
+	max-height: 80px;
+}
+
+/**********************************************
+	BOX SIZING 
+/*********************************************/
+*,
+*:before,
+*:after {
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+		    box-sizing: border-box;
+}
+
+/**********************************************
+	Study Cards on Home Page
+/*********************************************/
+.card-grid-container {
+	display: flex;
+	justify-content: center;
+	background: lightgray;
+	padding: 44px 0 44px 0;
+}
+
+.card-grid {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.card-grid-item {
+	margin: 8px;
+	background: #fff;
+	padding: 44px 10px;
+	border: 1px solid black;
+	border-radius: 8px;
+	padding-top: 20px;
+	height: 340px;
+	width: 220px;
+	color: black;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.card-grid-item h3 {
+	color: black;/*#888;*/
+}
+
+.card-grid-item .p-smaller {
+	font: 400 15px/20px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.live-card:hover {
+	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+	transform: scale(1.05, 1.05);
+	background: #e5fbe5;/*#edf2ee;*/
+}
+
+.db-locked-card {
+	background: lightgray;	
+}
+
+.db-locked-card:hover {
+	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+	transform: scale(1.05, 1.05);
+	background: #e5fbe5;
+}
+
+#coming-soon {
+	cursor: pointer;
+}
+/*
+#coming-soon .coming-soon {
+	position: relative;
+	bottom: 190px;
+	left: 0px;
+	visibility: hidden;
+	font: 300 52pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;	
+	-webkit-transform: rotate(-45deg);
+	-moz-transform: rotate(-45deg);
+}
+
+#coming-soon:hover .coming-soon {
+	visibility: visible;
+}
+
+#coming-soon:hover {
+	background-color: darkgrey;
+}
+
+#coming-soon:hover p {
+	opacity: .3;
+}*/
+
+.card-grid-item p {
+	font-weight: 400;
+	color: black;
+}
+
+.protocol-name,
+.nickname {
+	text-align: center;
+}
+
+a {
+	color: black;/*#648880;*/
+	text-decoration: none; 
+}
+
+.live-card a:hover h3 {
+	/*color: #3FBF48;*/
+	color: black;/*#39B54A;*/
+}
+
+/**********************************************
+	FAQ
+/*********************************************/
+
+.faq-container {
+	padding-top: 50px;
+	background-color: lightgray;
+}
+
+/* Style the buttons that are used to open and close the accordion panel */
+.accordion {
+  background-color: white;/*#d8d8d8;/*lightgray;/*#293f50;*/
+  color: black;
+  cursor: pointer;
+  padding: 15px;
+  margin: 0 auto 0 auto;
+  width: 700px;
+  text-align: left;
+  border: 1px solid black;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+  border-radius: 0;
+  outline: none;
+  transition: 0.4s;
+  display: block;
+  font: 400 15pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.accordion:first-of-type {
+  border-bottom: 1px solid black;	
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+  border-top: 2px solid black;
+}
+
+.accordion:last-of-type {
+  border-top: 1px solid black;	
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+  border-bottom: 2px solid black;
+}
+
+.panel li {
+	margin: 10px 0;
+	padding-left: 10px;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .accordion:hover {
+  background-color: #e5fbe5;/*#edf2ee;/*#a6f1a6;/*#bcf5bc;/*#39B54A;*/
+}
+
+.accordion:after {
+  content: '\00002B'; /* Unicode character for "plus" sign (+) */
+  font: 400 28pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: black;
+  float: right;
+  line-height: 1px;
+  padding-top: 10px;
+}
+
+.active:after {
+  content: "\2212"; /* Unicode character for "minus" sign (-) */
+  font: 400 28pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: black;
+  float: right;
+  line-height: 1px;
+  padding-top: 10px;
+}
+
+.active {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.accordion-last {
+	margin-bottom: 18px;
+	opacity: 0;
+}
+
+/* Style the accordion panel. Note: hidden by default */
+.panel {
+  background-color: #bbb;/* lightgray;/*#293f50;*/
+  color: black;
+  display: none;
+  overflow: hidden;
+  border: 1px solid black;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 18px;
+  margin: 0 auto;
+  width: 700px;
+  font: 400 15pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  max-height: 0;
+  transition: max-height 0.2s ease-out;
+}
+
+.panel a {
+	color: #0000EE;
+	text-decoration: underline;/*
+	border-bottom: 1px solid #0000EE;*/
+}
+
+.panel a:hover {
+	color: #39B54A;	
+}
+
+/**********************************************
+	Patient Cards on Dashboards
+/*********************************************/
+.patient-card-grid-title h1 {
+	text-align: center;
+	background: lightgray;
+	color: black;
+	padding: 25px 0 0 0;
+	margin: 0;
+	font: 400 28pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.patient-card-grid-container {
+	position: relative;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	background: lightgray;
+	padding: 10px 0 10px 0;
+}
+
+.patient-card-grid-item {
+	position: relative;
+	height: 90px;
+	width: 144px;
+	cursor: pointer;
+	margin: 5px;
+	background: #fff;
+	border: 1px solid black;
+	border-radius: 8px;
+	color: black;
+/*	box-shadow: -10px -10px 21px #757575, 10px 10px 21px #dfdfdf;*/
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.patient-live-card:hover {
+	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+	transform: scale(1.05, 1.05);
+	background: #e5fbe5;/*#edf2ee;*/
+}
+
+.patient-live-card a:hover  {
+	color: #39B54A;
+}
+
+.patient-number {
+	width: 100%;
+	position: absolute;
+	top: 60%;
+	left: 0;
+	font: 500 18pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin: -27px 0 0 0;
+	text-align: center;
+	color: black;
+}
+
+.part-cohort {
+	width: 100%;
+	position: absolute;
+	left: 6px;
+	top: 4px;
+	text-align: left;
+	font: 400 10pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: black;
+}
+
+.patient-visit {
+	position: absolute;
+	left: 6px;
+	bottom: -17px;
+	text-align: left;
+	font: 400 10pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: black;
+}
+
+.patient-status {
+	position: absolute;
+	right: 6px;
+	bottom: -17px;
+	text-align: right;
+	font: 400 10pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: black;
+}
+
+.ready-for-review {
+	width: 100%;
+	position: absolute;
+	right: 6px;
+	bottom: -16px;
+	text-align: right;
+	font: 400 13pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: cyan;
+}
+
+.active-patient {
+	background: #e5fbe5;/*#ccebc5;	*/
+}
+
+.discontinued-patient {
+	background: darkgrey;
+}
+
+.active-patient:hover,
+.discontinued-patient:hover {
+	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+	transform: scale(1.05, 1.05);
+}
+
+.footnote {
+	font: 400 18px/22px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: black;
+	width: 100%;
+	background-color: lightgray;
+	/*text-align: left;*/
+	/*overflow-wrap: normal;*/
+	padding-left: 30px;
+	white-space: normal !important;
+	display: inline-block;
+}
+
+/**********************************************
+	About
+/*********************************************/
+.about-content p {
+	font-weight: 400;
+	color: #fff;
+	text-align: center;
+}
