@@ -36,6 +36,7 @@ ods listing close;
 %include "&macros.\INFCON_build.sas"   / nosource2;
 %include "&macros.\ELIG_build.sas"     / nosource2;
 %include "&macros.\DM_build.sas"       / nosource2;
+%include "&macros.\MH_build.sas"       / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -255,7 +256,8 @@ proc format;
 	value $domainord
 	"INFCON_report_Informed Consent.sas" = 1
 	"ELIG_report_Eligibility.sas"        = 2
-	"DM_report_Demographics.sas"		 = 3;
+	"DM_report_Demographics.sas"		 = 3
+	"MH_report_Medical History.sas"		 = 4;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";

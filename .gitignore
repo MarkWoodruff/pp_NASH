@@ -12,3 +12,5 @@
 *.aspx
 
 *.sas7bcat
+
+output/patients-BOS-580-201.html
