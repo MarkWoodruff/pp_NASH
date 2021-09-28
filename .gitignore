@@ -14,3 +14,9 @@
 *.sas7bcat
 
 output/patients-BOS-580-201.html
+
+*.zip
+
+data/crf/MD5.txt
+
+*.log

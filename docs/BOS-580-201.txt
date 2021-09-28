@@ -13,6 +13,7 @@ In Profiles:
 	1) external MRI data from BioTel Research - comes monthly
 	2) external lab data from LabConnect
 
+
 DS dataset
 	-End of Study (5316860) (DSSTDAT, DSCOMP, DSDECOD_PRIM, DSTERM, DSDTHDAT, DSAENO, DSPDNO, DSDECOD_COVID, DSDECDOT)
 	-End of Treatment (5740868) (DSEXDAT, DSSTDAT, COMPLET, DSDECOD, DSAENO, DTHDAT, DSWSOOTH, DSPDOTH, DSPDNO, COVIDSP, DSTERMOT, DABLIND)
@@ -20,11 +21,70 @@ DS dataset
 	-Randomization (5316892)
 	-Reconsent (5656976)
 
+*******************
+** Patient Cards **
+*******************
+Part: Cohort + Dose (lower left)
+Latest Visit (upper right)
+Status: Active/Discontinued/Screen Fail (upper left)
+Lower Right: Indicator for SAE or G3/G4 AE
+-put Part A-Cohort x on cards, not dose.
 
-Patient Cards
-	Part: Cohort + Dose (lower left)
-	Latest Visit (upper right)
-	Status: Active/Discontinued/Screen Fail (upper left)
+*************
+** DOMAINS **
+*************
+Registration
+	-Informed Consent (DONE)
+	-Eligibility (DONE)
+	-Randomization (NO DATA)
+	-Reconsent Log (DONE)
+	-PI Signature (NO DATA)
+Screening
+	-Visit Date (DONE)
+	-Unscheduled Visit (DONE)
+	-Demographics (DONE)
+	-Medical History (DONE)
+	-Body Measurements (DONE)
+	-Urine Pregnancy
+Safety
+	-Vital Signs
+	-ECG
+	-Physical Exam
+	-AE
+	-Conmeds
+	-Central Labs
+	-VCTE
+	-Ultrasound
+	-MRI-PDFF
+	-Fasting Plasma Glucose
+Dosing
+	-Kit Assignment
+	-Study Drug Administration
+	-PK Collection
+	-ADA Collection
+	-Exploratory Biomarkers
+Other
+	-Monthly Visit Questionnaire
+	-Menstrual Summary
+PDs
+End of Study
+End of Treatment
+
+***********
+** TO-DO **
+***********
+-macro to sort with unscheduled visits, update all domains
+
+
+
+
+**************
+** SCHEDULE **
+**************
+-first interim analysis is 6 weeks after 90% of patients have completed week 6 assessment.
+-baseline profiles on Sharepoint by 10/1
+-full profiles set up by 10/8
+-baseline tables set up by end of October
 
 Study Setup
 	Part A: 5 cohorts (A1 - A4, A5 randomized separately) - approximately 75 subjects.
@@ -41,3 +101,31 @@ Study Setup
 	Study Treatment Period
 	Post-Treatment Follow-up, including a visit 4 weeks after last dose.
 	Total Duration for each subject is approximately 21 weeks
+
+*********
+** SRT **
+*********
+-SRT will formally look at blinded tables/listings on a quarterly basis.  
+-But teams also looking more often, to maintain safety overview.  
+-Pretty consistent with 721 or 738.  
+-Section 10.0 of Charter shows what tables and listings will be created.  
+-ECGs Tanya seems to be thinking on what she wants to see.  
+-SRT Charter is a starting point, not a firm concrete guidance.
+
+**********************
+** INTERIM ANALYSIS **
+**********************
+-FDA asked for this.  Cato may do interim, currently 5w, trying to get it to 4w.  
+-May rely on some of my tables (baseline + AE), Cato could do others.  Craig was OK with that.  Regulatory weighing in too.  
+-Not a fileable interim analysis, will not be submitted.  Mostly for internal.
+-Baseline Disease Hx table: include time from diag to study entry.  did they have gall bladder disease.  VCTE for those who reach week 12, if possible, otehrwise Cato will do.  
+-Nuventra will do PK stuff and Biomarker stuff.
+-HFF response - from MRI, Cato will do
+-have time on study and time on treatment in disposition.
+-group all placebo together.  have totals in baseline tables.  possible button for blinded/unblinded.
+-maybe have 580 unblinded card, OR have SRT tab, interim tab.
+-30th and first week of October for randomization.
+-first meeting mid-October
+-meet once a quarter after that
+-FDA asked about Cortisol
+-shift tables for triglycerides and cholesterol

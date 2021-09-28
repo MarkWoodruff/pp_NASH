@@ -38,7 +38,9 @@ ods listing close;
 %include "&macros.\DM_build.sas"       / nosource2;
 %include "&macros.\MH_build.sas"       / nosource2;
 %include "&macros.\SV_build.sas"       / nosource2;
-%include "&macros.\UNS_build.sas"       / nosource2;
+%include "&macros.\UNS_build.sas"      / nosource2;
+%include "&macros.\RECON_build.sas"    / nosource2;
+%include "&macros.\BODY_build.sas"     / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -257,11 +259,13 @@ run;
 proc format;
 	value $domainord
 	"INFCON_report_Informed Consent.sas" = 1
-	"ELIG_report_Eligibility.sas"        = 2
-	"SV_report_Visit Date.sas"			 = 3
-	"UNS_report_Unscheduled Visit.sas"	 = 4
-	"DM_report_Demographics.sas"		 = 5
-	"MH_report_Medical History.sas"		 = 6;
+	"RECON_report_Reconsent.sas"         = 2
+	"ELIG_report_Eligibility.sas"        = 3
+	"SV_report_Visit Date.sas"			 = 4
+	"UNS_report_Unscheduled Visit.sas"	 = 5
+	"DM_report_Demographics.sas"		 = 6
+	"MH_report_Medical History.sas"		 = 7
+	"BODY_report_Body Measurements.sas"	 = 8;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -589,7 +593,7 @@ options mprint mlogic symbolgen;
 					_infile_=tranwrd(_infile_,%unquote(%nrbquote('</table></div></div></div></div><div style="padding-bottom: 8px; padding-top: 1px"><hr class="pagebreak"/><span class="anchor" id="IDX&idx.">')),%unquote(%nrbquote('</table></div></div></div></div></div><div style="padding-bottom: 8px; padding-top: 1px"><hr class="pagebreak"/><span class="anchor" id="IDX&idx.">')));
 					_infile_=tranwrd(_infile_,%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px">')),%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px"><div class="table-container">')));
 				%mend frozen_columns;
-				%frozen_columns(idx=4, key_good=%str(>Unscheduled),key_bad=,colspan_frz=5);
+				%frozen_columns(idx=5, key_good=%str(>Unscheduled),key_bad=,colspan_frz=5);
 /*
 				*************************;
 				** TOGGLING of columns **;
@@ -733,7 +737,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 *%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=39,ept=39,spn=1,epn=&num_domains.);
+%patients_domains(spt=1,ept=4,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;

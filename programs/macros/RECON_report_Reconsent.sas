@@ -1,18 +1,16 @@
 /*****************************************************************************************/
-* Program Name  : INFCON_report_Informed Consent.sas
+* Program Name  : RECON_report_Reconsent.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-09-14
+* Creation Date : 2021-09-28
 * Description   : report Informed Consent domain
 *
 * Revision History
 * Date       By            Description of Change
-* 2021-09-24 Mark Woodruff use SUBNUM.
-* 2021-09-28 Mark Woodruff use data_dt.
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_infcon;
+	set pp_final_recon;
 	where subnum="&ptn.";
 run;
 
@@ -38,12 +36,11 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column dsstdat_c dsicf_g_dec dsstdat_g_c pver part_dec;
-			define dsstdat_c   /display "Date Informed|Consent Signed" style=[htmlclass='min-width-1-0'];
-			define dsicf_g_dec /display "Genetic Informed|Consent Signed?";
-			define dsstdat_g_c /display "Date Genetic|Consent Signed" style=[htmlclass='min-width-1-0'];
-			define pver        /display "Protocol Version at|Study Entry";
-			define part_dec    /display "Protocol Part";
+			column dsseq_c rpver ricv ricdat_c;
+			define dsseq_c  /display "Sequence Number";
+			define rpver    /display "Reconsent Protocol|Version";
+			define ricv     /display "Reconsent Informed|Consent Version";
+			define ricdat_c /display "Date Subject|Signed Reconsent" style=[htmlclass='min-width-1-0'];
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
@@ -57,7 +54,7 @@ run;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="domain-title"];
-			line "Informed Consent";
+			line "Reconsent";
 		endcomp;
 	run;
 	

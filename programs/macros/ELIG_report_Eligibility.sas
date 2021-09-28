@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-09-28 Mark Woodruff use data_dt.
 ******************************************************************************************;
 
 data domain_data;
@@ -33,7 +34,7 @@ run;
 		%if &nobs.=0 %then %do;
 			column subnum;
 			define subnum /order order=internal noprint;
-			footnote "No data for this patient/domain as of INSERTDATE.";
+			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
 			column iestdat_c ieorres_dec ieenroll_dec ietestcd_dec sf_mri mostdat_c iereplc_dec iereplcn;

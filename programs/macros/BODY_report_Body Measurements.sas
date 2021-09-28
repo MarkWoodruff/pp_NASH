@@ -1,18 +1,16 @@
 /*****************************************************************************************/
-* Program Name  : INFCON_report_Informed Consent.sas
+* Program Name  : BODY_report_Body Measurements.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-09-14
-* Description   : report Informed Consent domain
+* Creation Date : 2021-09-24
+* Description   : report Body Measurements domain
 *
 * Revision History
 * Date       By            Description of Change
-* 2021-09-24 Mark Woodruff use SUBNUM.
-* 2021-09-28 Mark Woodruff use data_dt.
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_infcon;
+	set pp_final_body;
 	where subnum="&ptn.";
 run;
 
@@ -38,12 +36,18 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column dsstdat_c dsicf_g_dec dsstdat_g_c pver part_dec;
-			define dsstdat_c   /display "Date Informed|Consent Signed" style=[htmlclass='min-width-1-0'];
-			define dsicf_g_dec /display "Genetic Informed|Consent Signed?";
-			define dsstdat_g_c /display "Date Genetic|Consent Signed" style=[htmlclass='min-width-1-0'];
-			define pver        /display "Protocol Version at|Study Entry";
-			define part_dec    /display "Protocol Part";
+			column vsdat visname vsperf_n vsreasnd vsdat_c waist weight height ("Auto-calculated in DB" height_bmi vsbmi_c);
+			define vsdat      /order order=internal noprint;
+			define visname    /display "Visit";
+			define vsperf_n   /display "Check Box if|Not Assessed";
+			define vsreasnd   /display "Reason|Not Done";
+			define vsdat_c    /display "Date|Assessed" style=[htmlclass='min-width-1-0'];
+			define waist      /display "Waist|Circumference";
+			define weight     /display "Weight";
+			define height     /display "Height";
+			define height_bmi /display "Height|in Metric" style=[htmlclass='overline'];
+			define vsbmi_c    /display "BMI" style=[htmlclass='overline'];
+
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
@@ -56,8 +60,8 @@ run;
 			*footnote "dm-footnote";
 		%end;
 
-		compute before _page_ / style=[just=l htmlclass="domain-title"];
-			line "Informed Consent";
+		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];
+			line "Body Measurements";
 		endcomp;
 	run;
 	
