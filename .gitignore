@@ -20,3 +20,5 @@ output/patients-BOS-580-201.html
 data/crf/MD5.txt
 
 *.log
+
+programs/checklogs.lst

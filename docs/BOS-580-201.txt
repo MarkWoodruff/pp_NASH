@@ -45,7 +45,7 @@ Screening
 	-Demographics (DONE)
 	-Medical History (DONE)
 	-Body Measurements (DONE)
-	-Urine Pregnancy
+	-Urine Pregnancy (NO DATA, DONE)
 Safety
 	-Vital Signs
 	-ECG
