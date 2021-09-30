@@ -1,17 +1,18 @@
 /*****************************************************************************************/
-* Program Name  : MH_report_Medical History.sas
+* Program Name  : PE_report_Physical Exam.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-09-24
-* Description   : report Medical History domain
+* Creation Date : 2021-09-30
+* Description   : report PE domain
 *
 * Revision History
 * Date       By            Description of Change
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_mh;
+	set pp_final_pe;
 	where subnum="&ptn.";
+	space=' ';
 run;
 
 %nobs(domain_data);
@@ -36,13 +37,15 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column mhnd_c mhterm coding dates ongoing mhsev_dec;
-			define mhnd_c    /display "No Relevant|Medical History";
-			define mhterm    /display "Diagnosis/Procedure";
-			define coding    /display "System Organ Class/|Preferred Term";
-			define dates     /display "Start Date/|Stop Date" style=[htmlclass='min-width-1-25'];
-			define ongoing   /display "Ongoing?";
-			define mhsev_dec /display "CTCAE Grade";
+			column visitid visname peperf_reas peperf_reas2 peres_desc peae pemh;
+			define visitid      /order order=internal noprint;
+			define visname      /display "Visit";
+			define peperf_reas  /display "Performed?|If No, Reason" style=[htmlclass='max-width-3-0'];
+			define peperf_reas2 /display "Abdominal Exam|Performed?  If No, Reason" style=[htmlclass='max-width-3-0'];
+			define peres_desc   /display "Examination|Result, Specify";
+			define peae         /display "Adverse Event|Number";
+			define pemh         /display "Medical History|Number";
+
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
@@ -55,8 +58,8 @@ run;
 			*footnote "dm-footnote";
 		%end;
 
-		compute before _page_ / style=[just=l htmlclass="domain-title"];
-			line "Medical History";
+		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];
+			line "Physical Exam";
 		endcomp;
 	run;
 	

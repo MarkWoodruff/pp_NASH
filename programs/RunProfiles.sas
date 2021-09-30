@@ -44,6 +44,8 @@ ods listing close;
 %include "&macros.\PREG_build.sas"     / nosource2;
 %include "&macros.\VS_build.sas"       / nosource2;
 %include "&macros.\ECG_build.sas"      / nosource2;
+%include "&macros.\PE_build.sas"       / nosource2;
+%include "&macros.\CM_build.sas"       / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -261,17 +263,19 @@ run;
 ***************************************************************************************************;
 proc format;
 	value $domainord
-	"INFCON_report_Informed Consent.sas"  = 1
-	"RECON_report_Reconsent.sas"          = 2
-	"ELIG_report_Eligibility.sas"         = 3
-	"SV_report_Visit Date.sas"			  = 4
-	"UNS_report_Unscheduled Visit.sas"	  = 5
-	"DM_report_Demographics.sas"		  = 6
-	"MH_report_Medical History.sas"		  = 7
-	"BODY_report_Body Measurements.sas"	  = 8
-	"PREG_report_Urine Pregnancy Test.sas"= 9
-	"VS_report_Vital Signs.sas"           =10
-	"ECG_report_ECG.sas"                  =11;
+	"INFCON_report_Informed Consent.sas"   = 1
+	"RECON_report_Reconsent.sas"           = 2
+	"ELIG_report_Eligibility.sas"          = 3
+	"SV_report_Visit Date.sas"			   = 4
+	"UNS_report_Unscheduled Visit.sas"	   = 5
+	"DM_report_Demographics.sas"		   = 6
+	"MH_report_Medical History.sas"		   = 7
+	"BODY_report_Body Measurements.sas"	   = 8
+	"PREG_report_Urine Pregnancy Test.sas" = 9
+	"VS_report_Vital Signs.sas"            =10
+	"ECG_report_ECG.sas"                   =11
+	"PE_report_Physical Exam.sas"          =12
+	"CM_report_Concomitant Medications.sas"=13;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -755,8 +759,8 @@ options mprint mlogic symbolgen;
 	%patients;
 	ods listing;
 %mend patients_domains;
-%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=2,ept=2,spn=1,epn=&num_domains.);
+*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+%patients_domains(spt=2,ept=2,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;

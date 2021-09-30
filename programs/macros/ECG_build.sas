@@ -10,7 +10,7 @@
 ******************************************************************************************;
 
 data _null_;
-	set crf.eg(encoding=any where=(pagename='ECG'));
+	set crf.eg(encoding=any);
 
 	** ensure only ECG records are present in crf.eg **;
 	if ^(pagename='ECG') then put "ER" "ROR: update ECG_build.sas to read in only ECG records from crf.EG.";

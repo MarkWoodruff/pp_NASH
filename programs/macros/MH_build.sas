@@ -28,7 +28,7 @@ data pp_final_mh(keep=subnum mhnd_c mhterm dates ongoing mhsev_dec coding);
 	length mhnd_c $3;
 	if mhnd^='' then mhnd_c='Yes';
 
-	length dates $20;
+	length dates $200;
 	if mhstdat^='' or mhendat^='' then dates=strip(mhstdat)||'/frcbrk'||strip(mhendat);
 
 	length ongoing $3;

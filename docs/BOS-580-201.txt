@@ -47,9 +47,9 @@ Screening
 	-Body Measurements (DONE)
 	-Urine Pregnancy (NO DATA, DONE)
 Safety
-	-Vital Signs
-	-ECG
-	-Physical Exam
+	-Vital Signs (DONE)
+	-ECG (DONE)
+	-Physical Exam (DONE)
 	-AE
 	-Conmeds
 	-Central Labs
