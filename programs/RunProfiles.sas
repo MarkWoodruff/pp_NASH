@@ -43,6 +43,7 @@ ods listing close;
 %include "&macros.\BODY_build.sas"     / nosource2;
 %include "&macros.\PREG_build.sas"     / nosource2;
 %include "&macros.\VS_build.sas"       / nosource2;
+%include "&macros.\ECG_build.sas"      / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -269,7 +270,8 @@ proc format;
 	"MH_report_Medical History.sas"		  = 7
 	"BODY_report_Body Measurements.sas"	  = 8
 	"PREG_report_Urine Pregnancy Test.sas"= 9
-	"VS_report_Vital Signs.sas"           =10;
+	"VS_report_Vital Signs.sas"           =10
+	"ECG_report_ECG.sas"                  =11;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -598,6 +600,19 @@ options mprint mlogic symbolgen;
 					_infile_=tranwrd(_infile_,%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px">')),%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px"><div class="table-container">')));
 				%mend frozen_columns;
 				%frozen_columns(idx=5, key_good=%str(>Unscheduled),key_bad=,colspan_frz=5);
+
+				************************************************************************************************************************;
+				** CENTERING OF SPANNING COLUMN HEADERS AND SOME MANUAL ADJUSTMENTS OF NESTED SPANNING HEADERS THAT SAS CANNOT HANDLE **;
+				************************************************************************************************************************;
+				if index(_infile_,'SPNHDRFRCNDRLNCNTR') then do;
+					_infile_=tranwrd(_infile_,"header",'header center underline');
+					_infile_=tranwrd(_infile_,'SPNHDRFRCNDRLNCNTR','');
+				end;
+				if index(_infile_,'SPNHDRFRCCNTR') then do;
+					_infile_=tranwrd(_infile_,"header",'header center');
+					_infile_=tranwrd(_infile_,'SPNHDRFRCCNTR','');
+				end;
+
 /*
 				*************************;
 				** TOGGLING of columns **;
@@ -740,8 +755,8 @@ options mprint mlogic symbolgen;
 	%patients;
 	ods listing;
 %mend patients_domains;
-*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=1,ept=4,spn=1,epn=&num_domains.);
+%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+*%patients_domains(spt=2,ept=2,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;

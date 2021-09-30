@@ -742,6 +742,12 @@ th.overline {
 	border-top-style: solid;
 }
 
+th.underline {
+	border-bottom-color: white;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
 td.border-under {
 	border-bottom-color: black;
 	border-bottom-width: 2px;

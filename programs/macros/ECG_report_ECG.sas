@@ -1,16 +1,16 @@
 /*****************************************************************************************/
-* Program Name  : VS_report_Vital Signs.sas
+* Program Name  : ECG_report_ECG.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-09-29
-* Description   : report Vital Signs domain
+* Creation Date : 2021-09-30
+* Description   : report ECG domain
 *
 * Revision History
 * Date       By            Description of Change
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_vs;
+	set pp_final_ecg;
 	where subnum="&ptn.";
 	space=' ';
 run;
@@ -37,27 +37,20 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column vsdat visname vsnd_reas vsdat_c vspos vstimp_c vstim1_c hr rr ("TemperatureSPNHDRFRCCNTR" temp vstempl_dec) space
-			("Blood Pressure (mmHg)SPNHDRFRCNDRLNCNTR" bp1 ("Value #2SPNHDRFRCCNTR" vstim2_c bp2) space 
-				("Value #3SPNHDRFRCCNTR" vstim3_c bp3) space bp_avg);
-			define vsdat     /order order=internal noprint;
+			column egdat visname egnd_reas egdat_c egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf_c egorres_c;
+			define egdat     /order order=internal noprint;
 			define visname   /display "Visit";
-			define vsnd_reas /display "Not Done:|Reason";
-			define vsdat_c   /display "Date|Assessed" style=[htmlclass='min-width-1-0'];
-			define vspos     /display "Position";
-			define vstimp_c  /display "Start Time|in Position";
-			define vstim1_c  /display "Time|Assessed";
-			define hr        /display "Heart|Rate";
-			define rr        /display "Resp.|Rate";
-			define temp        /display "Value" style=[htmlclass='overline'];
-			define vstempl_dec /display "Location" style=[htmlclass='overline'];
-			define space     /display " ";
-			define bp1       /display "Value #1";
-			define vstim2_c  /display "Time" style=[htmlclass='overline'];
-			define bp2       /display "Value" style=[htmlclass='overline'];
-			define vstim3_c  /display "Time" style=[htmlclass='overline'];
-			define bp3       /display "Value" style=[htmlclass='overline'];
-			define bp_avg    /display "Average|(mmHg)";
+			define egnd_reas /display "Not Done:|Reason";
+			define egdat_c   /display "Date|Performed" style=[htmlclass='min-width-1-0'];
+			define egtims_c  /display "Start Time|Supine Position";
+			define egtim_c   /display "Time|Performed";
+			define eghr_c    /display "Heart|Rate";
+			define egqt_c    /display "QT|Interval";
+			define egpr_c    /display "PR|Interval";
+			define egqrs_c   /display "QRS|Interval";
+			define egrr_c    /display "RR|Interval";
+			define egqtcf_c  /display "QTcF";
+			define egorres_c /display "Results, Specify" style=[htmlclass='max-width-3-75'];
 
 
 			*compute foldername;
@@ -72,7 +65,7 @@ run;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];
-			line "Vital Signs";
+			line "ECG";
 		endcomp;
 	run;
 	
