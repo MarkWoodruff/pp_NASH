@@ -7,12 +7,15 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-01 Mark Woodruff refine check on pagename now that have more records.
 ******************************************************************************************;
 
 ** ensure only informed consent records are present in crf.ds **;
 data _null_;
 	set crf.ds(encoding=any);
-	if ^(visname='Registration' and pagename='Informed Consent') then put "ER" "ROR: update RECON_build.sas to read in only Reconsent records.";
+
+	if (rpver^='' or ricv^='' or ricdat>.z) or pagename not in ('Randomization','Informed Consent') then put
+		"ER" "ROR: update RECON_build.sas to read in only Reconsent records.";
 run;
 
 ** ensure DELETED var is being handled correctly **;

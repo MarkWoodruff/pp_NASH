@@ -36,7 +36,7 @@ Lower Right: Indicator for SAE or G3/G4 AE
 Registration
 	-Informed Consent (DONE)
 	-Eligibility (DONE)
-	-Randomization (NO DATA)
+	-Randomization (DONE)
 	-Reconsent Log (DONE)
 	-PI Signature (NO DATA)
 Screening
@@ -50,10 +50,10 @@ Safety
 	-Vital Signs (DONE)
 	-ECG (DONE)
 	-Physical Exam (DONE)
-	-AE
-	-Conmeds
-	-Central Labs
-	-VCTE
+	-AE (NO DATA)
+	-Conmeds (DONE)
+	-Central Labs (NO DATA)
+	-Fibroscan (VCTE)
 	-Ultrasound
 	-MRI-PDFF
 	-Fasting Plasma Glucose

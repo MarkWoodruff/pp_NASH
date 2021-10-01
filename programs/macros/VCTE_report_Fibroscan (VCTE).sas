@@ -1,16 +1,16 @@
 /*****************************************************************************************/
-* Program Name  : CM_report_Concomitant Medications.sas
+* Program Name  : VCTE_report_Fibroscan (VCTE).sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-09-30
-* Description   : report CM domain
+* Creation Date : 2021-10-01
+* Description   : report VCTE domain
 *
 * Revision History
 * Date       By            Description of Change
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_cm;
+	set pp_final_vcte;
 	where subnum="&ptn.";
 	space=' ';
 run;
@@ -37,16 +37,17 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column cmtrt_c coding cmindc_c cmaeno cmmhno dose route frequency dates;
-			define cmtrt_c   /display "Medication" style=[htmlclass='max-width-3-0'];
-			define coding    /display "Coding" style=[htmlclass='max-width-3-0'];
-			define cmindc_c  /display "Indication,|Specify" style=[htmlclass='max-width-3-0'];
-			define cmaeno    /display "AE|ID";
-			define cmmhno    /display "MH|ID";
-			define dose      /display "Dose, Unit";
-			define route     /display "Route";
-			define frequency /display "Frequency";
-			define dates     /display "Start Date/|Stop Date" style=[htmlclass='min-width-1-0'];
+			column fadat visitid visname faperf_reas fafast8_dec fafast_c fadat_c faorres_cap_c faorres_lsm_c facoval;
+			define fadat         /order order=internal noprint;
+			define visitid       /order order=internal noprint;
+			define visname       /display "Visit";
+			define faperf_reas   /display "Performed?|If No, Reason" style=[htmlclass='max-width-3-0'];
+			define fafast8_dec   /display "Fasting at|least 8 hours?";
+			define fafast_c      /display "If No, Number|of Hours Fasted";
+			define fadat_c       /display "Date" style=[htmlclass='min-width-1-0'];
+			define faorres_cap_c /display "CAP|Score";
+			define faorres_lsm_c /display "LSM|Score";
+			define facoval       /display "Comments";
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
@@ -60,7 +61,7 @@ run;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];
-			line "Concomitant Medications";
+			line "Fibroscan (VCTE)";
 		endcomp;
 	run;
 	

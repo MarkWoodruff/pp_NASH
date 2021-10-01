@@ -19,7 +19,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update CM_build.sas to handle CM.DELETED var appropriately.";
 run;
 
-data pp_final_cm(keep=subnum visitid visname cmtrt_c cmindc_c cmaeno cmmhno dose route frequency cmstdat cmendat dates);
+data pp_final_cm(keep=subnum visitid visname cmtrt_c cmindc_c cmaeno cmmhno dose route frequency cmstdat cmendat dates coding);
 	set crf.cm(encoding=any where=(pagename='Concomitant Medications' and deleted='f'));
 
 	length cmtrt_c $700;
@@ -44,6 +44,12 @@ data pp_final_cm(keep=subnum visitid visname cmtrt_c cmindc_c cmaeno cmmhno dose
 	if cmendat>.z and cmongo^='' then put "ER" "ROR: update CM_build.sas to handle both a stop date and ongoing.";
 	if cmendat>.z then dates=strip(cmstdat)||'/frcbrk'||strip(put(cmendat,yymmdd10.));
 		else if cmongo^='' then dates=strip(cmstdat)||'/frcbrk'||'Ongoing';
+
+	length coding $3100;
+	if drug_name^='' or preferred_name^='' then do;
+		put "ER" "ROR: update CM_build.sas to make sure proper coding terms are being used, now that they are populated";
+		coding=strip(drug_name)||'/frcbrk'||strip(preferred_name);
+	end;
 
 	proc sort;
 		by subnum cmstdat cmendat;

@@ -7,13 +7,14 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-01 Mark Woodruff remove visit from check on pagename var.
 ******************************************************************************************;
 
 data _null_;
 	set crf.mh(encoding=any);
 
 	** ensure only informed consent records are present in crf.ds **;
-	if ^(visname='Screening' and pagename='Medical History') then put "ER" "ROR: update MH_build.sas to read in only Medical History records from crf.MH.";
+	if ^(pagename='Medical History') then put "ER" "ROR: update MH_build.sas to read in only Medical History records from crf.MH.";
 
 	** ensure DELETED var is being handled correctly **;
 	if deleted^='f' then put "ER" "ROR: update DM_build.sas to handle MH.DELETED var appropriately.";

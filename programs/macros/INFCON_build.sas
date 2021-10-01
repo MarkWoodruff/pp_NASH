@@ -13,7 +13,7 @@
 ** ensure only informed consent records are present in crf.ds **;
 data _null_;
 	set crf.ds(encoding=any);
-	if ^(visname='Registration' and pagename='Informed Consent') then put "ER" "ROR: update INFCON_build.sas to read in only Informed Consent records.";
+	if ^(pagename in ('Randomization','Informed Consent')) then put "ER" "ROR: update INFCON_build.sas to read in only Informed Consent records.";
 run;
 
 ** ensure DELETED var is being handled correctly **;

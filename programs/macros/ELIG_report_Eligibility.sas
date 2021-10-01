@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-09-28 Mark Woodruff use data_dt.
+* 2021-10-01 Mark Woodruff add visitid and visname.
 ******************************************************************************************;
 
 data domain_data;
@@ -37,7 +38,9 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column iestdat_c ieorres_dec ieenroll_dec ietestcd_dec sf_mri mostdat_c iereplc_dec iereplcn;
+			column visitid visname iestdat_c ieorres_dec ieenroll_dec ietestcd_dec sf_mri mostdat_c iereplc_dec iereplcn;
+			define visitid      /order order=internal noprint;
+			define visname      /display "Visit";
 			define iestdat_c    /display "Eligibility|Assessment|Date" style=[htmlclass='min-width-1-0'];
 			define ieorres_dec  /display "Eligible|for Study?";
 			define ieenroll_dec /display "Enrolled without meeting|all IE requirements?|(include as PD)";

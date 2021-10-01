@@ -7,13 +7,14 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-01 Mark Woodruff remove visit from check on pagename var.  add visitid and visname.
 ******************************************************************************************;
 
 data _null_;
 	set crf.ie(encoding=any);
 
 	** ensure only informed consent records are present in crf.ds **;
-	if ^(visname='Registration' and pagename='Eligibility') then put "ER" "ROR: update ELIG_build.sas to read in only Eligibility records from crf.IE.";
+	if ^(pagename='Eligibility') then put "ER" "ROR: update ELIG_build.sas to read in only Eligibility records from crf.IE.";
 
 	** ensure DELETED var is being handled correctly **;
 	if deleted^='f' then put "ER" "ROR: update ELIG_build.sas to handle IE.DELETED var appropriately.";
@@ -23,23 +24,25 @@ data _null_;
 	set crf.mo(encoding=any);
 
 	** ensure only informed consent records are present in crf.ds **;
-	if ^(visname='Registration' and pagename='Eligibility') then put "ER" "ROR: update ELIG_build.sas to read in only Eligibility records from crf.MO.";
+	if ^(pagename in ('Eligibility','MRI-PDFF')) then put "ER" "ROR: update ELIG_build.sas to read in only Eligibility records from crf.MO.";
 
 	** ensure DELETED var is being handled correctly **;
 	if deleted^='f' then put "ER" "ROR: update ELIG_build.sas to handle MO.DELETED var appropriately.";
 run;
 
-data elig(keep=subnum iestdat_c ieorres_dec ieenroll_dec ietestcd_dec iereplc_dec iereplcn);
+data elig(keep=subnum visitid visname iestdat_c ieorres_dec ieenroll_dec ietestcd_dec iereplc_dec iereplcn);
 	set crf.ie(encoding=any where=(pagename='Eligibility' and deleted='f'));
 
 	length iestdat_c $10;
 	if iestdat>.z then iestdat_c=strip(put(iestdat,yymmdd10.));
 
+	if index(upcase(visname),'UNSCH')>0 then put "ER" "ROR: update ELIG_build.sas for Unscheduled visit sorting and merging.";
+
 	proc sort;
-		by subnum;
+		by subnum visitid visname;
 run;
 
-data mo(keep=subnum sf_mri mostdat_c);
+data mo(keep=subnum visitid visname sf_mri mostdat_c);
 	set crf.mo(encoding=any where=(pagename='Eligibility' and deleted='f'));
 
 	length sf_mri $3;
@@ -48,12 +51,14 @@ data mo(keep=subnum sf_mri mostdat_c);
 	length mostdat_c $10;
 	if mostdat>.z then mostdat_c=strip(put(mostdat,yymmdd10.));
 
+	if index(upcase(visname),'UNSCH')>0 then put "ER" "ROR: update ELIG_build.sas for Unscheduled visit sorting and merging.";
+
 	proc sort;
-		by subnum;
+		by subnum visitid visname;
 run;
 
-data pp_final_elig(keep=subnum iestdat_c ieorres_dec ieenroll_dec ietestcd_dec sf_mri mostdat_c iereplc_dec iereplcn);
+data pp_final_elig(keep=subnum visitid visname visname iestdat_c ieorres_dec ieenroll_dec ietestcd_dec sf_mri mostdat_c iereplc_dec iereplcn);
 	merge elig
 		  mo;
-	by subnum;
+	by subnum visitid visname;
 run;

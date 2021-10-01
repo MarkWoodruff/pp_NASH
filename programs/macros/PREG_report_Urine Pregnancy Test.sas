@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-01 Mark Woodruff keep visitid visname.
 ******************************************************************************************;
 
 data domain_data;
@@ -36,7 +37,9 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column lbnd lbuptr_dec lbcoval;
+			column visitid visname lbnd lbuptr_dec lbcoval;
+			define visitid    /order order=internal noprint;
+			define visname    /display "Visit";
 			define lbnd       /display "Check Box|if Not Done";
 			define lbuptr_dec /display "Result of|Urine Pregnancy Test";
 			define lbcoval    /display "Comments, if any";
