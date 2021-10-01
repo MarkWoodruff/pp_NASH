@@ -469,7 +469,7 @@ a {
 .patient-status {
 	position: absolute;
 	right: 6px;
-	bottom: -17px;
+	top: 4px;
 	text-align: right;
 	font: 400 10pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	color: black;

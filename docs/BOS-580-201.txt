@@ -53,7 +53,7 @@ Safety
 	-AE (NO DATA)
 	-Conmeds (DONE)
 	-Central Labs (NO DATA)
-	-Fibroscan (VCTE)
+	-Fibroscan (DONE)
 	-Ultrasound
 	-MRI-PDFF
 	-Fasting Plasma Glucose

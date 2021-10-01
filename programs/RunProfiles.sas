@@ -48,6 +48,7 @@ ods listing close;
 %include "&macros.\PE_build.sas"       / nosource2;
 %include "&macros.\CM_build.sas"       / nosource2;
 %include "&macros.\VCTE_build.sas"     / nosource2;
+%include "&macros.\IP_build.sas"       / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -71,33 +72,58 @@ run;
 *****************************************;
 ** get HTML code for patient dashboard **;
 *****************************************;
-** part + cohort, for lower left of patient cards **;
-data cohort(keep=subnum part_cohort);
+** part + cohort, for upper left of patient cards **;
+data part(keep=subnum part_dec_);
 	set crf.ds(encoding=any where=(pagename='Informed Consent'));
 
-	length cohort_c $100;
-	if cohort_dec^='' then cohort_c=strip(cohort_dec);
-		else cohort_c='Cohort TBD';
-
-	length part_cohort $100;
-	part_cohort=catx(': ','Part '||strip(part_dec),cohort_c);
+	length part_dec_ $20;
+	if part_dec^='' then part_dec_='Part '||strip(part_dec);
 
 	proc sort;
 		by subnum;
 run;
 
+data cohort(keep=subnum cohort_dec);
+	set crf.ds(encoding=utf8 where=(pagename='Randomization'));
+	
+	cohort_dec=tranwrd(cohort_dec,' –',' -');
+
+	proc sort;
+		by subnum;
+run;
+
+data part_cohort(keep=subnum part_cohort);
+	merge part
+		  cohort;
+	by subnum;
+
+	length part_cohort $30;
+	part_cohort=coalescec(cohort_dec,part_dec_);
+run;
+
 ** patient status, for upper left of patient cards **;
 ** enrolled **;
-data enrolled(keep=subnum enrolled);
+data enrolled(keep=subnum iestdat enrolled);
 	set crf.ie(encoding=any where=(deleted='f'));
 
 	enrolled=strip(ieorres);
 
 	proc sort;
-		by subnum;
+		by subnum iestdat;
+run;
+
+data enrolled(keep=subnum enrolled);
+	set enrolled;
+	by subnum iestdat;
+	if last.subnum;
 run;
 
 ** discontinued or completed **;
+data _null_;
+	set crf.ds;
+	if pagename not in ('Informed Consent','Randomization') then put "ER" "ROR: make sure end of study caught in patient cards.";
+run;
+
 data eos(keep=subnum eos);
 	set crf.ds(encoding=any where=(upcase(pagename)='END OF STUDY' and dsstdat>.z));
 
@@ -120,17 +146,27 @@ data patient_status(keep=subnum patient_status);
 run;
 
 ** latest visit **;
-data latest_visit;
-	set crf.sv(encoding=any);
+%macro latest(dsn=,dt=,whr=);
+	data latest_&dsn.(keep=subnum latest visname);
+		set crf.&dsn.(encoding=any rename=(&dt.=latest) &whr.);
+	run;
+%mend latest;
+%latest(dsn=sv,dt=svstdt,whr=%str(where=(svnd='')));
+%latest(dsn=ie,dt=iestdat);
+%latest(dsn=ds,dt=dsstdat);
+
+data latest;
+	set latest_sv
+		latest_ie
+		latest_ds;
 
 	proc sort;
-		by subnum svstdt;
-		where svnd='';
+		by subnum latest;
 run;
 
 data latest_visit(keep=subnum latest_visit);
-	set latest_visit;
-	by subnum svstdt;
+	set latest;
+	by subnum latest;
 	if last.subnum;
 
 	if visname='Unscheduled' then visname='Unsched.';
@@ -139,9 +175,24 @@ data latest_visit(keep=subnum latest_visit);
 	latest_visit=strip(visname);
 run;
 
+%macro mult(dsn=);
+	proc freq data=&dsn. noprint;
+		tables subnum/out=&dsn._m;
+	run;
+
+	data &dsn._m;
+		set &dsn._m;
+		by subnum;
+		if count>1;
+	run;
+%mend mult;
+%mult(dsn=latest_visit);
+%mult(dsn=part_cohort);
+%mult(dsn=patient_status);
+
 data patient_cards(keep=subnum part_cohort latest_visit patient_status);
 	merge latest_visit
-		  cohort
+		  part_cohort
 		  patient_status;
 	by subnum;
 
@@ -279,7 +330,8 @@ proc format;
 	"ECG_report_ECG.sas"                   =12
 	"PE_report_Physical Exam.sas"          =13
 	"CM_report_Concomitant Medications.sas"=14
-	"VCTE_report_Fibroscan (VCTE).sas"     =15;
+	"VCTE_report_Fibroscan (VCTE).sas"     =15
+	"IP_report_MORE IN PROGRESS.sas"       =16;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -466,7 +518,8 @@ options mprint mlogic symbolgen;
 						<nav class="header-outnav">                     
 							<a href=".\index.html">studies</a>                                    
 							<a href=".\patients-bos-580-201.html">patients</a>
-							<a href="C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_QSR.htm">qsr</a>    
+							<a href="#" class="dead-link">srt</a>  
+							<a href="#" class="dead-link">ia</a>    
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FProtocols" target="_blank">protocol</a> 
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FData%5FMgmt%2FCRFs" target="_blank">crf</a>                          
 						</nav>
@@ -716,6 +769,10 @@ options mprint mlogic symbolgen;
 				end;
 */
 
+				** insert MORE IN PROGRESS domain **;
+				_infile_=tranwrd(_infile_,">MORE IN PROGRESS","id='red-domain'>MORE IN PROGRESS");
+				
+
 				** fix some special characters **;
 				_infile_=tranwrd(_infile_,'GEGEGE','&#8805;');
 				_infile_=tranwrd(_infile_,'checkmark','&#10004;');
@@ -764,8 +821,8 @@ options mprint mlogic symbolgen;
 	%patients;
 	ods listing;
 %mend patients_domains;
-*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=48,ept=48,spn=1,epn=&num_domains.);
+%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+*%patients_domains(spt=48,ept=48,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -781,6 +838,7 @@ data _null_;
 	_infile_=tranwrd(_infile_,'DUMMYPATIENTCARDLIST4',"&big_patient_cards_list4."); 
 	_infile_=tranwrd(_infile_,'<h1>BOS-580-201 Patients</h1>',"<h1>BOS-580-201 Patients - Data as of &data_dt.</h1>");	
 	_infile_=tranwrd(_infile_,'stylesheets\main.css',"stylesheets\main.css?Rev=&now.");
+	_infile_=tranwrd(_infile_,' – ',' &#8209; ');
 
 	put _infile_;
 run;
@@ -797,6 +855,7 @@ data _null_;
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FData%5FMgmt%2FPatient%20Profiles%2Foutput/BOS-580-201_QSR.aspx');
 	_infile_=tranwrd(_infile_,'.html','.aspx');	
 	_infile_=tranwrd(_infile_,'.htm','.aspx');	
+	_infile_=tranwrd(_infile_,' – ',' &#8209; ');
 
 	put _infile_;
 run;

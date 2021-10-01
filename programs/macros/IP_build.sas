@@ -9,14 +9,5 @@
 * Date       By            Description of Change
 ******************************************************************************************;
 
-data pp_final_rand(keep=subnum visitid visname dsstdat_c cohort_dec);
-	set crf.ds(encoding=utf8 where=(pagename='Randomization'));
-
-	length dsstdat_c $10;
-	if dsstdat>.z then dsstdat_c=strip(put(dsstdat,yymmdd10.));
-
-	cohort_dec=tranwrd(cohort_dec,' –',' -');
-
-	proc sort;
-		by subnum visitid visname;
+data pp_final_ip;
 run;

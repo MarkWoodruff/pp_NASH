@@ -98,6 +98,13 @@ h5 {
 	text-transform: uppercase;
 }
 
+#red-domain {
+	color: red;	
+	font-size: 16px;
+	pointer-events: none;
+	cursor: default;
+}
+
 sup {
 	vertical-align: super;
 	font-size: smaller;
@@ -417,6 +424,11 @@ tr:nth-child(odd) {
 
 .data::before {
 	display: none;
+}
+
+.dead-link {
+	pointer-events: none;
+	cursor: default;
 }
 
 .header {

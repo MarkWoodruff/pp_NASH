@@ -36,9 +36,11 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column dsstdat_c cohort_dec;
-			define dsstdat_c   /display "Date" style=[htmlclass='min-width-1-0'];
-			define cohort_dec  /display "Cohort";
+			column visitid visname dsstdat_c cohort_dec;
+			define visitid    /order order=internal noprint;
+			define visname    /display "Visit";
+			define dsstdat_c  /display "Date" style=[htmlclass='min-width-1-0'];
+			define cohort_dec /display "Cohort";
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
