@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-01 Mark Woodruff remove visit from check on pagename var.  add visitid and visname.
+* 2021-10-06 Mark Woodruff sort by eligibility assessment date.
 ******************************************************************************************;
 
 data _null_;
@@ -30,7 +31,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update ELIG_build.sas to handle MO.DELETED var appropriately.";
 run;
 
-data elig(keep=subnum visitid visname iestdat_c ieorres_dec ieenroll_dec ietestcd_dec iereplc_dec iereplcn);
+data elig(keep=subnum visitid visname iestdat iestdat_c ieorres_dec ieenroll_dec ietestcd_dec iereplc_dec iereplcn);
 	set crf.ie(encoding=any where=(pagename='Eligibility' and deleted='f'));
 
 	length iestdat_c $10;
@@ -57,8 +58,11 @@ data mo(keep=subnum visitid visname sf_mri mostdat_c);
 		by subnum visitid visname;
 run;
 
-data pp_final_elig(keep=subnum visitid visname visname iestdat_c ieorres_dec ieenroll_dec ietestcd_dec sf_mri mostdat_c iereplc_dec iereplcn);
+data pp_final_elig(keep=subnum visitid visname visname iestdat iestdat_c ieorres_dec ieenroll_dec ietestcd_dec sf_mri mostdat_c iereplc_dec iereplcn);
 	merge elig
 		  mo;
 	by subnum visitid visname;
+
+	proc sort;
+		by subnum iestdat;
 run;

@@ -1,18 +1,18 @@
 /*****************************************************************************************/
-* Program Name  : MH_report_Medical History.sas
+* Program Name  : ULTRA_report_Ultrasound.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-09-24
-* Description   : report Medical History domain
+* Creation Date : 2021-10-06
+* Description   : report ULTRA domain
 *
 * Revision History
 * Date       By            Description of Change
-* 2021-10-06 Mark Woodruff coding removed from DB.
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_mh;
+	set pp_final_ultra;
 	where subnum="&ptn.";
+	space=' ';
 run;
 
 %nobs(domain_data);
@@ -37,13 +37,15 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column mhnd_c mhterm dates ongoing mhsev_dec;
-			define mhnd_c    /display "No Relevant|Medical History";
-			define mhterm    /display "Diagnosis/Procedure";
-			*define coding    /display "System Organ Class/|Preferred Term";
-			define dates     /display "Start Date/|Stop Date" style=[htmlclass='min-width-1-25'];
-			define ongoing   /display "Ongoing?";
-			define mhsev_dec /display "CTCAE Grade";
+			column fadat visitid visname fadat_c faperf_reas faorres_g_dec faorres_s_dec faorres_dec;
+			define fadat         /order order=internal noprint;
+			define visitid       /order order=internal noprint;
+			define visname       /display "Visit";
+			define fadat_c       /display "Date" style=[htmlclass='min-width-1-0'];
+			define faperf_reas   /display "Performed?|If No, Reason" style=[htmlclass='max-width-3-0'];
+			define faorres_g_dec /display "Does Subject|Have Gallstones?";
+			define faorres_s_dec /display "Does Subject|Have Sludge?";
+			define faorres_dec   /display "Investigator|Assessment";
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
@@ -56,8 +58,8 @@ run;
 			*footnote "dm-footnote";
 		%end;
 
-		compute before _page_ / style=[just=l htmlclass="domain-title"];
-			line "Medical History";
+		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];
+			line "Ultrasound";
 		endcomp;
 	run;
 	

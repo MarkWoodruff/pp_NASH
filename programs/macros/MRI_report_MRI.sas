@@ -1,17 +1,16 @@
 /*****************************************************************************************/
-* Program Name  : MH_report_Medical History.sas
+* Program Name  : MRI_report_MRI.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-09-24
-* Description   : report Medical History domain
+* Creation Date : 2021-10-06
+* Description   : report MRI domain
 *
 * Revision History
 * Date       By            Description of Change
-* 2021-10-06 Mark Woodruff coding removed from DB.
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_mh;
+	set pp_final_mri;
 	where subnum="&ptn.";
 run;
 
@@ -37,13 +36,14 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column mhnd_c mhterm dates ongoing mhsev_dec;
-			define mhnd_c    /display "No Relevant|Medical History";
-			define mhterm    /display "Diagnosis/Procedure";
-			*define coding    /display "System Organ Class/|Preferred Term";
-			define dates     /display "Start Date/|Stop Date" style=[htmlclass='min-width-1-25'];
-			define ongoing   /display "Ongoing?";
-			define mhsev_dec /display "CTCAE Grade";
+			column mostdat visitid visname mostdat_c mriperf_reas mofastyn_dec mofastn_c;
+			define mostdat      /order order=internal noprint;
+			define visitid      /order order=internal noprint;
+			define visname      /display "Visit";
+			define mostdat_c    /display "Date of MRI|Examination" style=[htmlclass='min-width-1-0'];
+			define mriperf_reas /display "Performed?|If No, Reason" style=[htmlclass='max-width-3-0'];
+			define mofastyn_dec /display "Fasting for 4 Hours|Prior to Procedure?";
+			define mofastn_c    /display "How Many Hours Was|Subject Fasting?";
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
@@ -53,11 +53,11 @@ run;
 				*if .z<input(age_raw,best.)<18 then call define(_col_,"style","style=[background=lightred]");
 			*endcomp;
 
-			*footnote "dm-footnote";
+			footnote "Note: External MRI data from BioTel Research will be added once it is received.";
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="domain-title"];
-			line "Medical History";
+			line "MRI";
 		endcomp;
 	run;
 	

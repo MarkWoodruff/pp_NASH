@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-01 Mark Woodruff remove visit from check on pagename var.
+* 2021-10-06 Mark Woodruff coding removed from DB.  edit sort.
 ******************************************************************************************;
 
 data _null_;
@@ -20,10 +21,10 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update DM_build.sas to handle MH.DELETED var appropriately.";
 
 	** check that coding is working properly once it is populated **;
-	if pt_term^='' or soc_term^='' then put "ER" "ROR: check MH_build.sas to make sure coding is being handled appropriately.";
+	*if pt_term^='' or soc_term^='' then put "ER" "ROR: check MH_build.sas to make sure coding is being handled appropriately.";
 run;
 
-data pp_final_mh(keep=subnum mhnd_c mhterm dates ongoing mhsev_dec coding);
+data pp_final_mh(keep=subnum mhnd_c mhterm mhstdat mhendat dates ongoing mhsev_dec);* coding);
 	set crf.mh(encoding=any where=(pagename='Medical History' and deleted='f'));
 
 	length mhnd_c $3;
@@ -35,9 +36,9 @@ data pp_final_mh(keep=subnum mhnd_c mhterm dates ongoing mhsev_dec coding);
 	length ongoing $3;
 	if mhongo^='' then ongoing='Yes';
 
-	length coding $20;
-	if pt_term^='' or soc_term^='' then coding=strip(soc_term)||'/frcbrk'||strip(pt_term);
+	*length coding $20;
+	*if pt_term^='' or soc_term^='' then coding=strip(soc_term)||'/frcbrk'||strip(pt_term);
 
 	proc sort;
-		by subnum;
+		by subnum mhstdat mhendat mhterm;
 run;

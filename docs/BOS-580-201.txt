@@ -9,9 +9,12 @@ For Etienne:
 		b) graph of QTcF (might as well do all)
 		c) listing of demographics
 	6) Shelley will provide table of site number and time zone, use that and TIME OF SYRINGE LOADED (will be added to DB) to determine timing difference between dose administration adn time of syringe loaded.  Flag those later than 24 hours.
-In Profiles:
-	1) external MRI data from BioTel Research - comes monthly
-	2) external lab data from LabConnect
+
+*******************
+** EXTERNAL DATA **
+*******************
+	1) MRI data from BioTel Research - comes monthly
+	2) lab data from LabConnect
 
 
 DS dataset
@@ -54,8 +57,8 @@ Safety
 	-Conmeds (DONE)
 	-Central Labs (NO DATA)
 	-Fibroscan (DONE)
-	-Ultrasound
-	-MRI-PDFF
+	-Ultrasound (DONE)
+	-MRI-PDFF (DONE - NEED EXTERNAL DATA)
 	-Fasting Plasma Glucose
 Dosing
 	-Kit Assignment

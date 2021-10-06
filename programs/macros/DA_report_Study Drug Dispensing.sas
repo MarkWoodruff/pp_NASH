@@ -1,17 +1,16 @@
 /*****************************************************************************************/
-* Program Name  : MH_report_Medical History.sas
+* Program Name  : DA_report_Study Drug Dispensing.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-09-24
-* Description   : report Medical History domain
+* Creation Date : 2021-10-06
+* Description   : report DA domain
 *
 * Revision History
 * Date       By            Description of Change
-* 2021-10-06 Mark Woodruff coding removed from DB.
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_mh;
+	set pp_final_da;
 	where subnum="&ptn.";
 run;
 
@@ -37,13 +36,17 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column mhnd_c mhterm dates ongoing mhsev_dec;
-			define mhnd_c    /display "No Relevant|Medical History";
-			define mhterm    /display "Diagnosis/Procedure";
-			*define coding    /display "System Organ Class/|Preferred Term";
-			define dates     /display "Start Date/|Stop Date" style=[htmlclass='min-width-1-25'];
-			define ongoing   /display "Ongoing?";
-			define mhsev_dec /display "CTCAE Grade";
+			column visitid visname dareplac_dec dadisdat_c dadistim_c dakitno1-dakitno3 dadisdat2_c dadistim2_c;
+			define visitid      /order order=internal noprint;
+			define visname      /display "Visit";
+			define dareplac_dec /display "Replacing a|Damaged Kit?";
+			define dadisdat_c   /display "Date Kit|Assigned" style=[htmlclass='min-width-1-0'];
+			define dadistim_c   /display "Time Kit|Assigned";
+			define dakitno1     /display "Kit Number 1";
+			define dakitno2     /display "Kit Number 2";
+			define dakitno3     /display "Kit Number 3";
+			define dadisdat2_c  /display "Date Syringe(s)|Loaded" style=[htmlclass='min-width-1-0'];
+			define dadistim2_c  /display "Time Syringe(s)|Loaded";
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
@@ -53,11 +56,11 @@ run;
 				*if .z<input(age_raw,best.)<18 then call define(_col_,"style","style=[background=lightred]");
 			*endcomp;
 
-			*footnote "dm-footnote";
+			*footnote "Note: External MRI data from BioTel Research will be added once it is received.";
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="domain-title"];
-			line "Medical History";
+			line "Study Drug Dispensing";
 		endcomp;
 	run;
 	

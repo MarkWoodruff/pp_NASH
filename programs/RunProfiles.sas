@@ -49,6 +49,10 @@ ods listing close;
 %include "&macros.\CM_build.sas"       / nosource2;
 %include "&macros.\VCTE_build.sas"     / nosource2;
 %include "&macros.\IP_build.sas"       / nosource2;
+%include "&macros.\ULTRA_build.sas"    / nosource2;
+%include "&macros.\MRI_build.sas"      / nosource2;
+%include "&macros.\FPG_build.sas"      / nosource2;
+%include "&macros.\DA_build.sas"       / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -331,7 +335,11 @@ proc format;
 	"PE_report_Physical Exam.sas"          =13
 	"CM_report_Concomitant Medications.sas"=14
 	"VCTE_report_Fibroscan (VCTE).sas"     =15
-	"IP_report_MORE IN PROGRESS.sas"       =16;
+	"ULTRA_report_Ultrasound.sas"          =16
+	"MRI_report_MRI.sas"                   =17
+	"FPG_report_Fasting Plasma Glucose.sas"=18
+	"DA_report_Study Drug Dispensing.sas"  =19
+	"IP_report_MORE IN PROGRESS.sas"       =20;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -822,7 +830,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=48,ept=48,spn=1,epn=&num_domains.);
+*%patients_domains(spt=69,ept=69,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
