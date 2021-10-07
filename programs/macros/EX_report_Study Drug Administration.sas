@@ -1,16 +1,16 @@
 /*****************************************************************************************/
-* Program Name  : DA_report_Study Drug Dispensing.sas
+* Program Name  : EX_report_Study Drug Administration.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-10-06
-* Description   : report DA domain
+* Creation Date : 2021-10-07
+* Description   : report EX domain
 *
 * Revision History
 * Date       By            Description of Change
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_da;
+	set pp_final_ex;
 	where subnum="&ptn.";
 run;
 
@@ -36,17 +36,22 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column visitid visname dareplac_dec dadisdat_c dadistim_c dakitno1-dakitno3 dadisdat2_c dadistim2_c;
+			column visitid visname exyn_dec exinjn_dec exstdat_c exsttim_c ("LocationSPNHDRFRCNDRLNCNTR" exloc1_ exloc2_ exloc3_) 
+			       exvamtt_c exdoseyn_dec exreas_ exrxnyn_dec excoval;
 			define visitid      /order order=internal noprint;
 			define visname      /display "Visit";
-			define dareplac_dec /display "Replacing a|Damaged Kit?";
-			define dadisdat_c   /display "Date Kit|Assigned" style=[htmlclass='min-width-1-0'];
-			define dadistim_c   /display "Time Kit|Assigned";
-			define dakitno1     /display "Kit|Number 1";
-			define dakitno2     /display "Kit|Number 2";
-			define dakitno3     /display "Kit|Number 3";
-			define dadisdat2_c  /display "Date Syringe(s)|Loaded" style=[htmlclass='min-width-1-0'];
-			define dadistim2_c  /display "Time Syringe(s)|Loaded";
+			define exyn_dec     /display "Dosing|Performed?";
+			define exinjn_dec   /display "Number of|Injections";
+			define exstdat_c    /display "Dosing|Date" style=[htmlclass='min-width-1-0'];
+			define exsttim_c    /display "Start|Dosing|Time";
+			define exloc1_      /display "1" style=[htmlclass='overline'];
+			define exloc2_      /display "2" style=[htmlclass='overline'];
+			define exloc3_      /display "3" style=[htmlclass='overline'];
+			define exvamtt_c    /display "Total|Volume|Admin. (mL)";
+			define exdoseyn_dec /display "Full Dose|Admin.?";
+			define exreas_      /display "Reasons";
+			define exrxnyn_dec  /display "Injection Site|Reaction Occur?";
+			define excoval      /display "Comments" style=[htmlclass='max-width-3-0'];
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
@@ -60,7 +65,7 @@ run;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="domain-title"];
-			line "Study Drug Dispensing";
+			line "Study Drug Administration";
 		endcomp;
 	run;
 	

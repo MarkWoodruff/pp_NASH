@@ -53,6 +53,7 @@ ods listing close;
 %include "&macros.\MRI_build.sas"      / nosource2;
 %include "&macros.\FPG_build.sas"      / nosource2;
 %include "&macros.\DA_build.sas"       / nosource2;
+%include "&macros.\EX_build.sas"       / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -320,26 +321,27 @@ run;
 ***************************************************************************************************;
 proc format;
 	value $domainord
-	"INFCON_report_Informed Consent.sas"   = 1
-	"RECON_report_Reconsent.sas"           = 2
-	"ELIG_report_Eligibility.sas"          = 3
-	"RAND_report_Randomization.sas"        = 4
-	"SV_report_Visit Date.sas"			   = 5
-	"UNS_report_Unscheduled Visit.sas"	   = 6
-	"DM_report_Demographics.sas"		   = 7
-	"MH_report_Medical History.sas"		   = 8
-	"BODY_report_Body Measurements.sas"	   = 9
-	"PREG_report_Urine Pregnancy Test.sas" =10
-	"VS_report_Vital Signs.sas"            =11
-	"ECG_report_ECG.sas"                   =12
-	"PE_report_Physical Exam.sas"          =13
-	"CM_report_Concomitant Medications.sas"=14
-	"VCTE_report_Fibroscan (VCTE).sas"     =15
-	"ULTRA_report_Ultrasound.sas"          =16
-	"MRI_report_MRI.sas"                   =17
-	"FPG_report_Fasting Plasma Glucose.sas"=18
-	"DA_report_Study Drug Dispensing.sas"  =19
-	"IP_report_MORE IN PROGRESS.sas"       =20;
+	"INFCON_report_Informed Consent.sas"     = 1
+	"RECON_report_Reconsent.sas"             = 2
+	"ELIG_report_Eligibility.sas"            = 3
+	"RAND_report_Randomization.sas"          = 4
+	"SV_report_Visit Date.sas"			     = 5
+	"UNS_report_Unscheduled Visit.sas"	     = 6
+	"DM_report_Demographics.sas"		     = 7
+	"MH_report_Medical History.sas"		     = 8
+	"BODY_report_Body Measurements.sas"	     = 9
+	"PREG_report_Urine Pregnancy Test.sas"   =10
+	"VS_report_Vital Signs.sas"              =11
+	"ECG_report_ECG.sas"                     =12
+	"PE_report_Physical Exam.sas"            =13
+	"CM_report_Concomitant Medications.sas"  =14
+	"VCTE_report_Fibroscan (VCTE).sas"       =15
+	"ULTRA_report_Ultrasound.sas"            =16
+	"MRI_report_MRI.sas"                     =17
+	"FPG_report_Fasting Plasma Glucose.sas"  =18
+	"DA_report_Study Drug Dispensing.sas"    =19
+	"EX_report_Study Drug Administration.sas"=20
+	"IP_report_MORE IN PROGRESS.sas"         =21;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -829,8 +831,8 @@ options mprint mlogic symbolgen;
 	%patients;
 	ods listing;
 %mend patients_domains;
-%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=69,ept=69,spn=1,epn=&num_domains.);
+*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+%patients_domains(spt=54,ept=54,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;

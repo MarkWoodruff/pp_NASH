@@ -168,6 +168,11 @@ body {
 	max-height: 80px;
 }
 
+.dead-link {
+	pointer-events: none;
+	cursor: default;
+}
+
 /**********************************************
 	BOX SIZING 
 /*********************************************/
