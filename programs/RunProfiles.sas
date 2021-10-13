@@ -32,10 +32,10 @@ ods listing close;
 
 ******************************************************;
 ** BUILD EACH REPORTABLE DOMAIN ACROSS ALL PATIENTS **;
-******************************************************;
+******************************************************;/*
 %include "&macros.\INFCON_build.sas"   / nosource2;
-%include "&macros.\RECON_build.sas"    / nosource2;
-%include "&macros.\ELIG_build.sas"     / nosource2;
+%include "&macros.\RECON_build.sas"    / nosource2;*/
+%include "&macros.\ELIG_build.sas"     / nosource2;/*
 %include "&macros.\RAND_build.sas"     / nosource2;
 %include "&macros.\DM_build.sas"       / nosource2;
 %include "&macros.\MH_build.sas"       / nosource2;
@@ -54,7 +54,7 @@ ods listing close;
 %include "&macros.\FPG_build.sas"      / nosource2;
 %include "&macros.\DA_build.sas"       / nosource2;
 %include "&macros.\EX_build.sas"       / nosource2;
-
+*/
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
 ****************************************************************;
@@ -612,6 +612,7 @@ options mprint mlogic symbolgen;
 
 				** force breaks in proc report **;
 				if index(_infile_,'frcbrk')>0 then _infile_=tranwrd(_infile_,'frcbrk','<br>');
+				if index(_infile_,'FRCBRK')>0 then _infile_=tranwrd(_infile_,'FRCBRK','<br>');
 
 				** add javascript for adding classes to elements upon clicking **;
 				_infile_=tranwrd(_infile_,'</body>',
@@ -832,7 +833,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 *%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=54,ept=54,spn=1,epn=&num_domains.);
+%patients_domains(spt=54,ept=54,spn=3,epn=3);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -869,6 +870,354 @@ data _null_;
 
 	put _infile_;
 run;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*****************************;
+** Data Management Reports **;
+*****************************;
+** get list of tables for sidebar links **;
+proc format;
+	value $list_ord
+	"SF_listing_Screen Failures.sas"=1;
+run;				
+
+filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
+
+data listing_progs(keep=listing_prog listing_link num);
+	infile tmp dlm='Z';
+	length listing_prog_ listing_prog $2000;
+	input listing_prog_;
+	if index(listing_prog_,'listing')>0;
+
+	** program filename **;
+	listing_prog=reverse(scan(reverse(listing_prog_),1,'\'));
+
+	** program text tag, for link **;
+	listing_link=tranwrd(scan(listing_prog,3,'_'),'.sas','');
+
+	num=input(put(listing_prog,$list_ord.),best.);
+
+	proc sort;
+		by num;
+run;
+
+*************************************************************;
+** put list of all reportable domains into macro variables **;
+*************************************************************;
+proc sql noprint;
+	select count(listing_prog) into :num_listing_prog trimmed from listing_progs;
+quit;
+
+data _null_;
+	set listing_progs;
+	by num;
+	call symput('list_rpg'||strip(put(num,best.)),listing_prog);
+run;
+
+**************************;
+** create sidebar links **;
+**************************;
+data listing_links(keep=listing_link_html);
+	set listing_progs end=eof;
+	by num;
+
+	if num=1 then listing_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(listing_link)||"</a></li>";
+		else if eof then listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><<li><p>Report: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
+		else listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li>";
+run;
+
+data _null_;
+	set listing_links end=eof;
+	length big_listing_link_list $3000;
+	retain big_listing_link_list;
+	big_listing_link_list=catx(' ',big_listing_link_list,listing_link_html);
+	if eof then call symput('big_listing_link_list',strip(big_listing_link_list));
+run;
+
+****************************;
+** loop through listings. **;
+****************************;
+options mprint mlogic symbolgen;
+%macro all_listings(slist=,elist=);
+	options ls=119;
+	%if &slist=  %then %let slist=1;
+	%if &elist=  %then %let elist=&num_listing_prog.;
+
+	ods _all_ close;
+	options missing='' ls=119;
+	ods noresults; ** disables ODS tracking, and output is not sent to the results window;
+	ods noproctitle; ** removes all procedure titles;
+	options nobyline; ** avoids printing BY lines above each BY group;
+	options nofontembedding; ** output files will rely on the fonts being installed on the computer used to view or print the font;
+	goptions reset=all;
+
+	%if &machine.=SERVER %then %do;
+	%end;
+		%else %if &machine.=USER %then %do;
+			ods html5 nogtitle nogfootnote 
+				options(svg_mode='inline')
+				base="&output."
+				path="&output."(url=none)
+				gpath="&output."(url=none)
+				contents="listings_c.htm"
+				frame="listings_f.htm"
+				body="listings_.htm"
+				stylesheet=(URL="..\programs\assets\stylesheets\main_grid.css?Rev=&now."); ** make sure latest file is grabbed, not from cache **;
+				*metatext='charset="utf-8" content="IE=edge"';
+			ods graphics / outputfmt=svg imagemap=on;
+		%end;
+
+	** loop through each listing individually **;
+	%macro listings;
+		%do p=&slist. %to &elist.;
+			options missing='';
+			%include "&macros.\&&list_rpg&p.." / nosource2;
+			options missing='.';
+		%end;
+	%mend listings;
+	%listings;
+
+	%if &machine.=SERVER %then %do;
+	%end;
+		%else %if &machine.=USER %then %do;
+			ods html5 close;
+			ods results;
+		%end;
+
+	options notes;
+
+	**********************************************************************;
+	** read in complete HTML file for IERs, insert HTML code for header **;
+	** must write to new file, otherwise pre-existing code overwritten  **;
+	**********************************************************************;
+	data _null_;
+		infile "&output.\listings_.htm" sharebuffers;
+		file "&output.\listings.htm";
+		input;
+
+		_infile_=tranwrd(_infile_,'</head>','<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900"></head>');
+
+		_infile_=tranwrd(_infile_,'<body class="body">','<body class="body">
+			<!------------>                    
+			<!-- HEADER -->                    
+			<!------------>          
+			<nav class="header-outnav">                     
+				<a href=".\index.html">studies</a>                                    
+				<a href=".\patients-bos-580-201.html">patients</a>
+				<a href="#" class="dead-link">srt</a>  
+				<a href="#" class="dead-link">ia</a>    
+				<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FProtocols" target="_blank">protocol</a> 
+				<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FData%5FMgmt%2FCRFs" target="_blank">crf</a>                          
+			</nav>
+
+			<div class="header-logo logo">                           
+				<a class="logo" href="https://bostonpharmaceuticals.sharepoint.com/Pages/Home.aspx">                                
+					<img src="..\programs\assets\images\bp-logo-white.png" alt="Company Logo">                            
+				</a>                   
+			</div>
+
+			<div class="header-title">
+				<h2 class="tagline">BOS-580-201 Data Management Reports</h2>
+				<div class="progress-container">
+					<div class="progress-bar" id="ProgBar"></div>
+				</div> 
+				<div class="space-under-progress-bar"></div>
+			</div>
+
+			<!----------------------->                    
+			<!-- TABLE TOC SIDEBAR -->                    
+			<!----------------------->  
+				<div class="table-sidebar" id="sub-header">
+					<ul>'||"&big_listing_link_list."||'</ul>
+				</div>   
+
+				<div class="fromsas">
+				<br>');
+
+		** remove the unneeded c and b **;
+		_infile_=tranwrd(_infile_,'th class="c ','th class="');
+		_infile_=tranwrd(_infile_,'td class="c ','td class="');
+		_infile_=tranwrd(_infile_,'span class="c ','span class="');
+		_infile_=tranwrd(_infile_,'th class="b ','th class="');
+		_infile_=tranwrd(_infile_,'td class="b ','td class="');
+		_infile_=tranwrd(_infile_,'span class="b ','span class="');
+
+		** when user specifies class, add back in default 'header' and 'data' classes as well **;
+		if index(_infile_,'th class="')>0 and index(_infile_,'header')=0 then _infile_=tranwrd(_infile_,'th class="','th class="header ');
+		if index(_infile_,'td class="')>0 and index(_infile_,'data')=0 and index(_infile_,'domain-title')=0 then _infile_=tranwrd(_infile_,'td class="','td class="data ');
+
+		** for certain column headers, do not apply class to <td>, only <th> **;
+		if index(_infile_,'td class="')>0 and index(_infile_,'overline')=0 then _infile_=tranwrd(_infile_,'overline',' ');
+		if index(_infile_,'td class="')>0 and index(_infile_,'created')=0 then _infile_=tranwrd(_infile_,'created',' ');
+
+		** avoid hard breaks on hyphens **;
+		if index(_infile_,'href')=0 then _infile_=tranwrd(_infile_,'12-','12&#8209;');
+		_infile_=tranwrd(_infile_,'Gamma-','Gamma&#8209;');
+		_infile_=tranwrd(_infile_,'Life-','Life&#8209;');
+		_infile_=tranwrd(_infile_,'gastro-','gastro&#8209;');
+		_infile_=tranwrd(_infile_,'COVID-','COVID&#8209;');
+		_infile_=tranwrd(_infile_,' – ',' &#8209; ');
+		_infile_=tranwrd(_infile_,'non–','non&#8209;');
+		_infile_=tranwrd(_infile_,'half–','half&#8209;');
+
+		** force breaks in proc report **;
+		if index(_infile_,'frcbrk')>0 then _infile_=tranwrd(_infile_,'frcbrk','<br>');
+		if index(_infile_,'FRCBRK')>0 then _infile_=tranwrd(_infile_,'FRCBRK','<br>');
+
+		** fix some special characters **;
+		_infile_=tranwrd(_infile_,'GEGEGE','&#8805;');
+
+		** for graphs generated by GTL, re-set classes to work with CSS **;
+		_infile_=tranwrd(_infile_,'class="systemtitle"','class="domain-title"');
+		_infile_=tranwrd(_infile_,'class="systemfooter"','class="footnote"');
+		_infile_=tranwrd(_infile_,'class="systemfooter2"','class="footnote"');
+		_infile_=tranwrd(_infile_,'class="systemfooter3"','class="footnote"');
+
+		** add javascript for adding classes to elements upon clicking **;
+		_infile_=tranwrd(_infile_,'</body>',
+			'<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+			 <script src="..\programs\assets\js\js-navigation.js"></script>
+			 <script src="..\programs\assets\js\progress-bar.js"></script>
+			 </body>'); 
+
+		** offset anchors below sticky header by adding a new anchor and offset **;
+		_infile_=tranwrd(_infile_,'<div id="IDX"','<span class="anchor" id="IDX"></span><div id="_IDX"');
+		%macro ier_offset_anchors;
+			%do i=1 %to 20;
+				_infile_=tranwrd(_infile_,%unquote(%nrbquote('<div id="IDX&i."')),%unquote(%nrbquote('<span class="anchor" id="IDX&i."></span><div id="_IDX&i."')));
+			%end;
+		%mend ier_offset_anchors;
+		%ier_offset_anchors;	
+
+		** for listings, create links back to related IDX of patient profile **;
+		if index(_infile_,"data patient-link sf")>0 then do;
+			pat=strip(scan(scan(_infile_,2,'>'),1,'<'));
+			if length(pat)=7 then do;
+				_infile_=tranwrd(_infile_,'pre">','pre"><a href=".\'||strip(pat)||'.htm#IDX">');
+				_infile_=tranwrd(_infile_,'</td>','</a></td>');
+			end;
+		end;
+
+		** FOOTNOTES **;
+		*_infile_=tranwrd(_infile_,'<p><span class="footnote">INCEXCSF-FOOTNOTE</span> </p>',
+			'<p><span class="footnote-num">SUPER1 Listing includes only patients for which "Did the subject meet all the inclusion criteria and none of the exclusion criteria?" = No, and "Was subject a screen failure?" = No.</span></p>');
+
+		** handle superscripts **;
+		_infile_=tranwrd(_infile_,'SUPER1','<sup>1</sup>');	
+		_infile_=tranwrd(_infile_,'SUPER2','<sup>2</sup>');	
+		_infile_=tranwrd(_infile_,'SUPER3','<sup>3</sup>');	
+		_infile_=tranwrd(_infile_,'SUPER4','<sup>4</sup>');	
+
+		** bold inclusion/exclusion numbers **;
+		_infile_=tranwrd(_infile_,'IN01','<span class="bold">IN01</span>');
+		_infile_=tranwrd(_infile_,'IN02','<span class="bold">IN02</span>');
+		_infile_=tranwrd(_infile_,'IN03','<span class="bold">IN03</span>');
+		_infile_=tranwrd(_infile_,'IN04','<span class="bold">IN04</span>');
+		_infile_=tranwrd(_infile_,'IN05','<span class="bold">IN05</span>');
+		_infile_=tranwrd(_infile_,'IN06','<span class="bold">IN06</span>');
+		_infile_=tranwrd(_infile_,'EX01','<span class="bold">EX01</span>');
+		_infile_=tranwrd(_infile_,'EX02','<span class="bold">EX02</span>');
+		_infile_=tranwrd(_infile_,'EX03','<span class="bold">EX03</span>');
+		_infile_=tranwrd(_infile_,'EX04','<span class="bold">EX04</span>');
+		_infile_=tranwrd(_infile_,'EX05','<span class="bold">EX05</span>');
+		_infile_=tranwrd(_infile_,'EX06','<span class="bold">EX06</span>');
+		_infile_=tranwrd(_infile_,'EX07','<span class="bold">EX07</span>');
+		_infile_=tranwrd(_infile_,'EX08','<span class="bold">EX08</span>');
+		_infile_=tranwrd(_infile_,'EX09','<span class="bold">EX09</span>');
+		_infile_=tranwrd(_infile_,'EX10','<span class="bold">EX10</span>');
+		_infile_=tranwrd(_infile_,'EX11','<span class="bold">EX11</span>');
+		_infile_=tranwrd(_infile_,'EX12','<span class="bold">EX12</span>');
+		_infile_=tranwrd(_infile_,'EX13','<span class="bold">EX13</span>');
+		_infile_=tranwrd(_infile_,'EX14','<span class="bold">EX14</span>');
+		_infile_=tranwrd(_infile_,'EX15','<span class="bold">EX15</span>');
+		_infile_=tranwrd(_infile_,'EX16','<span class="bold">EX16</span>');
+		_infile_=tranwrd(_infile_,'EX17','<span class="bold">EX17</span>');
+		_infile_=tranwrd(_infile_,'EX18','<span class="bold">EX18</span>');
+		_infile_=tranwrd(_infile_,'EX19','<span class="bold">EX19</span>');
+		_infile_=tranwrd(_infile_,'EX20','<span class="bold">EX20</span>');
+		_infile_=tranwrd(_infile_,'EX21','<span class="bold">EX21</span>');
+		_infile_=tranwrd(_infile_,'EX22','<span class="bold">EX22</span>');
+		_infile_=tranwrd(_infile_,'EX23','<span class="bold">EX23</span>');
+		_infile_=tranwrd(_infile_,'EX24','<span class="bold">EX24</span>');
+		_infile_=tranwrd(_infile_,'EX25','<span class="bold">EX25</span>');
+		_infile_=tranwrd(_infile_,'EX26','<span class="bold">EX26</span>');
+		_infile_=tranwrd(_infile_,'EX27','<span class="bold">EX27</span>');
+		_infile_=tranwrd(_infile_,'EX28','<span class="bold">EX28</span>');
+		_infile_=tranwrd(_infile_,'EX29','<span class="bold">EX29</span>');
+		_infile_=tranwrd(_infile_,'EX30','<span class="bold">EX30</span>');
+		_infile_=tranwrd(_infile_,'EX31','<span class="bold">EX31</span>');
+		_infile_=tranwrd(_infile_,'EX32','<span class="bold">EX32</span>');
+		_infile_=tranwrd(_infile_,'EX33','<span class="bold">EX33</span>');
+		_infile_=tranwrd(_infile_,'EX34','<span class="bold">EX34</span>');
+		_infile_=tranwrd(_infile_,'EX35','<span class="bold">EX35</span>');
+		_infile_=tranwrd(_infile_,'EX36','<span class="bold">EX36</span>');
+		_infile_=tranwrd(_infile_,'EX37','<span class="bold">EX37</span>');
+		_infile_=tranwrd(_infile_,'EX38','<span class="bold">EX38</span>');
+		_infile_=tranwrd(_infile_,'EX39','<span class="bold">EX39</span>');
+		_infile_=tranwrd(_infile_,'EX40','<span class="bold">EX40</span>');
+		_infile_=tranwrd(_infile_,'EX41','<span class="bold">EX41</span>');
+		_infile_=tranwrd(_infile_,'EX42','<span class="bold">EX42</span>');
+		_infile_=tranwrd(_infile_,'EX43','<span class="bold">EX43</span>');
+		_infile_=tranwrd(_infile_,'EX44','<span class="bold">EX44</span>');
+			
+		put _infile_;
+	run;
+
+	** if need .aspx files for Sharepoint, do so here **;
+	data _null_;
+		infile "&output.\listings.htm" sharebuffers;
+		file "&output.\aspx\listings.aspx";
+		input;
+
+		*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\safety\output\BOS161721-02.htm',
+							  	  'https://bostonpharmaceuticals.sharepoint.com/721/AL/Clinical/Study%20BOS161721-02/Data_Mgmt/Patient%20Profiles/output/BOS161721-02.aspx');
+		_infile_=tranwrd(_infile_,'.html','.aspx');	
+		_infile_=tranwrd(_infile_,'.htm','.aspx');	
+
+		put _infile_;
+	run;
+
+	*********************************************************************************************;
+	** delete old file, and content/frame files, after HTML header code inserted into new file **;
+	** this method should be OS-agnostic, as long as fileref is specified as an argument       **;
+	*********************************************************************************************;
+	%macro listing_file_delete(file);
+		filename old_file "&output.\listings_.htm";
+		%put %sysfunc(fdelete(old_file));
+
+		filename _c_file "&output.\listings_c.htm";
+		%put %sysfunc(fdelete(_c_file));
+
+		filename _f_file "&output.\listings_f.htm";
+		%put %sysfunc(fdelete(_f_file));
+	%mend listing_file_delete;
+	%listing_file_delete;	
+
+	ods listing;
+%mend all_listings;
+%all_listings(slist=1,elist=&num_listing_prog.);
 
 ***************************************************************;
 ** record program end time, and print duration of run to log **;
