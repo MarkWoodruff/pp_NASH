@@ -1,5 +1,5 @@
 /*****************************************************************************************/
-* Program Name  : SF_listing_Screen Failures.sas
+* Program Name  : SF_listing_Listing of Screen Failures.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
 * Creation Date : 2021-10-13

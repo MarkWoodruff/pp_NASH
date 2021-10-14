@@ -753,9 +753,19 @@ td.max-width-7-0 {
 	max-width: 7.0in;    
 }
 
+th.max-width-7-25,
+td.max-width-7-25 {
+	max-width: 7.25in;    
+}
+
 th.max-width-7-5,
 td.max-width-7-5 {
 	max-width: 7.5in;    
+}
+
+th.max-width-7-75,
+td.max-width-7-75 {
+	max-width: 7.75in;    
 }
 
 th.overline {

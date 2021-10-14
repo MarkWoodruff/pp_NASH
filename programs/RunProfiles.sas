@@ -32,10 +32,10 @@ ods listing close;
 
 ******************************************************;
 ** BUILD EACH REPORTABLE DOMAIN ACROSS ALL PATIENTS **;
-******************************************************;/*
+******************************************************;
 %include "&macros.\INFCON_build.sas"   / nosource2;
-%include "&macros.\RECON_build.sas"    / nosource2;*/
-%include "&macros.\ELIG_build.sas"     / nosource2;/*
+%include "&macros.\RECON_build.sas"    / nosource2;
+%include "&macros.\ELIG_build.sas"     / nosource2;
 %include "&macros.\RAND_build.sas"     / nosource2;
 %include "&macros.\DM_build.sas"       / nosource2;
 %include "&macros.\MH_build.sas"       / nosource2;
@@ -54,7 +54,7 @@ ods listing close;
 %include "&macros.\FPG_build.sas"      / nosource2;
 %include "&macros.\DA_build.sas"       / nosource2;
 %include "&macros.\EX_build.sas"       / nosource2;
-*/
+
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
 ****************************************************************;
@@ -832,8 +832,8 @@ options mprint mlogic symbolgen;
 	%patients;
 	ods listing;
 %mend patients_domains;
-*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=54,ept=54,spn=3,epn=3);
+%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+*%patients_domains(spt=54,ept=54,spn=3,epn=3);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -900,7 +900,8 @@ run;
 ** get list of tables for sidebar links **;
 proc format;
 	value $list_ord
-	"SF_listing_Screen Failures.sas"=1;
+	"SF_listing_Listing of Screen Failures.sas"=1
+	"SF_table_Table of Screen Failures.sas"  =2;
 run;				
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -909,7 +910,7 @@ data listing_progs(keep=listing_prog listing_link num);
 	infile tmp dlm='Z';
 	length listing_prog_ listing_prog $2000;
 	input listing_prog_;
-	if index(listing_prog_,'listing')>0;
+	if index(listing_prog_,'_listing_')>0 or index(listing_prog_,'_table_')>0;
 
 	** program filename **;
 	listing_prog=reverse(scan(reverse(listing_prog_),1,'\'));
@@ -944,7 +945,7 @@ data listing_links(keep=listing_link_html);
 	by num;
 
 	if num=1 then listing_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(listing_link)||"</a></li>";
-		else if eof then listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><<li><p>Report: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
+		else if eof then listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Report: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
 		else listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li>";
 run;
 
@@ -1082,9 +1083,11 @@ options mprint mlogic symbolgen;
 		_infile_=tranwrd(_infile_,'non–','non&#8209;');
 		_infile_=tranwrd(_infile_,'half–','half&#8209;');
 
-		** force breaks in proc report **;
+		** force breaks or spaces in proc report **;
 		if index(_infile_,'frcbrk')>0 then _infile_=tranwrd(_infile_,'frcbrk','<br>');
 		if index(_infile_,'FRCBRK')>0 then _infile_=tranwrd(_infile_,'FRCBRK','<br>');
+		if index(_infile_,'FRCSPC')>0 then _infile_=tranwrd(_infile_,'FRCSPC','&nbsp;');
+		if index(_infile_,'TWSPCNNDRLN')>0 then _infile_=tranwrd(_infile_,'TWSPCNNDRLN','<span style="text-decoration: none">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
 
 		** fix some special characters **;
 		_infile_=tranwrd(_infile_,'GEGEGE','&#8805;');

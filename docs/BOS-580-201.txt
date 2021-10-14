@@ -9,13 +9,23 @@ For Etienne:
 		b) graph of QTcF (might as well do all)
 		c) listing of demographics
 	6) Shelley will provide table of site number and time zone, use that and TIME OF SYRINGE LOADED (will be added to DB) to determine timing difference between dose administration adn time of syringe loaded.  Flag those later than 24 hours.
+External Hepatologist
+	1) Needs profile access
+	2) interim analysis will be sometime next year
+	3) first SRT will be sometime early December, all outputs ready 5 business days in advance.
+	4) for Tanya's ECG/Vitals emails, just do frequencies of those meeting things in her email.  Labs by grade.
+	5) ia will be me, tanja, alicia
+	6) need to have RTF
+	7) listings can be Excel
 
 *******************
 ** EXTERNAL DATA **
 *******************
-	1) MRI data from BioTel Research - comes monthly
-	2) lab data from LabConnect
-
+	1) MRI data from BioTel Research - comes monthly, first should have been end of September.
+	2) lab data from LabConnect - look in DMP, it specifies each lab test they will do.  They are taking external data and putting that in LB.
+	3) Nordic Biosciences (Pro-C3) - Biomarker.  DTA not done yet.
+	4) PPD (Biomarkers).  DTA not done yet.
+	5) LGC - PK and ADA.  DTA not done yet.
 
 DS dataset
 	-End of Study (5316860) (DSSTDAT, DSCOMP, DSDECOD_PRIM, DSTERM, DSDTHDAT, DSAENO, DSPDNO, DSDECOD_COVID, DSDECDOT)
@@ -48,7 +58,7 @@ Screening
 	-Demographics (DONE)
 	-Medical History (DONE)
 	-Body Measurements (DONE)
-	-Urine Pregnancy (NO DATA, DONE)
+	-Urine Pregnancy (DONE)
 Safety
 	-Vital Signs (DONE)
 	-ECG (DONE)
@@ -59,10 +69,10 @@ Safety
 	-Fibroscan (DONE)
 	-Ultrasound (DONE)
 	-MRI-PDFF (DONE - NEED EXTERNAL DATA)
-	-Fasting Plasma Glucose
+	-Fasting Plasma Glucose (DONE)
 Dosing
-	-Kit Assignment
-	-Study Drug Administration
+	-Study Drug Dispensing (DONE)
+	-Study Drug Administration (DONE)
 	-PK Collection
 	-ADA Collection
 	-Exploratory Biomarkers
