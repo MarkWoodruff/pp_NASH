@@ -73,7 +73,7 @@ Safety
 Dosing
 	-Study Drug Dispensing (DONE)
 	-Study Drug Administration (DONE)
-	-PK Collection
+	-PK Collection (DONE)
 	-ADA Collection
 	-Exploratory Biomarkers
 Other

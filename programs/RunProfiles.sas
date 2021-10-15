@@ -54,6 +54,8 @@ ods listing close;
 %include "&macros.\FPG_build.sas"      / nosource2;
 %include "&macros.\DA_build.sas"       / nosource2;
 %include "&macros.\EX_build.sas"       / nosource2;
+%include "&macros.\PK_build.sas"       / nosource2;
+%include "&macros.\ADA_build.sas"      / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -126,7 +128,7 @@ run;
 ** discontinued or completed **;
 data _null_;
 	set crf.ds;
-	if pagename not in ('Informed Consent','Randomization') then put "ER" "ROR: make sure end of study caught in patient cards.";
+	if pagename not in ('Informed Consent','Randomization','Reconsent Log') then put "ER" "ROR: make sure end of study caught in patient cards.";
 run;
 
 data eos(keep=subnum eos);
@@ -341,7 +343,9 @@ proc format;
 	"FPG_report_Fasting Plasma Glucose.sas"  =18
 	"DA_report_Study Drug Dispensing.sas"    =19
 	"EX_report_Study Drug Administration.sas"=20
-	"IP_report_MORE IN PROGRESS.sas"         =21;
+	"PK_report_PK Sampling.sas"              =21
+	"ADA_report_ADA Sample.sas"              =22
+	"IP_report_MORE IN PROGRESS.sas"         =23;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -833,7 +837,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=54,ept=54,spn=3,epn=3);
+*%patients_domains(spt=29,ept=29,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;

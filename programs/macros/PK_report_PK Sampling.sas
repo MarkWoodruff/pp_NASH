@@ -1,17 +1,18 @@
 /*****************************************************************************************/
-* Program Name  : RECON_report_Reconsent.sas
+* Program Name  : PK_report_PK Sampling.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-09-28
-* Description   : report Informed Consent domain
+* Creation Date : 2021-10-15
+* Description   : report PK domain
 *
 * Revision History
 * Date       By            Description of Change
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_recon;
+	set pp_final_pk;
 	where subnum="&ptn.";
+	space=' ';
 run;
 
 %nobs(domain_data);
@@ -36,11 +37,13 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column dsseq_c rpver ricv ricdat_c;
-			define dsseq_c  /display "Sequence Number|(auto-calculated in DB)";
-			define rpver    /display "Reconsent Protocol|Version";
-			define ricv     /display "Reconsent Informed|Consent Version";
-			define ricdat_c /display "Date Subject|Signed Reconsent" style=[htmlclass='min-width-1-0'];
+			column visitid visname pcperf_reas pcdat_c pctim_c pccoval;
+			define visitid     /order order=internal noprint;
+			define visname     /display "Visit";
+			define pcperf_reas /display "Sample Collected?|If No, Reason" style=[htmlclass='max-width-4-0'];
+			define pcdat_c     /display "Collection|Date" style=[htmlclass='min-width-1-0'];
+			define pctim_c     /display "Collection|Time";
+			define pccoval     /display "Comment, if any" style=[htmlclass='max-width-4-0'];
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
@@ -53,8 +56,8 @@ run;
 			*footnote "dm-footnote";
 		%end;
 
-		compute before _page_ / style=[just=l htmlclass="domain-title"];
-			line "Reconsent";
+		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];
+			line "PK Sampling";
 		endcomp;
 	run;
 	

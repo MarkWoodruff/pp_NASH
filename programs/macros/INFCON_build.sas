@@ -8,12 +8,13 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-09-24 Mark Woodruff use SUBNUM.
+* 2021-10-15 Mark Woodruff add Reconsent to check of pagename.
 ******************************************************************************************;
 
 ** ensure only informed consent records are present in crf.ds **;
 data _null_;
 	set crf.ds(encoding=any);
-	if ^(pagename in ('Randomization','Informed Consent')) then put "ER" "ROR: update INFCON_build.sas to read in only Informed Consent records.";
+	if ^(pagename in ('Randomization','Informed Consent','Reconsent Log')) then put "ER" "ROR: update INFCON_build.sas to read in only Informed Consent records.";
 run;
 
 ** ensure DELETED var is being handled correctly **;

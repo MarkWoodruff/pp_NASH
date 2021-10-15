@@ -8,14 +8,15 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-01 Mark Woodruff refine check on pagename now that have more records.
+* 2021-10-15 Mark Woodruff use correct pagename value, now that it is populated with Reconsent records.
 ******************************************************************************************;
 
 ** ensure only informed consent records are present in crf.ds **;
 data _null_;
 	set crf.ds(encoding=any);
 
-	if (rpver^='' or ricv^='' or ricdat>.z) or pagename not in ('Randomization','Informed Consent') then put
-		"ER" "ROR: update RECON_build.sas to read in only Reconsent records.";
+	if ^(pagename in ('Randomization','Informed Consent','Reconsent Log')) then 
+		put "ER" "ROR: update RECON_build.sas to read in only Reconsent Log records.";
 run;
 
 ** ensure DELETED var is being handled correctly **;
@@ -25,7 +26,7 @@ data _null_;
 run;
 
 data pp_final_recon(keep=subnum dsseq_c rpver ricv ricdat_c);
-	set crf.ds(encoding=any where=(pagename='Reconsent'));
+	set crf.ds(encoding=any where=(pagename='Reconsent Log'));
 
 	length dsseq_c $10;
 	if dsseq>.z then dsseq_c=strip(put(dsseq,best.));
