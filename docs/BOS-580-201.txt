@@ -74,8 +74,8 @@ Dosing
 	-Study Drug Dispensing (DONE)
 	-Study Drug Administration (DONE)
 	-PK Collection (DONE)
-	-ADA Collection
-	-Exploratory Biomarkers
+	-ADA Collection (DONE)
+	-Exploratory Biomarkers (DONE)
 Other
 	-Monthly Visit Questionnaire
 	-Menstrual Summary
