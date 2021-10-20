@@ -77,8 +77,9 @@ Dosing
 	-ADA Collection (DONE)
 	-Exploratory Biomarkers (DONE)
 Other
-	-Monthly Visit Questionnaire
-	-Menstrual Summary
+	-Monthly Visit Questionnaire (DONE)
+	-Menstrual Summary (DONE)
+	-Menstrual Cycle (DONE)
 PDs
 End of Study
 End of Treatment

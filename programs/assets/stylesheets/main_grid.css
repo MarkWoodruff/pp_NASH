@@ -780,6 +780,12 @@ th.underline {
 	border-bottom-style: solid;
 }
 
+span.underline {
+	border-bottom-color: black;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
 td.border-under {
 	border-bottom-color: black;
 	border-bottom-width: 2px;
