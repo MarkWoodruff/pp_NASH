@@ -65,6 +65,7 @@ Safety
 	-Physical Exam (DONE)
 	-AE (NO DATA)
 	-Conmeds (DONE)
+	-Local Labs (WILL ALERT)
 	-Central Labs (NO DATA)
 	-Fibroscan (DONE)
 	-Ultrasound (DONE)
@@ -80,14 +81,18 @@ Other
 	-Monthly Visit Questionnaire (DONE)
 	-Menstrual Summary (DONE)
 	-Menstrual Cycle (DONE)
-PDs
-End of Study
-End of Treatment
+PDs (DONE)
+End of Study (WILL ALERT)
+End of Treatment (WILL ALERT)
 
 ***********
 ** TO-DO **
 ***********
+-finish base build (AEs, Labs)
+-finish Tanya ranges
+-SK: flag visits not matching
 -macro to sort with unscheduled visits, update all domains
+-add graphs for labs, vitals, ecg including color flagging
 
 
 
