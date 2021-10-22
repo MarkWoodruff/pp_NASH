@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-21 Mark Woodruff edit coding to use ATC2.
 ******************************************************************************************;
 
 data _null_;
@@ -46,10 +47,7 @@ data pp_final_cm(keep=subnum visitid visname cmtrt_c cmindc_c cmaeno cmmhno dose
 		else if cmongo^='' then dates=strip(cmstdat)||'/frcbrk'||'Ongoing';
 
 	length coding $3100;
-	if drug_name^='' or preferred_name^='' then do;
-		put "ER" "ROR: update CM_build.sas to make sure proper coding terms are being used, now that they are populated";
-		coding=strip(drug_name)||'/frcbrk'||strip(preferred_name);
-	end;
+	coding=strip(text2)||'/frcbrk'||strip(preferred_name);
 
 	proc sort;
 		by subnum cmstdat cmendat;

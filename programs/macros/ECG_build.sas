@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-21 Mark Woodruff add EGQTCF.
 ******************************************************************************************;
 
 data _null_;
@@ -19,7 +20,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update ECG_build.sas to handle ECG.DELETED var appropriately.";
 run;
 
-data pp_final_ecg(keep=subnum visname egnd_reas egdat egdat_c egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf_c egorres_c);
+data pp_final_ecg(keep=subnum visname egnd_reas egdat egdat_c egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf egqtcf_c egorres_c);
 	set crf.eg(encoding=any where=(pagename='ECG' and deleted='f'));
 
 	length egnd_reas $500;

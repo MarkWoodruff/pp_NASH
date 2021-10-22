@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-21 Mark Woodruff add HRN, TEMPN.
 ******************************************************************************************;
 
 data _null_;
@@ -22,7 +23,8 @@ data _null_;
 	if vsbpu not in ('','mmHg') then put "ER" "ROR: update vs_build.sas to handle VSBPU units correctly.";
 run;
 
-data pp_final_vs(keep=subnum visname vsnd_reas vsdat vsdat_c vspos vstimp_c vstim1_c hr rr temp vstempl_dec bp1 vstim2 vstim2_c bp2 vstim3_c bp3 bp_avg);
+data pp_final_vs(keep=subnum visname vsnd_reas vsdat vsdat_c vspos vstimp_c vstim1_c hr hrn rr temp tempn vstempl_dec bp1_sysn bp1_sys bp1_dian bp1_dia 
+	vstim2 vstim2_c bp2_sysn bp2_sys bp2_dian bp2_dia vstim3_c bp3_sysn bp3_sys bp3_dian bp3_dia bp_avg_sysn bp_avg_sys bp_avg_dian bp_avg_dia);
 	set crf.vs(encoding=any where=(pagename='Vital Signs' and deleted='f'));
 
 	length vsnd_reas $500;
@@ -41,6 +43,8 @@ data pp_final_vs(keep=subnum visname vsnd_reas vsdat vsdat_c vspos vstimp_c vsti
 		length hr $200;
 		if &nd.^='' or &reas.^='' then &outvar.='Not Done: '||strip(&reas.);
 			else if &val.>.z or &unit.^='' then &outvar.=catx(' ',strip(put(&val.,best.)),strip(&unit.));
+
+		if &val.>.z then &outvar.n=&val.;
 		&outvar.=tranwrd(&outvar.,'beats per minute','bpm');
 		&outvar.=tranwrd(&outvar.,'breaths per minute','brpm');
 		&outvar.=tranwrd(&outvar.,'degrees Celsius','°C');
@@ -50,26 +54,28 @@ data pp_final_vs(keep=subnum visname vsnd_reas vsdat vsdat_c vspos vstimp_c vsti
 	%build_var(outvar=rr,  nd=vsnd2,reas=vsreasnd, val=vsrr,  unit=vsrru);
 	%build_var(outvar=temp,nd=vsnd3,reas=vsreasnd3,val=vstemp,unit=vstempu_dec);
 
-	length bp1 $200;
-	if vsnd4^='' or vsreasnd4^='' then bp1='Not Done: '||strip(vsreasnd4);
-		else if vssysbp1>.z or vsdiabp1>.z then bp1=strip(put(vssysbp1,best.))||"/"||strip(put(vsdiabp1,best.));
+	%macro sys_dia(readnum=,ndnum=);
+		%if &readnum.^=1 %then %do;
+			length vstim&readnum._c $10;
+			if vstim&readnum.>.z then vstim&readnum._c=strip(put(vstim&readnum.,time5.));
+		%end;
 
-	length vstim2_c $10;
-	if vstim2>.z then vstim2_c=strip(put(vstim2,time5.));
+		length bp&readnum._sys bp&readnum._dia $200;
+		if vsnd&ndnum.^='' or vsreasnd&ndnum.^='' then bp&readnum._sys='Not Done: '||strip(vsreasnd&ndnum.);
+			else if vssysbp&readnum.>.z then bp&readnum._sys=strip(put(vssysbp&readnum.,best.));
+		if vsdiabp&readnum.>.z then bp&readnum._dia=strip(put(vsdiabp&readnum.,best.));
+		bp&readnum._sysn=vssysbp&readnum.;
+		bp&readnum._dian=vsdiabp&readnum.;
+	%mend sys_dia;
+	%sys_dia(readnum=1,ndnum=4);
+	%sys_dia(readnum=2,ndnum=5);
+	%sys_dia(readnum=3,ndnum=6);
 
-	length bp2 $200;
-	if vsnd5^='' or vsreasnd5^='' then bp2='Not Done: '||strip(vsreasnd5);
-		else if vssysbp2>.z or vsdiabp2>.z then bp2=strip(put(vssysbp2,best.))||"/"||strip(put(vsdiabp2,best.));
-
-	length vstim3_c $10;
-	if vstim3>.z then vstim3_c=strip(put(vstim3,time5.));
-
-	length bp3 $200;
-	if vsnd6^='' or vsreasnd6^='' then bp3='Not Done: '||strip(vsreasnd6);
-		else if vssysbp3>.z or vsdiabp3>.z then bp3=strip(put(vssysbp3,best.))||"/"||strip(put(vsdiabp3,best.));
-
-	length bp_avg $200;
-	if vssbpavg>.z or vsdbpavg>.z then bp_avg=strip(put(vssbpavg,best.))||"/"||strip(put(vsdbpavg,best.));
+	length bp_avg_sys bp_avg_dia $200;
+	if vssbpavg>.z then bp_avg_sys=strip(put(vssbpavg,best.));
+	if vsdbpavg>.z then bp_avg_dia=strip(put(vsdbpavg,best.));
+	bp_avg_sysn=vssbpavg;
+	bp_avg_dian=vsdbpavg;
 
 	proc sort;
 		by subnum vsdat;

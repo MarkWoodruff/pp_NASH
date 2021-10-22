@@ -32,7 +32,7 @@ ods listing close;
 
 ******************************************************;
 ** BUILD EACH REPORTABLE DOMAIN ACROSS ALL PATIENTS **;
-******************************************************;
+******************************************************;/*
 %include "&macros.\INFCON_build.sas"   / nosource2;
 %include "&macros.\RECON_build.sas"    / nosource2;
 %include "&macros.\ELIG_build.sas"     / nosource2;
@@ -60,6 +60,8 @@ ods listing close;
 %include "&macros.\QS_build.sas"       / nosource2;
 %include "&macros.\QSM_build.sas"      / nosource2;
 %include "&macros.\QSS_build.sas"      / nosource2;
+%include "&macros.\PD_build.sas"       / nosource2;*/
+%include "&macros.\LBC_build.sas"      / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -353,7 +355,9 @@ proc format;
 	"QS_report_Monthly Questionnaire.sas"    =24
 	"QSM_report_Menstrual Cycles.sas"        =25
 	"QSS_report_Menstrual Summary.sas"       =26
-	"IP_report_MORE IN PROGRESS.sas"         =27;
+	"PD_report_Protocol Deviations.sas"      =27
+	"LBC_report_Central Lab Results.sas"     =28
+	"IP_report_MORE IN PROGRESS.sas"         =29;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -612,6 +616,38 @@ options mprint mlogic symbolgen;
 				_infile_=tranwrd(_infile_,'PARA-HILAR','PARA&#8209;HILAR');
 				_infile_=tranwrd(_infile_,'T-WAVE','T&#8209;WAVE');
 				_infile_=tranwrd(_infile_,' – ',' &#8209; ');
+				if index(_infile_,'RPLCSBJ')>0 then do;
+					_infile_=tranwrd(_infile_,'100-','100&#8209;');
+					_infile_=tranwrd(_infile_,'101-','101&#8209;');
+					_infile_=tranwrd(_infile_,'102-','102&#8209;');
+					_infile_=tranwrd(_infile_,'103-','103&#8209;');
+					_infile_=tranwrd(_infile_,'104-','104&#8209;');
+					_infile_=tranwrd(_infile_,'105-','105&#8209;');
+					_infile_=tranwrd(_infile_,'106-','106&#8209;');
+					_infile_=tranwrd(_infile_,'107-','107&#8209;');
+					_infile_=tranwrd(_infile_,'108-','108&#8209;');
+					_infile_=tranwrd(_infile_,'109-','109&#8209;');
+					_infile_=tranwrd(_infile_,'110-','110&#8209;');
+					_infile_=tranwrd(_infile_,'111-','111&#8209;');
+					_infile_=tranwrd(_infile_,'112-','112&#8209;');
+					_infile_=tranwrd(_infile_,'113-','113&#8209;');
+					_infile_=tranwrd(_infile_,'114-','114&#8209;');
+					_infile_=tranwrd(_infile_,'115-','115&#8209;');
+					_infile_=tranwrd(_infile_,'116-','116&#8209;');
+					_infile_=tranwrd(_infile_,'117-','117&#8209;');
+					_infile_=tranwrd(_infile_,'118-','118&#8209;');
+					_infile_=tranwrd(_infile_,'119-','119&#8209;');
+					_infile_=tranwrd(_infile_,'120-','120&#8209;');
+					_infile_=tranwrd(_infile_,'121-','121&#8209;');
+					_infile_=tranwrd(_infile_,'122-','122&#8209;');
+					_infile_=tranwrd(_infile_,'123-','123&#8209;');
+					_infile_=tranwrd(_infile_,'124-','124&#8209;');
+					_infile_=tranwrd(_infile_,'125-','125&#8209;');
+					_infile_=tranwrd(_infile_,'126-','126&#8209;');
+					_infile_=tranwrd(_infile_,'127-','127&#8209;');
+					_infile_=tranwrd(_infile_,'128-','128&#8209;');
+					_infile_=tranwrd(_infile_,'129-','129&#8209;');
+				end;
 				*if index(_infile_,'702-0001')>0 and index(_infile_,'SUBJECTS')>0 then _infile_=tranwrd(_infile_,'702-0001','702&#8209;*0001');
 
 				** monthly questionnaire handling **;
@@ -733,10 +769,28 @@ options mprint mlogic symbolgen;
 				if index(_infile_,'Response')>0 and index(_infile_,'Summary')>0 and index(_infile_,'1.1</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'1.1</td>','1.1<button class="toggle-button" id="toggle-rs" onclick="textRS()">Show Only Investigator Responses</button></td>');
 */
 
-/*
 				***************;
 				** FOOTNOTES **;
 				***************;
+				** VS - Vital Signs **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">vs-footnote</span> </p>'
+					,'<p><span class="footnote-num">SUPER1 For pulse, <span class="red-footnote">red</span> flags values outside the normal range of 60 - 100 beats/min.</span><br>
+						 <span class="footnote-num">SUPER2 For temperature, <span class="red-footnote">red</span> flags values outside the normal range of 35 - 38 &#176;C</span><br>
+						 <span class="footnote-num">SUPER3 For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
+							<span class="yellow-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yellow</span> &nbsp;= Grade 1 (&#8805;120 - <140 systolic, &#8805;80 - <90 diastolic), <br>
+							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (&#8805;140 - <160 systolic, &#8805;90 - <100 diastolic), <br>
+							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (&#8805;160 systolic, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8805;100 diastolic).</span>
+					  </p>');
+					  
+				** ECG - Electrocardiogram **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">ecg-footnote</span> </p>'
+					,'<p><span class="footnote-num">SUPER1 Colors flag CTCAE Grades: <br>
+							<span class="yellow-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yellow</span> &nbsp;= Grade 1 (>450 - &#8804;480 msec), <br>
+							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (>480 - &#8804;500 msec), <br>
+							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (>500 msec)</span>
+					  </p>');
+/*
+				
 				** DM - Demographics **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">dm-footnote</span> </p>'
 					,'<p><span class="footnote">Note: Ages <18 are highlighted in <span class="red-footnote">red</span>, as this was an inclusion criteria.</span> </p>');
@@ -756,10 +810,6 @@ options mprint mlogic symbolgen;
 				** HTWT - Height and Weight **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">htwt-footnote</span> </p>',
 					'<p><span class="footnote-num">SUPER1 Screening/Baseline records are from the Height and Weight CRF, post-Screening/Baseline records are from the Weight CRF.</span></p>');
-
-				** VS - Vital Signs **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">vs-footnote</span> </p>'
-					,'<p><span class="footnote-num">SUPER1 For temperature, <span class="red-footnote">red</span> flags values outside the normal range of >35 - <38 &#176;C</span><br><span class="footnote-num">SUPER2 For pulse, <span class="red-footnote">red</span> flags values outside the normal range of 60 - 100 beats/min.</span><br><span class="footnote-num">SUPER3 For blood pressure, colors flag CTCAE Grades of Hypertension: <span class="yellow-footnote">yellow</span> = Grade 1 (&#8805;120 - <140 systolic, &#8805;80 - <90 diastolic), <span class="orange-footnote">orange</span> = Grade 2 (&#8805;140 - <160 systolic, &#8805;90 - <100 diastolic), <span class="red-footnote">red</span> = Grade 3 (&#8805;160 systolic, &#8805;100 diastolic).</span></p>');
 
 				** VSPLOT - Vital Signs Plots **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">vsplot-footnote</span> </p>'
@@ -856,8 +906,8 @@ options mprint mlogic symbolgen;
 	%patients;
 	ods listing;
 %mend patients_domains;
-%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=29,ept=29,spn=26,epn=26);
+*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+%patients_domains(spt=76,ept=76,spn=28,epn=28);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -898,25 +948,24 @@ run;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 *****************************;
 ** Data Management Reports **;

@@ -34,6 +34,8 @@ run;
 data elig(keep=subnum visitid visname iestdat iestdat_c ieorres_dec ieenroll_dec ietestcd_dec iereplc_dec iereplcn);
 	set crf.ie(encoding=any where=(pagename='Eligibility' and deleted='f'));
 
+	if ^(100<=sitenum<=129) then put "ER" "ROR: update Run_Profiles.sas for RPLCSBJ patient numbers";
+
 	length iestdat_c $10;
 	if iestdat>.z then iestdat_c=strip(put(iestdat,yymmdd10.));
 
