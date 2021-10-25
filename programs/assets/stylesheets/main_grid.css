@@ -345,7 +345,9 @@ td {
 	border-right: 1px solid black;
 }
 
-.mh-coding.hidden,
+.lbcc-other.hidden,
+.lbch-other.hidden,
+.lbco-other.hidden,
 .pct-coding.hidden,
 .tl-nonmeas.hidden,
 .rs-inv.hidden,

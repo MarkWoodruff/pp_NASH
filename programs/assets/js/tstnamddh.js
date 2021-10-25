@@ -1,29 +1,29 @@
 $(document).ready(function(){
-  $('#lbh').find('.basophils--').closest('tr').addClass('basophils-- tstnamddh-all');
-  $('#lbh').find('.basophils-abs').closest('tr').addClass('basophils-abs tstnamddh-all');
-  $('#lbh').find('.eosinophils--').closest('tr').addClass('eosinophils-- tstnamddh-all');
-  $('#lbh').find('.eosinophils-abs').closest('tr').addClass('eosinophils-abs tstnamddh-all');
-  $('#lbh').find('.erythrocytes-rbc').closest('tr').addClass('erythrocytes-rbc tstnamddh-all');
-  $('#lbh').find('.hematocrit').closest('tr').addClass('hematocrit tstnamddh-all');
-  $('#lbh').find('.hemoglobin').closest('tr').addClass('hemoglobin tstnamddh-all');
-  $('#lbh').find('.leukocytes-wbc').closest('tr').addClass('leukocytes-wbc tstnamddh-all');
-  $('#lbh').find('.lymphocytes--').closest('tr').addClass('lymphocytes-- tstnamddh-all');
-  $('#lbh').find('.lymphocytes-abs').closest('tr').addClass('lymphocytes-abs tstnamddh-all');
-  $('#lbh').find('.mch').closest('tr').addClass('mch tstnamddh-all');
-  $('#lbh').find('.mcv').closest('tr').addClass('mcv tstnamddh-all');
-  $('#lbh').find('.monocytes--').closest('tr').addClass('monocytes-- tstnamddh-all');
-  $('#lbh').find('.monocytes-abs').closest('tr').addClass('monocytes-abs tstnamddh-all');
-  $('#lbh').find('.neutrophils--').closest('tr').addClass('neutrophils-- tstnamddh-all');
-  $('#lbh').find('.neutrophils-abs').closest('tr').addClass('neutrophils-abs tstnamddh-all');
-  $('#lbh').find('.percentreticulocyte').closest('tr').addClass('percentreticulocyte tstnamddh-all');
-  $('#lbh').find('.platelets').closest('tr').addClass('platelets tstnamddh-all');
+  $('#lbch').find('.basophils').closest('tr').addClass('basophils tstnamddh-all');                       
+  $('#lbch').find('.basophils-leukocytes').closest('tr').addClass('basophils-leukocytes tstnamddh-all');            
+  $('#lbch').find('.eosinophils').closest('tr').addClass('eosinophils tstnamddh-all');                     
+  $('#lbch').find('.eosinophils-leukocytes').closest('tr').addClass('eosinophils-leukocytes tstnamddh-all');          
+  $('#lbch').find('.ery-meancorpuscularhemoglobin').closest('tr').addClass('ery-meancorpuscularhemoglobin tstnamddh-all');
+  $('#lbch').find('.ery-meancorpuscularvolume').closest('tr').addClass('ery-meancorpuscularvolume tstnamddh-all');    
+  $('#lbch').find('.erythrocytes').closest('tr').addClass('erythrocytes tstnamddh-all');                    
+  $('#lbch').find('.hematocrit').closest('tr').addClass('hematocrit tstnamddh-all');                      
+  $('#lbch').find('.hemoglobin').closest('tr').addClass('hemoglobin tstnamddh-all');                      
+  $('#lbch').find('.leukocytes').closest('tr').addClass('leukocytes tstnamddh-all');                      
+  $('#lbch').find('.lymphocytes').closest('tr').addClass('lymphocytes tstnamddh-all');                     
+  $('#lbch').find('.lymphocytes-leukocytes').closest('tr').addClass('lymphocytes-leukocytes tstnamddh-all');          
+  $('#lbch').find('.monocytes').closest('tr').addClass('monocytes tstnamddh-all');                       
+  $('#lbch').find('.monocytes-leukocytes').closest('tr').addClass('monocytes-leukocytes tstnamddh-all');            
+  $('#lbch').find('.neutrophils').closest('tr').addClass('neutrophils tstnamddh-all');                     
+  $('#lbch').find('.neutrophils-leukocytes').closest('tr').addClass('neutrophils-leukocytes tstnamddh-all');          
+  $('#lbch').find('.platelets').closest('tr').addClass('platelets tstnamddh-all');                       
+  $('#lbch').find('.reticulocyte-erythrocytes').closest('tr').addClass('reticulocyte-erythrocytes tstnamddh-all');
    });
 
 $(document).ready(function(){
      $("#tstnamddh").change(function(){
         var textselected =  document.getElementById("tstnamddh").value ;
             target = '.' + textselected;
-         $('#lbh tbody tr').hide();
+         $('#lbch tbody tr').hide();
         $(target).show();
      });
    });

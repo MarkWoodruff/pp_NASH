@@ -32,7 +32,7 @@ ods listing close;
 
 ******************************************************;
 ** BUILD EACH REPORTABLE DOMAIN ACROSS ALL PATIENTS **;
-******************************************************;/*
+******************************************************;
 %include "&macros.\INFCON_build.sas"   / nosource2;
 %include "&macros.\RECON_build.sas"    / nosource2;
 %include "&macros.\ELIG_build.sas"     / nosource2;
@@ -60,7 +60,7 @@ ods listing close;
 %include "&macros.\QS_build.sas"       / nosource2;
 %include "&macros.\QSM_build.sas"      / nosource2;
 %include "&macros.\QSS_build.sas"      / nosource2;
-%include "&macros.\PD_build.sas"       / nosource2;*/
+%include "&macros.\PD_build.sas"       / nosource2;
 %include "&macros.\LBC_build.sas"      / nosource2;
 
 ****************************************************************;
@@ -329,35 +329,37 @@ run;
 ***************************************************************************************************;
 proc format;
 	value $domainord
-	"INFCON_report_Informed Consent.sas"     = 1
-	"RECON_report_Reconsent.sas"             = 2
-	"ELIG_report_Eligibility.sas"            = 3
-	"RAND_report_Randomization.sas"          = 4
-	"SV_report_Visit Date.sas"			     = 5
-	"UNS_report_Unscheduled Visit.sas"	     = 6
-	"DM_report_Demographics.sas"		     = 7
-	"MH_report_Medical History.sas"		     = 8
-	"BODY_report_Body Measurements.sas"	     = 9
-	"PREG_report_Urine Pregnancy Test.sas"   =10
-	"VS_report_Vital Signs.sas"              =11
-	"ECG_report_ECG.sas"                     =12
-	"PE_report_Physical Exam.sas"            =13
-	"CM_report_Concomitant Medications.sas"  =14
-	"VCTE_report_Fibroscan (VCTE).sas"       =15
-	"ULTRA_report_Ultrasound.sas"            =16
-	"MRI_report_MRI.sas"                     =17
-	"FPG_report_Fasting Plasma Glucose.sas"  =18
-	"DA_report_Study Drug Dispensing.sas"    =19
-	"EX_report_Study Drug Administration.sas"=20
-	"PK_report_PK Sampling.sas"              =21
-	"ADA_report_ADA Sample.sas"              =22
-	"BIO_report_Exploratory Biomarkers.sas"  =23
-	"QS_report_Monthly Questionnaire.sas"    =24
-	"QSM_report_Menstrual Cycles.sas"        =25
-	"QSS_report_Menstrual Summary.sas"       =26
-	"PD_report_Protocol Deviations.sas"      =27
-	"LBC_report_Central Lab Results.sas"     =28
-	"IP_report_MORE IN PROGRESS.sas"         =29;
+	"INFCON_report_Informed Consent.sas"      = 1
+	"RECON_report_Reconsent.sas"              = 2
+	"ELIG_report_Eligibility.sas"             = 3
+	"RAND_report_Randomization.sas"           = 4
+	"SV_report_Visit Date.sas"			      = 5
+	"UNS_report_Unscheduled Visit.sas"	      = 6
+	"DM_report_Demographics.sas"		      = 7
+	"MH_report_Medical History.sas"		      = 8
+	"BODY_report_Body Measurements.sas"	      = 9
+	"PREG_report_Urine Pregnancy Test.sas"    =10
+	"VS_report_Vital Signs.sas"               =11
+	"ECG_report_ECG.sas"                      =12
+	"PE_report_Physical Exam.sas"             =13
+	"CM_report_Concomitant Medications.sas"   =14
+	"VCTE_report_Fibroscan (VCTE).sas"        =15
+	"ULTRA_report_Ultrasound.sas"             =16
+	"MRI_report_MRI.sas"                      =17
+	"FPG_report_Fasting Plasma Glucose.sas"   =18
+	"DA_report_Study Drug Dispensing.sas"     =19
+	"EX_report_Study Drug Administration.sas" =20
+	"PK_report_PK Sampling.sas"               =21
+	"ADA_report_ADA Sample.sas"               =22
+	"BIO_report_Exploratory Biomarkers.sas"   =23
+	"QS_report_Monthly Questionnaire.sas"     =24
+	"QSM_report_Menstrual Cycles.sas"         =25
+	"QSS_report_Menstrual Summary.sas"        =26
+	"PD_report_Protocol Deviations.sas"       =27
+	"LBCC_report_Central Lab - Chemistry.sas" =28
+	"LBCH_report_Central Lab - Hematology.sas"=29
+	"LBCO_report_Central Lab - Others.sas"    =30
+	"IP_report_MORE IN PROGRESS.sas"          =31;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -680,10 +682,14 @@ options mprint mlogic symbolgen;
 					 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
 					 <script src="..\programs\assets\js\js-navigation.js"></script>
 					 <script src="..\programs\assets\js\progress-bar.js"></script>
-					 <script src="..\programs\assets\js\toggle-mh.js"></script>
+					 <script src="..\programs\assets\js\toggle-lbcc.js"></script>
+					 <script src="..\programs\assets\js\toggle-lbch.js"></script>
+					 <script src="..\programs\assets\js\toggle-lbco.js"></script>
 					 <script src="..\programs\assets\js\ecg_dt.js"></script>
+					 <script src="..\programs\assets\js\tstnamddc.js"></script>
 					 <script src="..\programs\assets\js\tstnamddh.js"></script>
-					 <script src="..\programs\assets\js\lbh_dt.js"></script>
+					 <script src="..\programs\assets\js\tstnamddo.js"></script>
+					 <script src="..\programs\assets\js\lbc_dt.js"></script>
 					 </body>');  
 
 				** when bolding Yes, make sure No is not bolded **;
@@ -746,13 +752,14 @@ options mprint mlogic symbolgen;
 					_infile_=tranwrd(_infile_,'SPNHDRFRCCNTR','');
 				end;
 
-/*
 				*************************;
 				** TOGGLING of columns **;
 				*************************;
-				** MH coding toggling **;
-				if index(_infile_,'Medical')>0 and index(_infile_,'History</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'History</td>','History<button class="toggle-button" id="toggle-mh" onclick="textMH()">Show Coding</button></td>');
-				
+				** LBCC other vars toggling **;
+				if index(_infile_,'Central')>0 and index(_infile_,'Chemistry</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Chemistry</td>','Chemistry<button class="toggle-button" id="toggle-lbcc" onclick="textLBCC()">Show Other Vars</button></td>');
+				if index(_infile_,'Central')>0 and index(_infile_,'Hematology</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Hematology</td>','Hematology<button class="toggle-button" id="toggle-lbch" onclick="textLBCH()">Show Other Vars</button></td>');
+				if index(_infile_,'Central')>0 and index(_infile_,'Categories</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Categories</td>','Categories<button class="toggle-button" id="toggle-lbco" onclick="textLBCO()">Show Other Vars</button></td>');
+				/*
 				** PCT coding toggling **;
 				if index(_infile_,'Prior')>0 and index(_infile_,'Cancer') and index(_infile_,'Therapy</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Therapy</td>','Therapy<button class="toggle-button" id="toggle-pct" onclick="textPCT()">Show Coding</button></td>');
 				
@@ -789,6 +796,10 @@ options mprint mlogic symbolgen;
 							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (>480 - &#8804;500 msec), <br>
 							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (>500 msec)</span>
 					  </p>');
+					  
+				** LBC - Central Labs **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbx-footnote</span> </p>'
+					,'<p><span class="footnote">Note: <span class="red-footnote">red</span> flags values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span></p>');
 /*
 				
 				** DM - Demographics **;
@@ -835,29 +846,52 @@ options mprint mlogic symbolgen;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">ae-footnote</span> </p>'
 					,"<p><span class='footnote-num'>SUPER1 These fields are from an SAE Summary spreadsheet, delivered monthly.  Current version is &sae_date.</span> </p>");
 */
-
-/*
 				****************************;
 				** LAB DROPDOWN SELECTORS **;
 				****************************;
-				if index(_infile_,'Name-TSTNAMDDH')>0 then _infile_=tranwrd(_infile_,'Name-TSTNAMDDH',"Name<br>&tstnamddh.");
-				if index(_infile_,'Name-TSTNAMDDC')>0 then _infile_=tranwrd(_infile_,'Name-TSTNAMDDC',"Name<br>&tstnamddc.");
-				if index(_infile_,'Name-TSTNAMDDG')>0 then _infile_=tranwrd(_infile_,'Name-TSTNAMDDG',"Name<br>&tstnamddg.");
-				if index(_infile_,'Name-TSTNAMDDU')>0 then _infile_=tranwrd(_infile_,'Name-TSTNAMDDU',"Name<br>&tstnamddu.");
+				if index(_infile_,'Test-TSTNAMDDC')>0 then _infile_=tranwrd(_infile_,'Test-TSTNAMDDC',"Test<br>&tstnamddc.");
 				if index(_infile_,'<td class="')>0 and index(_infile_,'picklbnm')>0 then do;
 					length test $100;
 					test=lowcase(scan(compress(compress(tranwrd(scan(_infile_,2,'>'),'&#160;',''),''),')'),1,'<'));
 					test=tranwrd(test,'(','-');
 					test=tranwrd(test,'%','-');
 					test=tranwrd(test,',','-');
+					test=tranwrd(test,'/','-');
+					test=tranwrd(test,'\','-');
+					test=tranwrd(test,'.','-');
 					if index(test,'160')=0 and test not in ('','/td') then _infile_=tranwrd(_infile_,'class="','class=" '||strip(test)||" ");
 				end;
-*/
+				
+				if index(_infile_,'Test-TSTNAMDDH')>0 then _infile_=tranwrd(_infile_,'Test-TSTNAMDDH',"Test<br>&tstnamddh.");
+				if index(_infile_,'<td class="')>0 and index(_infile_,'picklbnm')>0 then do;
+					length test $100;
+					test=lowcase(scan(compress(compress(tranwrd(scan(_infile_,2,'>'),'&#160;',''),''),')'),1,'<'));
+					test=tranwrd(test,'(','-');
+					test=tranwrd(test,'%','-');
+					test=tranwrd(test,',','-');
+					test=tranwrd(test,'/','-');
+					test=tranwrd(test,'\','-');
+					test=tranwrd(test,'.','-');
+					if index(test,'160')=0 and test not in ('','/td') then _infile_=tranwrd(_infile_,'class="','class=" '||strip(test)||" ");
+				end;
+				
+				if index(_infile_,'Test-TSTNAMDDO')>0 then _infile_=tranwrd(_infile_,'Test-TSTNAMDDO',"Test<br>&tstnamddo.");
+				if index(_infile_,'<td class="')>0 and index(_infile_,'picklbnm')>0 then do;
+					length test $100;
+					test=lowcase(scan(compress(compress(tranwrd(scan(_infile_,2,'>'),'&#160;',''),''),')'),1,'<'));
+					test=tranwrd(test,'(','-');
+					test=tranwrd(test,'%','-');
+					test=tranwrd(test,',','-');
+					test=tranwrd(test,'/','-');
+					test=tranwrd(test,'\','-');
+					test=tranwrd(test,'.','-');
+					test=tranwrd(test,'#','-');
+					if index(test,'160')=0 and test not in ('','/td') then _infile_=tranwrd(_infile_,'class="','class=" '||strip(test)||" ");
+				end;
 
 				** insert MORE IN PROGRESS domain **;
 				_infile_=tranwrd(_infile_,">MORE IN PROGRESS","id='red-domain'>MORE IN PROGRESS");
 				
-
 				** fix some special characters **;
 				_infile_=tranwrd(_infile_,'GEGEGE','&#8805;');
 				_infile_=tranwrd(_infile_,'checkmark','&#10004;');
@@ -906,8 +940,8 @@ options mprint mlogic symbolgen;
 	%patients;
 	ods listing;
 %mend patients_domains;
-*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=76,ept=76,spn=28,epn=28);
+%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+*%patients_domains(spt=92,ept=92,spn=28,epn=30);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -964,8 +998,8 @@ run;
 
 
 
-
 /*
+
 
 *****************************;
 ** Data Management Reports **;

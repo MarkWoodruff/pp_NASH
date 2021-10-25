@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-25 Mark Woodruff add LABFLAG.
 ******************************************************************************************;
 
 data _null_;
@@ -19,8 +20,8 @@ data _null_;
 run;
 
 data pp_final_lbc(keep=subnum visname lbrefid yob_sex visit lbdat lbdat_c lbfast_dec lbcat lbtestcd lbtest lborres_lborresu nr lbstresc_lbstresu nrst
-					   lbnrind lbstat_lbreasnd lbspec lbcoval);
-	set crf.lbx(encoding=any where=(pagename='Lab Results' and deleted='f'));
+					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag);
+	set crf.lbx(encoding=any where=(pagename='Lab Results' and deleted='f') rename=(lbstresn=lbstresn_theirs));
 
 	if lbdat=. then put "ER" "ROR: update LBC_build.sas to handle Unscheduled visits and/or missing dates correctly.";
 
@@ -39,11 +40,25 @@ data pp_final_lbc(keep=subnum visname lbrefid yob_sex visit lbdat lbdat_c lbfast
 	length lbstresc_lbstresu $200;
 	lbstresc_lbstresu=catx(' ',lbstresc,lbstresu);
 
+	%macro c_to_n(var=);
+		if index(&var.,'<')>0 then &var.n=input(strip(substr(&var.,index(&var.,'<')+1)),best.);
+			else if index(&var.,'>')>0 then &var.n=input(strip(substr(&var.,index(&var.,'>')+1)),best.);
+			else if anyalpha(&var.)=0 and index(&var.,':')=0 then &var.n=input(strip(&var.),best.);
+	%mend c_to_n;
+	%c_to_n(var=lborres);
+	%c_to_n(var=lbornrlo);
+	%c_to_n(var=lbornrhi);
+	%c_to_n(var=lbstresc);
+	%c_to_n(var=lbstnrlo);
+	%c_to_n(var=lbstnrhi);
+
 	length nrst $200;
 	nrst=coalescec(catx(' - ',lbstnrlo,lbstnrhi),lbstnrc);
 
 	length lbstat_lbreasnd $1300;
 	lbstat_lbreasnd=catx(':FRCBRK',lbstat,lbreasnd);
+
+	if lbnrind^='' or .z<lborresn<lbornrlon or .z<lbornrhin<lborresn or .z<lbstrescn<lbstnrlon or .z<lbstnrhin<lbstrescn then labflag=1;
 
 	proc sort;
 		by subnum lbdat lbcat lbtest;
