@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 ******************************************************************************************;
 
 data domain_data;
@@ -37,7 +38,7 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column qsdat visname qsperf_reas qsdat_c c1 c2;*
+			column qsdat visname qsperf_reas qsdat_cflag qsdat_c c1 c2;*
 				   ("In the last month, on averageSPNHDRFRCNDRLNCNTR" 
 				   ("Juice/Soda (pop)SPNHDRFRCCNTR" qs01_dec qs02_dec qs03_dec qs04_dec qs05_dec) space
 				   ("AlcoholSPNHDRFRCCNTR" qs06_dec qs07_dec qs08_dec qs09_dec) space
@@ -45,6 +46,7 @@ run;
 			define qsdat       /order order=internal noprint;
 			define visname     /display group "Visit";
 			define qsperf_reas /display group "Completed?|Reason";
+			define qsdat_cflag /display noprint;
 			define qsdat_c     /display group "Date of|Assessment" style=[htmlclass='min-width-1-0'];
 			define c1          /display "Question" style=[htmlclass='max-width-7-0'];
 			define c2          /display "In the last month, on average" style=[htmlclass='max-width-7-0'];
@@ -72,15 +74,14 @@ run;
 				if c1 in ("BLDJuice/Soda (pop)X",'BLDAlcohol','BLDSweet/Dessert') then 
 					call define(_col_,"style","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
 			endcomp;
-			*compute foldername;
-				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
-			*endcomp;
 
-			*compute age_raw;
-				*if .z<input(age_raw,best.)<18 then call define(_col_,"style","style=[background=lightred]");
-			*endcomp;
+			compute qsdat_c;
+				if qsdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
+			endcomp;
 
-			*footnote "dm-footnote";
+			%if &qsdat_cflag_foot.=1 %then %do;
+				footnote "date-footnote";
+			%end;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];

@@ -36,28 +36,26 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column vsdat visname vsperf_n vsreasnd vsdat_c waist weight height ("Auto-calculated in DB" height_bmi vsbmi_c);
-			define vsdat      /order order=internal noprint;
-			define visname    /display "Visit";
-			define vsperf_n   /display "Check Box if|Not Assessed";
-			define vsreasnd   /display "Reason|Not Done";
-			define vsdat_c    /display "Date|Assessed" style=[htmlclass='min-width-1-0'];
-			define waist      /display "Waist|Circumference";
-			define weight     /display "Weight";
-			define height     /display "Height";
-			define height_bmi /display "Height|in Metric" style=[htmlclass='overline'];
-			define vsbmi_c    /display "BMI" style=[htmlclass='overline'];
+			column vsdat visname vsperf_n vsreasnd vsdat_cflag vsdat_c waist weight height ("Auto-calculated in DB" height_bmi vsbmi_c);
+			define vsdat       /order order=internal noprint;
+			define visname     /display "Visit";
+			define vsperf_n    /display "Check Box if|Not Assessed";
+			define vsreasnd    /display "Reason|Not Done";
+			define vsdat_cflag /display noprint;
+			define vsdat_c     /display "Date|Assessed" style=[htmlclass='min-width-1-0'];
+			define waist       /display "Waist|Circumference";
+			define weight      /display "Weight";
+			define height      /display "Height";
+			define height_bmi  /display "Height|in Metric" style=[htmlclass='overline'];
+			define vsbmi_c     /display "BMI" style=[htmlclass='overline'];
 
+			compute vsdat_c;
+				if vsdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
+			endcomp;
 
-			*compute foldername;
-				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
-			*endcomp;
-
-			*compute age_raw;
-				*if .z<input(age_raw,best.)<18 then call define(_col_,"style","style=[background=lightred]");
-			*endcomp;
-
-			*footnote "dm-footnote";
+			%if &vsdat_cflag_foot.=1 %then %do;
+				footnote "date-footnote";
+			%end;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];

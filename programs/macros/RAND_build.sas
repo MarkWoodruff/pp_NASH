@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-26 Mark Woodruff add flagging for dates not matching VS.
 ******************************************************************************************;
 
 data pp_final_rand(keep=subnum visitid visname dsstdat_c cohort_dec);
@@ -20,3 +21,5 @@ data pp_final_rand(keep=subnum visitid visname dsstdat_c cohort_dec);
 	proc sort;
 		by subnum visitid visname;
 run;
+
+%check_dates(dsn=pp_final_rand,date=dsstdat_c);

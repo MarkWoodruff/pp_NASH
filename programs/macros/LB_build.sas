@@ -1,18 +1,16 @@
 /*****************************************************************************************/
-* Program Name  : LBC_build.sas
+* Program Name  : LB_build.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-10-22
-* Description   : build temporary dataset for LBC (Central Labs) domain
+* Creation Date : 2021-10-26
+* Description   : build temporary dataset for LB (Safety Labs) domain
 *
 * Revision History
 * Date       By            Description of Change
-* 2021-10-25 Mark Woodruff add LABFLAG.
-* 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 ******************************************************************************************;
 
 data _null_;
-	set crf.lbx(encoding=any);
+	set crf.lb(encoding=any);
 
 	if pagename^='Lab Results' then	put "ER" "ROR: update LBC_build.sas to filter on proper PAGENAME, and add new domain as necessary.";
 
@@ -20,15 +18,11 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update LBC_build.sas to handle LBX.DELETED var appropriately.";
 run;
 
-data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_c lbfast_dec lbcat lbtestcd lbtest lborres_lborresu nr lbstresc_lbstresu nrst
+data pp_final_lbc(keep=subnum visname lbrefid yob_sex visit lbdat lbdat_c lbfast_dec lbcat lbtestcd lbtest lborres_lborresu nr lbstresc_lbstresu nrst
 					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag);
 	set crf.lbx(encoding=any where=(pagename='Lab Results' and deleted='f') rename=(lbstresn=lbstresn_theirs));
 
 	if lbdat=. then put "ER" "ROR: update LBC_build.sas to handle Unscheduled visits and/or missing dates correctly.";
-
-	** for check_dates macro **;
-	visname=strip(visit);
-	if visname not in ('Screening','Day 1','Day 8','Screening Retest','Unscheduled') then put "ER" "ROR: update LBC_build.sas for visits going into check_Dates";
 
 	length yob_sex $100;
 	yob_sex=catx(' - ',yob,sex);
@@ -67,10 +61,4 @@ data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_
 
 	proc sort;
 		by subnum lbdat lbcat lbtest;
-run;
-
-%check_dates(dsn=pp_final_lbc,date=lbdat_c,mrgvars=visname);
-
-proc sort data=pp_final_lbc;
-	by subnum lbdat lbcat lbtest;
 run;

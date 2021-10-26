@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-26 Mark Woodruff add flagging for dates not matching VS.
 ******************************************************************************************;
 
 data domain_data;
@@ -37,7 +38,7 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column vsdat visname vsnd_reas vsdat_c vspos vstimp_c vstim1_c hrn hr rr tempn ("Temp.SUPER2SPNHDRFRCCNTR" temp vstempl_dec) space
+			column vsdat visname vsnd_reas vsdat_cflag vsdat_c vspos vstimp_c vstim1_c hrn hr rr tempn ("Temp.SUPER2SPNHDRFRCCNTR" temp vstempl_dec) space
 			("Blood Pressure (mmHg)SUPER3SPNHDRFRCNDRLNCNTR" 
 				bp1_sysn bp1_dian ("Value #1SPNHDRFRCCNTR" bp1_sys bp1_dia) space
 				bp2_sysn bp2_dian ("Value #2SPNHDRFRCCNTR" vstim2_c bp2_sys bp2_dia) space 
@@ -46,6 +47,7 @@ run;
 			define vsdat       /order order=internal noprint;
 			define visname     /display "Visit";
 			define vsnd_reas   /display "Not Done:|Reason";
+			define vsdat_cflag /display noprint;
 			define vsdat_c     /display "Date|Assessed" style=[htmlclass='min-width-1-0'];
 			define vspos       /display "Position";
 			define vstimp_c    /display "Start Time|in Position";
@@ -123,15 +125,17 @@ run;
 					else if 100<=bp_avg_dian then call define(_col_,"style/merge","style=[background=cxff7676");
 			endcomp;
 
-			*compute foldername;
-				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
-			*endcomp;
+			compute vsdat_c;
+				if vsdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
+			endcomp;
 
-			*compute age_raw;
-				*if .z<input(age_raw,best.)<18 then call define(_col_,"style","style=[background=lightred]");
-			*endcomp;
+			%if &vsdat_cflag_foot.=1 %then %do;
+				footnote "vsdate-footnote";
+			%end;
+				%else %do;
+					footnote "vs-footnote";
+				%end;
 
-			footnote "vs-footnote";
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];

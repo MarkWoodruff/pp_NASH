@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-01 Mark Woodruff remove visit from check on pagename var.  add visitid and visname.
 * 2021-10-06 Mark Woodruff sort by eligibility assessment date.
+* 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 ******************************************************************************************;
 
 data _null_;
@@ -68,3 +69,5 @@ data pp_final_elig(keep=subnum visitid visname visname iestdat iestdat_c ieorres
 	proc sort;
 		by subnum iestdat;
 run;
+
+%check_dates(dsn=pp_final_elig,date=iestdat_c);

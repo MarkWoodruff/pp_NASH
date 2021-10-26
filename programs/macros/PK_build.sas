@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 ******************************************************************************************;
 
 data _null_;
@@ -34,3 +35,5 @@ data pp_final_pk(keep=subnum visitid visname pcperf_reas pcdat_c pctim_c pccoval
 	proc sort;
 		by subnum visitid;
 run;
+
+%check_dates(dsn=pp_final_pk,date=pcdat_c);

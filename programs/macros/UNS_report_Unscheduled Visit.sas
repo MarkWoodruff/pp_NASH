@@ -41,7 +41,7 @@ run;
 			define visitid  /order order=internal noprint;
 			define svstdt   /order order=internal noprint;
 			define svstdt_c /display "Visit Date" style=[htmlclass='min-width-1-0 fixed unsfixed1'];
-			define svupdes  /display "Reason for|Unscheduled" style=[htmlclass='fixed unsfixed2'];
+			define svupdes  /display "Reason for Unscheduled" style=[htmlclass='fixed unsfixed2'];
 			define SVUPBM   /display "Body|Measurements";
 			define SVUPVS   /display "Vital|Signs";
 			define SVUPEG   /display "ECG";

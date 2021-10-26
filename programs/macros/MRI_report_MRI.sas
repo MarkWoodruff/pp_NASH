@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 ******************************************************************************************;
 
 data domain_data;
@@ -36,24 +37,26 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column mostdat visitid visname mostdat_c mriperf_reas mofastyn_dec mofastn_c;
-			define mostdat      /order order=internal noprint;
-			define visitid      /order order=internal noprint;
-			define visname      /display "Visit";
-			define mostdat_c    /display "Date of MRI|Examination" style=[htmlclass='min-width-1-0'];
-			define mriperf_reas /display "Performed?|If No, Reason" style=[htmlclass='max-width-3-0'];
-			define mofastyn_dec /display "Fasting for 4 Hours|Prior to Procedure?";
-			define mofastn_c    /display "How Many Hours Was|Subject Fasting?";
+			column mostdat visitid visname mostdat_cflag mostdat_c mriperf_reas mofastyn_dec mofastn_c;
+			define mostdat       /order order=internal noprint;
+			define visitid       /order order=internal noprint;
+			define visname       /display "Visit";
+			define mostdat_cflag /display noprint;
+			define mostdat_c     /display "Date of MRI|Examination" style=[htmlclass='min-width-1-0'];
+			define mriperf_reas  /display "Performed?|If No, Reason" style=[htmlclass='max-width-3-0'];
+			define mofastyn_dec  /display "Fasting for 4 Hours|Prior to Procedure?";
+			define mofastn_c     /display "How Many Hours Was|Subject Fasting?";
 
-			*compute foldername;
-				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
-			*endcomp;
+			compute mostdat_c;
+				if mostdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
+			endcomp;
 
-			*compute age_raw;
-				*if .z<input(age_raw,best.)<18 then call define(_col_,"style","style=[background=lightred]");
-			*endcomp;
-
-			footnote "Note: External MRI data from BioTel Research will be added once it is received.";
+			%if &mostdat_cflag_foot.=1 %then %do;
+				footnote "mridate-footnote";
+			%end;
+				%else %do;
+					footnote "Note: External MRI data from BioTel Research will be added once it is received.";
+				%end;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="domain-title"];

@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-26 Mark Woodruff add pageseq_c;
 ******************************************************************************************;
 
 data domain_data;
@@ -37,16 +38,17 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column cmtrt_c coding cmindc_c cmaeno cmmhno dose route frequency dates;
+			column pageseq_c cmtrt_c coding cmindc_c cmaeno cmmhno dates dose route frequency;
+			define pageseq_c /display "CM|No.";
 			define cmtrt_c   /display "Medication" style=[htmlclass='max-width-3-0'];
 			define coding    /display "Coding" style=[htmlclass='max-width-3-0'];
 			define cmindc_c  /display "Indication,|Specify" style=[htmlclass='max-width-3-0'];
 			define cmaeno    /display "AE|ID";
 			define cmmhno    /display "MH|ID";
+			define dates     /display "Start Date/|Stop Date" style=[htmlclass='min-width-1-0'];
 			define dose      /display "Dose, Unit";
 			define route     /display "Route";
 			define frequency /display "Frequency";
-			define dates     /display "Start Date/|Stop Date" style=[htmlclass='min-width-1-0'];
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");

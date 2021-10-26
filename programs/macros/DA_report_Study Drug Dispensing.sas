@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 ******************************************************************************************;
 
 data domain_data;
@@ -36,10 +37,11 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column visitid visname dareplac_dec dadisdat_c dadistim_c dakitno1-dakitno3 dadisdat2_c dadistim2_c;
+			column visitid visname dareplac_dec dadisdat_cflag dadisdat_c dadistim_c dakitno1-dakitno3 dadisdat2_c dadistim2_c;
 			define visitid      /order order=internal noprint;
 			define visname      /display "Visit";
 			define dareplac_dec /display "Replacing a|Damaged Kit?";
+			define dadisdat_cflag /display noprint;
 			define dadisdat_c   /display "Date Kit|Assigned" style=[htmlclass='min-width-1-0'];
 			define dadistim_c   /display "Time Kit|Assigned";
 			define dakitno1     /display "Kit|Number 1";
@@ -48,15 +50,13 @@ run;
 			define dadisdat2_c  /display "Date Syringe(s)|Loaded" style=[htmlclass='min-width-1-0'];
 			define dadistim2_c  /display "Time Syringe(s)|Loaded";
 
-			*compute foldername;
-				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
-			*endcomp;
+			compute dadisdat_c;
+				if dadisdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
+			endcomp;
 
-			*compute age_raw;
-				*if .z<input(age_raw,best.)<18 then call define(_col_,"style","style=[background=lightred]");
-			*endcomp;
-
-			*footnote "Note: External MRI data from BioTel Research will be added once it is received.";
+			%if &dadisdat_cflag_foot.=1 %then %do;
+				footnote "date-footnote";
+			%end;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="domain-title"];

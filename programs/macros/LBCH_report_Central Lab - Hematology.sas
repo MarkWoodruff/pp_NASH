@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 ******************************************************************************************;
 
 data domain_data;
@@ -88,12 +89,13 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column lbdat visit lbdat_c lbtest labflag
+			column lbdat visit lbdat_cflag lbdat_c lbtest labflag
 				("Original UnitsSPNHDRFRCCNTR" lborres_lborresu nr) space 
 				("Standard UnitsSPNHDRFRCCNTR" lbstresc_lbstresu nrst) lbnrind 
 				 lbrefid yob_sex lbfast_dec lbstat_lbreasnd lbspec lbcoval;* lbcat;
 			define lbdat             /order order=internal noprint;
 			define visit             /display "Visit|Name";
+			define lbdat_cflag       /display noprint;
 			define lbdat_c           /display "Lab Date" style=[htmlclass='min-width-1-0'];
 			define lbtest            /display "Lab Test-TSTNAMDDH" style=[htmlclass='picklbnm min-width-1-75'];
 			define labflag           /display noprint;
@@ -121,6 +123,10 @@ run;
 						if labflag=1 then call define(_col_,"style/merge","style=[background=cxff7676]");
 					%end;
 
+					%if &var.=lbdat_c %then %do;
+						if lbdat_cflag=1 then call define(_col_,"style/merge","style=[background=yellow]");
+					%end;
+
 					visit_lag=lag(visit);
 					if visit^=visit_lag and visit^='Screening' then call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
 				endcomp;
@@ -141,7 +147,12 @@ run;
 			%makered(var=lbspec);
 			%makered(var=lbcoval);
 
-			footnote "lbx-footnote";
+			%if &lbdat_cflag_foot.=1 %then %do;
+				footnote "lbxdate-footnote";
+			%end;
+				%else %do;
+					footnote "lbx-footnote";
+				%end;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];

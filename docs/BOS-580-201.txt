@@ -66,7 +66,8 @@ Safety
 	-AE (NO DATA)
 	-Conmeds (DONE)
 	-Local Labs (WILL ALERT)
-	-Central Labs (NO DATA)
+	-Safety Labs (DO NOW)
+	-Central Labs (DONE)
 	-Fibroscan (DONE)
 	-Ultrasound (DONE)
 	-MRI-PDFF (DONE - NEED EXTERNAL DATA)
@@ -88,9 +89,9 @@ End of Treatment (WILL ALERT)
 ***********
 ** TO-DO **
 ***********
--finish base build (AEs, Labs)
+-finish base build (AEs)
 -finish Tanya ranges
--SK: flag visits not matching
+-SK: flag visit/dates not matching
 -macro to sort with unscheduled visits, update all domains
 -add graphs for labs, vitals, ecg including color flagging
 

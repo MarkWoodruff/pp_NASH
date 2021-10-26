@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-21 Mark Woodruff edit coding to use ATC2.
+* 2021-10-26 Mark Woodruff add pageseq_c.
 ******************************************************************************************;
 
 data _null_;
@@ -20,8 +21,10 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update CM_build.sas to handle CM.DELETED var appropriately.";
 run;
 
-data pp_final_cm(keep=subnum visitid visname cmtrt_c cmindc_c cmaeno cmmhno dose route frequency cmstdat cmendat dates coding);
+data pp_final_cm(keep=subnum visitid visname pageseq pageseq_c cmtrt_c cmindc_c cmaeno cmmhno dose route frequency cmstdat cmendat dates coding);
 	set crf.cm(encoding=any where=(pagename='Concomitant Medications' and deleted='f'));
+
+	if pageseq>.z then pageseq_c=strip(put(pageseq,best.));
 
 	length cmtrt_c $700;
 	if cmnone^='' then cmtrt_c='No Concomitant Medications taken during the study.';
@@ -47,8 +50,8 @@ data pp_final_cm(keep=subnum visitid visname cmtrt_c cmindc_c cmaeno cmmhno dose
 		else if cmongo^='' then dates=strip(cmstdat)||'/frcbrk'||'Ongoing';
 
 	length coding $3100;
-	coding=strip(text2)||'/frcbrk'||strip(preferred_name);
+	if text2^='' or preferred_name^='' then coding=strip(text2)||'/frcbrk'||strip(preferred_name);
 
 	proc sort;
-		by subnum cmstdat cmendat;
+		by subnum pageseq cmstdat cmendat;
 run;

@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-09-28 Mark Woodruff use data_dt.
 * 2021-10-01 Mark Woodruff add visitid and visname.
+* 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 ******************************************************************************************;
 
 data domain_data;
@@ -38,28 +39,27 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column iestdat visitid visname iestdat_c ieorres_dec ieenroll_dec ietestcd_dec sf_mri mostdat_c iereplc_dec iereplcn;
-			define iestdat      /order order=internal noprint;
-			define visitid      /order order=internal noprint;
-			define visname      /display "Visit";
-			define iestdat_c    /display "Eligibility|Assessment|Date" style=[htmlclass='min-width-1-0'];
-			define ieorres_dec  /display "Eligible|for Study?";
-			define ieenroll_dec /display "Enrolled without meeting|all IE requirements?|(include as PD)";
-			define ietestcd_dec /display "Inclusion and/or|Exclusion Criteria Not Met";
-			define sf_mri       /display "Screen Fail and|MRI Performed?";
-			define mostdat_c    /display "Date of MRI" style=[htmlclass='min-width-1-0'];
-			define iereplc_dec  /display "Replacing a|Previous Subject?";
-			define iereplcn     /display "Subject ID of|Subject to be Replaced";
+			column iestdat visitid visname iestdat_cflag iestdat_c ieorres_dec ieenroll_dec ietestcd_dec sf_mri mostdat_c iereplc_dec iereplcn;
+			define iestdat       /order order=internal noprint;
+			define visitid       /order order=internal noprint;
+			define visname       /display "Visit";
+			define iestdat_cflag /display noprint;
+			define iestdat_c     /display "Eligibility|Assessment|Date" style=[htmlclass='min-width-1-0'];
+			define ieorres_dec   /display "Eligible|for Study?";
+			define ieenroll_dec  /display "Enrolled without meeting|all IE requirements?|(include as PD)";
+			define ietestcd_dec  /display "Inclusion and/or|Exclusion Criteria Not Met";
+			define sf_mri        /display "Screen Fail and|MRI Performed?";
+			define mostdat_c     /display "Date of MRI" style=[htmlclass='min-width-1-0'];
+			define iereplc_dec   /display "Replacing a|Previous Subject?";
+			define iereplcn      /display "Subject ID of|Subject to be Replaced";
 
-			*compute foldername;
-				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
-			*endcomp;
+			compute iestdat_c;
+				if iestdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
+			endcomp;
 
-			*compute age_raw;
-				*if .z<input(age_raw,best.)<18 then call define(_col_,"style","style=[background=lightred]");
-			*endcomp;
-
-			*footnote "dm-footnote";
+			%if &iestdat_cflag_foot.=1 %then %do;
+				footnote "date-footnote";
+			%end;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="domain-title"];

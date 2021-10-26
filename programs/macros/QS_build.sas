@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 ******************************************************************************************;
 
 data _null_;
@@ -69,3 +70,5 @@ data pp_final_qs(keep=subnum visitid visname qsperf_reas qsdat qsdat_c c1 c2);
 	c1="Rate your desire"; c2=strip(qs13_dec);
 	output;
 run;
+
+%check_dates(dsn=pp_final_qs,date=qsdat_c);

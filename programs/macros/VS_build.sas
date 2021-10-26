@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-21 Mark Woodruff add HRN, TEMPN.
+* 2021-10-26 Mark Woodruff add flagging for dates not matching VS.
 ******************************************************************************************;
 
 data _null_;
@@ -23,7 +24,7 @@ data _null_;
 	if vsbpu not in ('','mmHg') then put "ER" "ROR: update vs_build.sas to handle VSBPU units correctly.";
 run;
 
-data pp_final_vs(keep=subnum visname vsnd_reas vsdat vsdat_c vspos vstimp_c vstim1_c hr hrn rr temp tempn vstempl_dec bp1_sysn bp1_sys bp1_dian bp1_dia 
+data pp_final_vs(keep=subnum visitid visname vsnd_reas vsdat vsdat_c vspos vstimp_c vstim1_c hr hrn rr temp tempn vstempl_dec bp1_sysn bp1_sys bp1_dian bp1_dia 
 	vstim2 vstim2_c bp2_sysn bp2_sys bp2_dian bp2_dia vstim3_c bp3_sysn bp3_sys bp3_dian bp3_dia bp_avg_sysn bp_avg_sys bp_avg_dian bp_avg_dia);
 	set crf.vs(encoding=any where=(pagename='Vital Signs' and deleted='f'));
 
@@ -80,3 +81,5 @@ data pp_final_vs(keep=subnum visname vsnd_reas vsdat vsdat_c vspos vstimp_c vsti
 	proc sort;
 		by subnum vsdat;
 run;
+
+%check_dates(dsn=pp_final_vs,date=vsdat_c);

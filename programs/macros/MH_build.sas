@@ -9,7 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-01 Mark Woodruff remove visit from check on pagename var.
 * 2021-10-06 Mark Woodruff coding removed from DB.  edit sort.
-* 2021-10-22 Mark Woodruff add pageseq;
+* 2021-10-22 Mark Woodruff add pageseq.
 ******************************************************************************************;
 
 data _null_;

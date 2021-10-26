@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-26 Mark Woodruff add flagging for dates not matching VS.
 ******************************************************************************************;
 
 data _null_;
@@ -16,7 +17,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update UNS_build.sas to handle SV.DELETED var appropriately.";
 run;
 
-data pp_final_body(keep=subnum visname vsperf_n vsreasnd vsdat vsdat_c waist weight height height_bmi vsbmi_c);
+data pp_final_body(keep=subnum visitid visname vsperf_n vsreasnd vsdat vsdat_c waist weight height height_bmi vsbmi_c);
 	set crf.vs(encoding=any where=(pagename='Body Measurements' and deleted='f'));
 
 	length vsdat_c $20;
@@ -37,3 +38,5 @@ data pp_final_body(keep=subnum visname vsperf_n vsreasnd vsdat vsdat_c waist wei
 	proc sort;
 		by subnum vsdat;
 run;
+
+%check_dates(dsn=pp_final_body,date=vsdat_c);

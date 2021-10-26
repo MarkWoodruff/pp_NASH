@@ -779,6 +779,13 @@ options mprint mlogic symbolgen;
 				***************;
 				** FOOTNOTES **;
 				***************;
+				** dates that do not match SV **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">date-footnote</span> </p>',
+					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span></p>');
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">mridate-footnote</span> </p>',
+					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
+						<span class="footnote">Note: External MRI data from BioTel Research will be added once it is received.</span></p>');
+
 				** VS - Vital Signs **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">vs-footnote</span> </p>'
 					,'<p><span class="footnote-num">SUPER1 For pulse, <span class="red-footnote">red</span> flags values outside the normal range of 60 - 100 beats/min.</span><br>
@@ -788,6 +795,15 @@ options mprint mlogic symbolgen;
 							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (&#8805;140 - <160 systolic, &#8805;90 - <100 diastolic), <br>
 							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (&#8805;160 systolic, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8805;100 diastolic).</span>
 					  </p>');
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">vsdate-footnote</span> </p>'
+					,'<p><span class="footnote-num">SUPER1 For pulse, <span class="red-footnote">red</span> flags values outside the normal range of 60 - 100 beats/min.</span><br>
+						 <span class="footnote-num">SUPER2 For temperature, <span class="red-footnote">red</span> flags values outside the normal range of 35 - 38 &#176;C</span><br>
+						 <span class="footnote-num">SUPER3 For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
+							<span class="yellow-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yellow</span> &nbsp;= Grade 1 (&#8805;120 - <140 systolic, &#8805;80 - <90 diastolic), <br>
+							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (&#8805;140 - <160 systolic, &#8805;90 - <100 diastolic), <br>
+							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (&#8805;160 systolic, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8805;100 diastolic).</span><br>
+						 <span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span>
+					  </p>');
 					  
 				** ECG - Electrocardiogram **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">ecg-footnote</span> </p>'
@@ -796,10 +812,22 @@ options mprint mlogic symbolgen;
 							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (>480 - &#8804;500 msec), <br>
 							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (>500 msec)</span>
 					  </p>');
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">ecgdate-footnote</span> </p>'
+					,'<p><span class="footnote-num">SUPER1 Colors flag CTCAE Grades: <br>
+							<span class="yellow-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yellow</span> &nbsp;= Grade 1 (>450 - &#8804;480 msec), <br>
+							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (>480 - &#8804;500 msec), <br>
+							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (>500 msec)</span><br>
+					  	 <span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span>
+					  </p>');
 					  
 				** LBC - Central Labs **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbx-footnote</span> </p>'
 					,'<p><span class="footnote">Note: <span class="red-footnote">red</span> flags values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span></p>');
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxdate-footnote</span> </p>'
+					,'<p><span class="footnote">Note: <span class="red-footnote">red</span> flags values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span><br>
+						 <span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span>
+					  </p>');
+
 /*
 				
 				** DM - Demographics **;
@@ -941,7 +969,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=92,ept=92,spn=28,epn=30);
+*%patients_domains(spt=78,ept=78,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -998,7 +1026,7 @@ run;
 
 
 
-/*
+
 
 
 *****************************;
@@ -1339,4 +1367,3 @@ data _null_;
 run;
 
 %put Program started at &starttm. and ended at &endtm.;
-*/
