@@ -447,6 +447,18 @@ tr:nth-child(odd) {
 	vertical-align: bottom;
 }
 
+.tab1 {
+	margin-left: 40px;
+}
+
+.tab2 {
+	margin-left: 80px;
+}
+
+.tab3 {
+	margin-left: 120px;
+}
+
 th.min-width-0-25,
 td.min-width-0-25 {
 	min-width: 0.25in;    

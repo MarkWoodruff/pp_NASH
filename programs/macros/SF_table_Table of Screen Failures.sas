@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-10-27 Mark Woodruff add number of screen fails.
 ******************************************************************************************;
 
 ******************************************;
@@ -53,18 +54,21 @@ data sf_one;
 
 	trt=1;
 
-	retain in01-in06 ex01-ex44;
+	retain any in01-in06 ex01-ex44;
 	if first.subnum then do;
 		in01=.; in02=.; in03=.; in04=.; in05=.; in06=.;
 		ex01=.; ex02=.; ex03=.; ex04=.; ex05=.; ex06=.; ex07=.; ex08=.; ex09=.; ex10=.;
 		ex11=.; ex12=.; ex13=.; ex14=.; ex15=.; ex16=.; ex17=.; ex18=.; ex19=.; ex20=.;
 		ex21=.; ex22=.; ex23=.; ex24=.; ex25=.; ex26=.; ex27=.; ex28=.; ex29=.; ex30=.;
 		ex31=.; ex32=.; ex33=.; ex34=.; ex35=.; ex36=.; ex37=.; ex38=.; ex39=.; ex40=.;
-		ex41=.; ex42=.; ex43=.; ex44=.;
+		ex41=.; ex42=.; ex43=.; ex44=.; any=.;
 	end;
 
 	%macro ie_1(i_or_e=,num=);
-		if index(ietestcd_dec,"&i_or_e.&num.")>0 then &i_or_e.&num.=1;
+		if index(ietestcd_dec,"&i_or_e.&num.")>0 then do;
+			&i_or_e.&num.=1;
+			any=1;
+		end;
 	%mend ie_1;
 	%ie_1(i_or_e=IN,num=01); %ie_1(i_or_e=IN,num=02); %ie_1(i_or_e=IN,num=03); %ie_1(i_or_e=IN,num=04); %ie_1(i_or_e=IN,num=05); %ie_1(i_or_e=IN,num=06);
 	%ie_1(i_or_e=EX,num=01); %ie_1(i_or_e=EX,num=02); %ie_1(i_or_e=EX,num=03); %ie_1(i_or_e=EX,num=04); %ie_1(i_or_e=EX,num=05); %ie_1(i_or_e=EX,num=06);
@@ -79,6 +83,7 @@ data sf_one;
 	if last.subnum;
 run;
 
+%counts(row= 0,dsn=sf_one,whr=%str(any=1),showdenom=0);
 %counts(row= 1,dsn=sf_one,whr=%str(in01=1),showdenom=0);
 %counts(row= 2,dsn=sf_one,whr=%str(in02=1),showdenom=0);
 %counts(row= 3,dsn=sf_one,whr=%str(in03=1),showdenom=0);
@@ -131,14 +136,14 @@ run;
 %counts(row=50,dsn=sf_one,whr=%str(ex44=1),showdenom=0);
 
 data rows;
-	set rowx1-rowx50;
+	set rowx0-rowx50;
 
 	proc sort;
 		by row;
 run;
 
 data dummy;
-	do row=0 to 6,6.1,6.2,7 to 11,11.1,12 to 19,19.1,20 to 30,30.1,31 to 40,40.1,41 to 50;
+	do row=0,0.1,1 to 6,6.1,6.2,7 to 11,11.1,12 to 19,19.1,20 to 30,30.1,31 to 40,40.1,41 to 50;
 		output;
 	end;
 run;
@@ -153,7 +158,8 @@ run;
 %let space4=%str(FRCSPCFRCSPCFRCSPCFRCSPCFRCSPCFRCSPCFRCSPCFRCSPC);
 proc format;
   	value rowfmt
-	   0="Inclusion Criteria"
+	   0="Overall count of Screen Failure Patients"
+	   0.1="Inclusion Criteria"
        1="&space2.01: Male or Female, age 18 to 75"
        2="&space2.02: BMI within range of 30 to 45 kg/mSUPER2"
        3="&space2.03: Liver fat VCTE CAP Score > 300 dB/m"
@@ -222,12 +228,13 @@ data final;
 	array columns c1;
 	do over columns;
 		if index(columns,'()')>0 and index(columns,'NA, NA')>0 then columns=put(0,2.);
-		if row not in (0,6.1,6.2,11.1,19.1,30.1,40.1) and columns='' then columns=put(0,3.);
+		if row not in (0.1,6.1,6.2,11.1,19.1,30.1,40.1) and columns='' then columns=put(0,3.);
 		*if row in (0,6.1,6.2,11.1,19.1,30.1,40.1) then columns="frcbrk"||columns;
 	end;
 
-	if .z<row<=6 then section=1;
-		else section=2;
+	if row=0 then section=1;
+		else if .z<row<=6 then section=2;
+		else section=3;
 
 	pgcount=1;
 
@@ -256,7 +263,8 @@ run;
 		define c1        /display "Screened|Patients|(N=&n1.)";
 
 		compute c0;
-			if row in (0,6.1,6.2,11.1,19.1,30.1,40.1) then call define(_col_,"style/merge","style=[font_weight=bold text_decoration=underline]");
+			if row in (0.1,6.1,6.2,11.1,19.1,30.1,40.1) then call define(_col_,"style/merge","style=[font_weight=bold text_decoration=underline]");
+			if row in (0) then call define(_col_,"style/merge","style=[font_weight=bold]");
 		endcomp;
 
 		** blank line before each section **;

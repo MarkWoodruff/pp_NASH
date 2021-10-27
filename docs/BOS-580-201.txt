@@ -66,7 +66,7 @@ Safety
 	-AE (NO DATA)
 	-Conmeds (DONE)
 	-Local Labs (WILL ALERT)
-	-Safety Labs (DO NOW)
+	-Safety Labs (DONE)
 	-Central Labs (DONE)
 	-Fibroscan (DONE)
 	-Ultrasound (DONE)
@@ -91,11 +91,11 @@ End of Treatment (WILL ALERT)
 ***********
 -finish base build (AEs)
 -finish Tanya ranges
--SK: flag visit/dates not matching
 -macro to sort with unscheduled visits, update all domains
 -add graphs for labs, vitals, ecg including color flagging
 
-
+** Walkthrough **;
+110-013 for Vitals
 
 
 **************

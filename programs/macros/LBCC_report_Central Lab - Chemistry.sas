@@ -85,22 +85,23 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column lbdat visit lbdat_cflag lbdat_c lbtest labflag
+			column lbdat visit lbdat_cflag lbdat_c lbtest labflag_tanja
 				("Original UnitsSPNHDRFRCCNTR" lborres_lborresu nr) space 
-				("Standard UnitsSPNHDRFRCCNTR" lbstresc_lbstresu nrst) lbnrind 
+				("Standard UnitsSPNHDRFRCCNTR" lbstresc_lbstresu nrst) labflag_lbnrind lbnrind 
 				 lbrefid yob_sex lbfast_dec lbstat_lbreasnd lbspec lbcoval;* lbcat;
 			define lbdat             /order order=internal noprint;
 			define visit             /display "Visit|Name";
 			define lbdat_cflag       /display noprint;
 			define lbdat_c           /display "Lab Date" style=[htmlclass='min-width-1-0'];
 			define lbtest            /display "Lab Test-TSTNAMDDC" style=[htmlclass='picklbnm min-width-1-75'];
-			define labflag           /display noprint;
-			define lborres_lborresu  /display "Result-Units" style=[htmlclass='overline'];
+			define labflag_tanja     /display noprint;
+			define lborres_lborresu  /display "Result-UnitsSUPER1" style=[htmlclass='overline'];
 			define nr                /display "Normal|Range" style=[htmlclass='overline'];
 			define space             /display " ";
 			define lbstresc_lbstresu /display "Result-Units" style=[htmlclass='overline'];
 			define nrst              /display "Normal|Range" style=[htmlclass='overline'];
-			define lbnrind           /display "Ref. Range|Indicator";
+			define labflag_lbnrind   /display noprint;
+			define lbnrind           /display "Ref. Range|IndicatorSUPER2";
 			define lbrefid           /display "Specimen|ID" style=[htmlclass='lbcc-other hidden'];
 			define yob_sex           /display "YOB-|Sex" style=[htmlclass='lbcc-other hidden'];
 			define lbfast_dec        /display "Fast?" style=[htmlclass='lbcc-other hidden'];
@@ -115,8 +116,14 @@ run;
 
 			%macro makered(var=);
 				compute &var.;
-					%if &var.=lborres_lborresu or &var.=nr or &var.=space or &var.=lbstresc_lbstresu or &var.=nrst or &var.=lbnrind %then %do;
-						if labflag=1 then call define(_col_,"style/merge","style=[background=cxff7676]");
+					%if &var.=lbnrind %then %do;
+						if labflag_lbnrind=1 then call define(_col_,"style/merge","style=[background=cxff7676]");
+					%end;
+
+					%if &var.=lborres_lborresu %then %do;
+						if labflag_tanja=1 then call define(_col_,"style/merge","style=[background=yellow]");
+						if labflag_tanja=2 then call define(_col_,"style/merge","style=[background=orange]");
+						if labflag_tanja=3 then call define(_col_,"style/merge","style=[background=cxff7676]");
 					%end;
 
 					%if &var.=lbdat_c %then %do;
@@ -144,10 +151,10 @@ run;
 			%makered(var=lbcoval);
 
 			%if &lbdat_cflag_foot.=1 %then %do;
-				footnote "lbxdate-footnote";
+				footnote "lbxchemdate-footnote";
 			%end;
 				%else %do;
-					footnote "lbx-footnote";
+					footnote "lbxchem-footnote";
 				%end;
 		%end;
 

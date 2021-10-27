@@ -21,7 +21,7 @@ data _null_;
 run;
 
 data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_c lbfast_dec lbcat lbtestcd lbtest lborres_lborresu nr lbstresc_lbstresu nrst
-					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag);
+					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag_lbnrind labflag_tanja);
 	set crf.lbx(encoding=any where=(pagename='Lab Results' and deleted='f') rename=(lbstresn=lbstresn_theirs));
 
 	if lbdat=. then put "ER" "ROR: update LBC_build.sas to handle Unscheduled visits and/or missing dates correctly.";
@@ -63,7 +63,23 @@ data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_
 	length lbstat_lbreasnd $1300;
 	lbstat_lbreasnd=catx(':FRCBRK',lbstat,lbreasnd);
 
-	if lbnrind^='' or .z<lborresn<lbornrlon or .z<lbornrhin<lborresn or .z<lbstrescn<lbstnrlon or .z<lbstnrhin<lbstrescn then labflag=1;
+	** red highlighting based on outside normal range, or CRF H/L flag exists **;
+	if lbnrind^='' or .z<lborresn<lbornrlon or .z<lbornrhin<lborresn or .z<lbstrescn<lbstnrlon or .z<lbstnrhin<lbstrescn then labflag_lbnrind=1;
+
+	** red highlighting based on Tanja requests **;
+	if lbtestcd='GLUC' then do;
+		if lborresu^='mg/dL' then put "ER" "ROR: update LBC_build.sas for Glucose units flagging for Tanja";
+		if lborresu='mg/dL' then do;
+			if .z<lborresn<56 then labflag_tanja=2;
+				else if 56<=lborresn<=70 then labflag_tanja=1;
+		end;
+	end;
+		else if lbtest in ('Amylase','Lipase') then do;
+			if lbornrhi>.z then lbornrhi_2=lbornrhi*2;
+			if lbornrhi>.z then lbornrhi_5=lbornrhi*5;
+			if .z<lbornrhi_2<lborresn<=lbornrhi_5 then labflag_tanja=1;
+				else if .z<lbornrhi_5<lborresn then labflag_tanja=2;
+		end;
 
 	proc sort;
 		by subnum lbdat lbcat lbtest;
