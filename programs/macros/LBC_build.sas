@@ -21,7 +21,7 @@ data _null_;
 run;
 
 data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_c lbfast_dec lbcat lbtestcd lbtest lborres_lborresu nr lbstresc_lbstresu nrst
-					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag_lbnrind labflag_tanja);
+					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag_lbnrind labflag_tanja lborresn lbornrhin);
 	set crf.lbx(encoding=any where=(pagename='Lab Results' and deleted='f') rename=(lbstresn=lbstresn_theirs));
 
 	if lbdat=. then put "ER" "ROR: update LBC_build.sas to handle Unscheduled visits and/or missing dates correctly.";
@@ -67,6 +67,9 @@ data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_
 	if lbnrind^='' or .z<lborresn<lbornrlon or .z<lbornrhin<lborresn or .z<lbstrescn<lbstnrlon or .z<lbstnrhin<lbstrescn then labflag_lbnrind=1;
 
 	** red highlighting based on Tanja requests **;
+	if lbornrhi>.z then lbornrhi_2=lbornrhi*2;
+	if lbornrhi>.z then lbornrhi_5=lbornrhi*5;
+
 	if lbtestcd='GLUC' then do;
 		if lborresu^='mg/dL' then put "ER" "ROR: update LBC_build.sas for Glucose units flagging for Tanja";
 		if lborresu='mg/dL' then do;
@@ -75,14 +78,88 @@ data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_
 		end;
 	end;
 		else if lbtest in ('Amylase','Lipase') then do;
-			if lbornrhi>.z then lbornrhi_2=lbornrhi*2;
-			if lbornrhi>.z then lbornrhi_5=lbornrhi*5;
 			if .z<lbornrhi_2<lborresn<=lbornrhi_5 then labflag_tanja=1;
 				else if .z<lbornrhi_5<lborresn then labflag_tanja=2;
+		end;
+		else if lbtestcd='BILI' and lbtest in ('Bilirubin') then do;
+			if .z<lbornrhi_2<=lborresn then labflag_tanja=1;
+		end;
+		else if lbtest='Platelets' then do;
+			if lborresu^='K/uL' then put "ER" "ROR: update LBC_build.sas for Platelets units flagging for Tanja";
+			if lborresu='K/uL' then do;
+				if .z<lborresn<150 then labflag_tanja=1;
+			end;
+		end;
+		else if lbtest='Prothrombin Intl. Normalized Ratio' then do;
+			if lborresn>1.5 then labflag_tanja=1;
 		end;
 
 	proc sort;
 		by subnum lbdat lbcat lbtest;
+run;
+
+** get first dose date **;
+data ex;
+	set crf.ex(encoding=any where=(pagename='Study Drug Administration' and exyn_dec='Yes' and deleted='f'));
+
+	format rfstdt yymmdd10.;
+	rfstdt=exstdat;
+
+	proc sort;
+		by subnum rfstdt;
+run;
+
+data ex(keep=subnum rfstdt);
+	set ex;
+	by subnum rfstdt;
+	if first.subnum;
+run;
+
+data pp_final_lbc;
+	merge ex
+		  pp_final_lbc(in=inl);
+	by subnum;
+	if inl;
+
+	if .z<rfstdt<lbdat then postbase=1;
+		else postbase=0;
+
+	proc sort;
+		by subnum lbcat lbtest lbdat;
+run;
+
+data base(keep=subnum lbcat lbtest base);
+	set pp_final_lbc;
+	by subnum lbcat lbtest lbdat;
+
+	retain base;
+	if first.lbtest then base=.;
+	if postbase=0 then base=lborresn;
+
+	if last.lbtest;
+run;
+
+data pp_final_lbc;
+	merge base
+		  pp_final_lbc;
+	by subnum lbcat lbtest;
+
+	proc sort;
+		by subnum lbdat lbcat lbtest;
+run;
+
+data pp_final_lbc;
+	set pp_final_lbc;
+
+	** ALT, AST **;
+	if lbtest in ('Alanine Aminotransferase') then do;
+		if .z<base<(1.5*lbornrhin) and postbase=1 then do;
+			flagelig=1;
+			if .z<(lbornrhin*8)<=lborresn then labflag_tanja=3;
+				else if .z<(lbornrhin*5)<=lborresn then labflag_tanja=2;
+				else if .z<(lbornrhin*3)<=lborresn then labflag_tanja=1;
+		end;
+	end;
 run;
 
 %check_dates(dsn=pp_final_lbc,date=lbdat_c,mrgvars=visname);

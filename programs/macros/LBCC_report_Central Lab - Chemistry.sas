@@ -98,7 +98,7 @@ run;
 			define lborres_lborresu  /display "Result-UnitsSUPER1" style=[htmlclass='overline'];
 			define nr                /display "Normal|Range" style=[htmlclass='overline'];
 			define space             /display " ";
-			define lbstresc_lbstresu /display "Result-Units" style=[htmlclass='overline'];
+			define lbstresc_lbstresu /display "Result-UnitsSUPER1" style=[htmlclass='overline'];
 			define nrst              /display "Normal|Range" style=[htmlclass='overline'];
 			define labflag_lbnrind   /display noprint;
 			define lbnrind           /display "Ref. Range|IndicatorSUPER2";
@@ -120,7 +120,7 @@ run;
 						if labflag_lbnrind=1 then call define(_col_,"style/merge","style=[background=cxff7676]");
 					%end;
 
-					%if &var.=lborres_lborresu %then %do;
+					%if &var.=lborres_lborresu or &var.=lbstresc_lbstresu %then %do;
 						if labflag_tanja=1 then call define(_col_,"style/merge","style=[background=yellow]");
 						if labflag_tanja=2 then call define(_col_,"style/merge","style=[background=orange]");
 						if labflag_tanja=3 then call define(_col_,"style/merge","style=[background=cxff7676]");

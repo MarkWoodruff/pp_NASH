@@ -32,7 +32,7 @@ ods listing close;
 
 ******************************************************;
 ** BUILD EACH REPORTABLE DOMAIN ACROSS ALL PATIENTS **;
-******************************************************;
+******************************************************;/*
 %include "&macros.\INFCON_build.sas"   / nosource2;
 %include "&macros.\RECON_build.sas"    / nosource2;
 %include "&macros.\ELIG_build.sas"     / nosource2;
@@ -60,7 +60,7 @@ ods listing close;
 %include "&macros.\QS_build.sas"       / nosource2;
 %include "&macros.\QSM_build.sas"      / nosource2;
 %include "&macros.\QSS_build.sas"      / nosource2;
-%include "&macros.\PD_build.sas"       / nosource2;
+%include "&macros.\PD_build.sas"       / nosource2;*/
 %include "&macros.\LBC_build.sas"      / nosource2;
 %include "&macros.\LB_build.sas"       / nosource2;
 
@@ -833,7 +833,7 @@ options mprint mlogic symbolgen;
 					  
 				** LBC - Central Labs (Chemistry) **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxchem-footnote</span> </p>'
-					,'<p><span class="footnote-num">SUPER1 Custom lab test flagging in the Original Result column as follows:<br>
+					,'<p><span class="footnote-num">SUPER1 Custom lab test flagging:<br>
 						 <span class="tab1">&#8226;Glucose</span><br>
 						 	<span class="tab2">&#9702;Hypoglycemia</span><br>
 								<span class="tab3"><56 mg/dL in <span class="orange-footnote">orange</span><br>
@@ -846,11 +846,19 @@ options mprint mlogic symbolgen;
 								<span class="tab2">>2.0 - 5.0 x ULN in <span class="yellow-footnote">yellow</span><br>
 								<span class="tab2">>5.0 x ULN in <span class="orange-footnote">orange</span>
 						 </span><br>
+						 <span class="tab1">&#8226;Total Bilirubin</span><br>
+								<span class="tab2">>=2.0 x ULN in <span class="yellow-footnote">yellow</span>
+						 </span><br>
+						 <span class="tab1">&#8226;Alanine Aminotransferase</span><br>
+								<span class="tab2">baseline <1.5 x ULN and post-baseline >=3 x ULN in <span class="yellow-footnote">yellow</span></span><br>
+			    				<span class="tab2">baseline <1.5 x ULN and post-baseline >=5 x ULN in <span class="orange-footnote">orange</span></span><br>
+			    				<span class="tab2">baseline <1.5 x ULN and post-baseline >=8 x ULN in <span class="red-footnote">red</span></span><br>
 					  	 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
-					 </p>');
+					 </p>'); 
+
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxchemdate-footnote</span> </p>'
 					,'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
-					     <span class="footnote-num">SUPER1 Custom lab test flagging in the Original Result column as follows:<br>
+					     <span class="footnote-num">SUPER1 Custom lab test flagging:<br>
 						 <span class="tab1">&#8226;Glucose</span><br>
 						 	<span class="tab2">&#9702;Hypoglycemia</span><br>
 								<span class="tab3"><56 mg/dL in <span class="orange-footnote">orange</span><br>
@@ -863,7 +871,44 @@ options mprint mlogic symbolgen;
 								<span class="tab2">>2.0 - 5.0 x ULN in <span class="yellow-footnote">yellow</span><br>
 								<span class="tab2">>5.0 x ULN in <span class="orange-footnote">orange</span>
 						 </span><br>
+						 <span class="tab1">&#8226;Total Bilirubin</span><br>
+								<span class="tab2">>=2.0 x ULN in <span class="yellow-footnote">yellow</span>
+						 </span><br>
+						 <span class="tab1">&#8226;Alanine Aminotransferase</span><br>
+								<span class="tab2">baseline <1.5 x ULN and post-baseline >=3 x ULN in <span class="yellow-footnote">yellow</span></span><br>
+			    				<span class="tab2">baseline <1.5 x ULN and post-baseline >=5 x ULN in <span class="orange-footnote">orange</span></span><br>
+			    				<span class="tab2">baseline <1.5 x ULN and post-baseline >=8 x ULN in <span class="red-footnote">red</span></span><br>
 					  	 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
+					 </p>');
+					  
+				** LBC - Central Labs (Hematology) **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxhema-footnote</span> </p>'
+					,'<p><span class="footnote-num">SUPER1 Custom lab test flagging:<br>
+						 <span class="tab1">&#8226;Platelets</span><br>
+								<span class="tab2"><150 10^9/L in <span class="yellow-footnote">yellow</span></span></span><br>
+						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
+					 </p>');
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxhemadate-footnote</span> </p>'
+					,'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
+					     <span class="footnote-num">SUPER1 Custom lab test flagging:<br>
+						 <span class="tab1">&#8226;Platelets</span><br>
+								<span class="tab2"><150 10^9/L in <span class="yellow-footnote">yellow</span></span></span><br>
+						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
+					 </p>');
+					  
+				** LBC - Central Labs (Other Categories) **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxoth-footnote</span> </p>'
+					,'<p><span class="footnote-num">SUPER1 Custom lab test flagging:<br>
+						 <span class="tab1">&#8226;Prothrombin Intl. Normalized Ratio</span><br>
+								<span class="tab2">>1.5 in <span class="yellow-footnote">yellow</span></span></span><br>
+						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
+					 </p>');
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxothdate-footnote</span> </p>'
+					,'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
+					     <span class="footnote-num">SUPER1 Custom lab test flagging:<br>
+						 <span class="tab1">&#8226;Prothrombin Intl. Normalized Ratio</span><br>
+								<span class="tab2">>1.5 in <span class="yellow-footnote">yellow</span></span></span><br>
+						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
 					 </p>');
 
 /*
@@ -1007,7 +1052,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 *%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=81,ept=81,spn=3,epn=3);
+%patients_domains(spt=100,ept=100,spn=29,epn=31);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1065,7 +1110,7 @@ run;
 
 
 
-
+/*
 
 *****************************;
 ** Data Management Reports **;
@@ -1405,3 +1450,4 @@ data _null_;
 run;
 
 %put Program started at &starttm. and ended at &endtm.;
+*/
