@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-25 Mark Woodruff add LABFLAG.
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
+* 2021-11-01 Mark Woodruff use lbornrhin rather than lbornrhi in computations.
 ******************************************************************************************;
 
 data _null_;
@@ -21,7 +22,7 @@ data _null_;
 run;
 
 data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_c lbfast_dec lbcat lbtestcd lbtest lborres_lborresu nr lbstresc_lbstresu nrst
-					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag_lbnrind labflag_tanja lborresn lbornrhin);
+					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag_lbnrind labflag_tanja lborresn lbornrhin lborresu);
 	set crf.lbx(encoding=any where=(pagename='Lab Results' and deleted='f') rename=(lbstresn=lbstresn_theirs));
 
 	if lbdat=. then put "ER" "ROR: update LBC_build.sas to handle Unscheduled visits and/or missing dates correctly.";
@@ -67,8 +68,8 @@ data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_
 	if lbnrind^='' or .z<lborresn<lbornrlon or .z<lbornrhin<lborresn or .z<lbstrescn<lbstnrlon or .z<lbstnrhin<lbstrescn then labflag_lbnrind=1;
 
 	** red highlighting based on Tanja requests **;
-	if lbornrhi>.z then lbornrhi_2=lbornrhi*2;
-	if lbornrhi>.z then lbornrhi_5=lbornrhi*5;
+	if lbornrhin>.z then lbornrhi_2=lbornrhin*2;
+	if lbornrhin>.z then lbornrhi_5=lbornrhin*5;
 
 	if lbtestcd='GLUC' then do;
 		if lborresu^='mg/dL' then put "ER" "ROR: update LBC_build.sas for Glucose units flagging for Tanja";
@@ -158,6 +159,20 @@ data pp_final_lbc;
 			if .z<(lbornrhin*8)<=lborresn then labflag_tanja=3;
 				else if .z<(lbornrhin*5)<=lborresn then labflag_tanja=2;
 				else if .z<(lbornrhin*3)<=lborresn then labflag_tanja=1;
+		end;
+		if lborresu^='IU/L' then put "ER" "ROR: update LBC_build.sas for ALT units in flagging.";
+		if .z<(1.5*lbornrhin)<=base and lborresu='IU/L' and postbase=1 then do;
+			flagelig=2;
+			if 500<=lborresn then labflag_tanja=2;
+				else if 300<=lborresn then labflag_tanja=1;				
+		end;
+	end;
+	if lbtest='Aspartate Aminotransferase' then do;
+		if postbase=1 then do;
+			flagelig=1;
+			if .z<(lbornrhin*20)<lborresn then labflag_tanja=3;
+				else if .z<(lbornrhin*5)<lborresn<=(lbornrhin*20) then labflag_tanja=2;
+				else if .z<(lbornrhin*2.5)<lborresn<=(lbornrhin*5) then labflag_tanja=1;
 		end;
 	end;
 run;

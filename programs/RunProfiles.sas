@@ -34,8 +34,8 @@ ods listing close;
 ** BUILD EACH REPORTABLE DOMAIN ACROSS ALL PATIENTS **;
 ******************************************************;/*
 %include "&macros.\INFCON_build.sas"   / nosource2;
-%include "&macros.\RECON_build.sas"    / nosource2;
-%include "&macros.\ELIG_build.sas"     / nosource2;
+%include "&macros.\RECON_build.sas"    / nosource2;*/
+%include "&macros.\ELIG_build.sas"     / nosource2;/*
 %include "&macros.\RAND_build.sas"     / nosource2;
 %include "&macros.\DM_build.sas"       / nosource2;
 %include "&macros.\MH_build.sas"       / nosource2;
@@ -48,8 +48,8 @@ ods listing close;
 %include "&macros.\PE_build.sas"       / nosource2;
 %include "&macros.\CM_build.sas"       / nosource2;
 %include "&macros.\VCTE_build.sas"     / nosource2;
-%include "&macros.\IP_build.sas"       / nosource2;
-%include "&macros.\ULTRA_build.sas"    / nosource2;
+%include "&macros.\IP_build.sas"       / nosource2;*/
+%include "&macros.\ULTRA_build.sas"    / nosource2;/*
 %include "&macros.\MRI_build.sas"      / nosource2;
 %include "&macros.\FPG_build.sas"      / nosource2;
 %include "&macros.\DA_build.sas"       / nosource2;
@@ -60,9 +60,10 @@ ods listing close;
 %include "&macros.\QS_build.sas"       / nosource2;
 %include "&macros.\QSM_build.sas"      / nosource2;
 %include "&macros.\QSS_build.sas"      / nosource2;
-%include "&macros.\PD_build.sas"       / nosource2;*/
+%include "&macros.\PD_build.sas"       / nosource2;
 %include "&macros.\LBC_build.sas"      / nosource2;
 %include "&macros.\LB_build.sas"       / nosource2;
+*/
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -612,6 +613,7 @@ options mprint mlogic symbolgen;
 				_infile_=tranwrd(_infile_,'5-7','5&#8209;7');
 				_infile_=tranwrd(_infile_,'8-14','8&#8209;14');
 				_infile_=tranwrd(_infile_,'Gamma-','Gamma&#8209;');
+				_infile_=tranwrd(_infile_,'bi-weekly','bi&#8209;weekly');
 				_infile_=tranwrd(_infile_,'Life-','Life&#8209;');
 				_infile_=tranwrd(_infile_,'gastro-','gastro&#8209;');
 				_infile_=tranwrd(_infile_,'Non-','Non&#8209;');
@@ -695,7 +697,7 @@ options mprint mlogic symbolgen;
 					 </body>');  
 
 				** when bolding Yes, make sure No is not bolded **;
-				if index(_infile_,'class="data yes"')>0 and index(_infile_,'>No')>0 then _infile_=tranwrd(_infile_,'class="data yes"','class="data"');
+				if index(_infile_,'class="data boldyes"')>0 and index(_infile_,'>No')>0 then _infile_=tranwrd(_infile_,'class="data boldyes"','class="data"');
 
 				** AE/Med Timeline footnotes **;
 				_infile_=tranwrd(_infile_,'add-no-data</span> </p>',
@@ -853,6 +855,12 @@ options mprint mlogic symbolgen;
 								<span class="tab2">baseline <1.5 x ULN and post-baseline >=3 x ULN in <span class="yellow-footnote">yellow</span></span><br>
 			    				<span class="tab2">baseline <1.5 x ULN and post-baseline >=5 x ULN in <span class="orange-footnote">orange</span></span><br>
 			    				<span class="tab2">baseline <1.5 x ULN and post-baseline >=8 x ULN in <span class="red-footnote">red</span></span><br>
+								<span class="tab2">baseline >=1.5 x ULN and post-baseline >=300 IU/L in <span class="yellow-footnote">yellow</span></span><br>
+			    				<span class="tab2">baseline >=1.5 x ULN and post-baseline >=500 IU/L in <span class="orange-footnote">orange</span></span><br>
+						 <span class="tab1">&#8226;Aspartate Aminotransferase</span><br>
+								<span class="tab2">>2.5 x ULN - 5 x ULN in <span class="yellow-footnote">yellow</span></span><br>
+			    				<span class="tab2">>5 x ULN - 20 x ULN in <span class="orange-footnote">orange</span></span><br>
+			    				<span class="tab2">>20 x ULN in <span class="red-footnote">red</span></span><br>
 					  	 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
 					 </p>'); 
 
@@ -878,6 +886,12 @@ options mprint mlogic symbolgen;
 								<span class="tab2">baseline <1.5 x ULN and post-baseline >=3 x ULN in <span class="yellow-footnote">yellow</span></span><br>
 			    				<span class="tab2">baseline <1.5 x ULN and post-baseline >=5 x ULN in <span class="orange-footnote">orange</span></span><br>
 			    				<span class="tab2">baseline <1.5 x ULN and post-baseline >=8 x ULN in <span class="red-footnote">red</span></span><br>
+								<span class="tab2">baseline >=1.5 x ULN and post-baseline >=300 IU/L in <span class="yellow-footnote">yellow</span></span><br>
+			    				<span class="tab2">baseline >=1.5 x ULN and post-baseline >=500 IU/L in <span class="orange-footnote">orange</span></span><br>
+						 <span class="tab1">&#8226;Aspartate Aminotransferase</span><br>
+								<span class="tab2">>2.5 x ULN - 5 x ULN in <span class="yellow-footnote">yellow</span></span><br>
+			    				<span class="tab2">>5 x ULN - 20 x ULN in <span class="orange-footnote">orange</span></span><br>
+			    				<span class="tab2">>20 x ULN in <span class="red-footnote">red</span></span><br>
 					  	 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
 					 </p>');
 					  
@@ -1052,7 +1066,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 *%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=100,ept=100,spn=29,epn=31);
+%patients_domains(spt=100,ept=100,spn=16,epn=16);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1110,7 +1124,7 @@ run;
 
 
 
-/*
+
 
 *****************************;
 ** Data Management Reports **;
@@ -1119,7 +1133,8 @@ run;
 proc format;
 	value $list_ord
 	"SF_listing_Listing of Screen Failures.sas"=1
-	"SF_table_Table of Screen Failures.sas"  =2;
+	"SF_table_Table of Screen Failures.sas"    =2
+	"ULTRA_listing_Listing of Ultrasounds.sas" =3;
 run;				
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -1321,6 +1336,7 @@ options mprint mlogic symbolgen;
 			'<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 			 <script src="..\programs\assets\js\js-navigation.js"></script>
 			 <script src="..\programs\assets\js\progress-bar.js"></script>
+			 <script src="..\programs\assets\js\ultradd.js"></script>
 			 </body>'); 
 
 		** offset anchors below sticky header by adding a new anchor and offset **;
@@ -1341,9 +1357,38 @@ options mprint mlogic symbolgen;
 			end;
 		end;
 
+		** Ultrasound Listing Dropdown Selectors **;
+		if index(_infile_,'Sludge?-ULTRADD')>0 then _infile_=tranwrd(_infile_,'Sludge?-ULTRADD',"Sludge?<br><select id='ultradd'>
+			<option value='ultradd-all' selected>-- Show All --</option>
+			<option value='yes'>Yes</option>
+			<option value='no'>No</option>
+			<option value='miss'>&#160;</option></select>");
+		if index(_infile_,'<td class="')>0 and index(_infile_,'pickultra')>0 and (index(_infile_,'>Yes')>0 or index(_infile_,'>No')>0) then do;
+			length test $100;
+			test=lowcase(scan(compress(compress(tranwrd(scan(_infile_,2,'>'),'&#160;',''),''),')'),1,'<'));
+			test=tranwrd(test,'(','-');
+			test=tranwrd(test,'%','-');
+			test=tranwrd(test,',','-');
+			test=tranwrd(test,'/','-');
+			test=tranwrd(test,'\','-');
+			test=tranwrd(test,'.','-');
+			if index(test,'160')=0 and test not in ('','/td') then _infile_=tranwrd(_infile_,'class="','class=" '||strip(test)||" ");
+		end;
+		if index(_infile_,'<td class="')>0 and index(_infile_,'pickultra')>0 and index(_infile_,'>&#160;<')>0 then do;
+			_infile_=tranwrd(_infile_,'class="','class=" miss ');
+		end;
+
+		** when bolding Yes, make sure No is not bolded **;
+		if index(_infile_,'class="data boldyes"')>0 and index(_infile_,'>No')>0 then _infile_=tranwrd(_infile_,'class="data boldyes"','class="data"');
+		if index(_infile_,'class=" no data boldyes pickultra created"')>0 and index(_infile_,'>No')>0 then _infile_=tranwrd(_infile_,'class=" no data boldyes pickultra created"','class=" no data pickultra created"');
+
 		** FOOTNOTES **;
 		*_infile_=tranwrd(_infile_,'<p><span class="footnote">INCEXCSF-FOOTNOTE</span> </p>',
 			'<p><span class="footnote-num">SUPER1 Listing includes only patients for which "Did the subject meet all the inclusion criteria and none of the exclusion criteria?" = No, and "Was subject a screen failure?" = No.</span></p>');
+
+		** Ultrasound listing footnote **;
+		_infile_=tranwrd(_infile_,'<p><span class="footnote">ultra-footnote</span> </p>',
+			'<p><span class="footnote">Note: <span class="green-footnote">Green</span> column headers indicate the column was programmatically created.</span></p>');
 
 		** handle superscripts **;
 		_infile_=tranwrd(_infile_,'SUPER1','<sup>1</sup>');	
@@ -1450,4 +1495,3 @@ data _null_;
 run;
 
 %put Program started at &starttm. and ended at &endtm.;
-*/

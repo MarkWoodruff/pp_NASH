@@ -823,7 +823,7 @@ th.center {
 	text-align: center;
 }
 
-td.yes {
+td.boldyes {
 	font-weight: 800;
 }
 
@@ -1016,6 +1016,16 @@ svg {
 #tstnamddc,
 #tstnamddu,
 #tstnamddg {
+    display: block;
+	font: 400 14px/18px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: black;
+    width: 100%;
+    max-width: 100%; 
+    box-sizing: border-box;
+    margin: 0;
+}
+
+#ultradd {
     display: block;
 	font: 400 14px/18px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: black;

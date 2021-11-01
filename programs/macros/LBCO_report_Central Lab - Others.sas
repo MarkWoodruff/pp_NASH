@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
+* 2021-11-01 Mark Woodruff use lbco for button.
 ******************************************************************************************;
 
 data domain_data;
@@ -100,7 +101,7 @@ run;
 			define visit             /display "Visit|Name";
 			define lbdat_cflag       /display noprint;
 			define lbdat_c           /display "Lab Date" style=[htmlclass='min-width-1-0'];
-			define lbtest            /display "Lab Test-TSTNAMDDC" style=[htmlclass='picklbnm min-width-1-75'];
+			define lbtest            /display "Lab Test-TSTNAMDDO" style=[htmlclass='picklbnm min-width-1-75'];
 			define labflag_tanja     /display noprint;
 			define lborres_lborresu  /display "Result-UnitsSUPER1" style=[htmlclass='overline'];
 			define nr                /display "Normal|Range" style=[htmlclass='overline'];
@@ -109,13 +110,13 @@ run;
 			define nrst              /display "Normal|Range" style=[htmlclass='overline'];
 			define labflag_lbnrind   /display noprint;
 			define lbnrind           /display "Ref. Range|IndicatorSUPER2";
-			define lbrefid           /display "Specimen|ID" style=[htmlclass='lbcc-other hidden'];
-			define yob_sex           /display "YOB-|Sex" style=[htmlclass='lbcc-other hidden'];
-			define lbfast_dec        /display "Fast?" style=[htmlclass='lbcc-other hidden'];
-			*define lbcat             /display "Lab|Cagegory" style=[htmlclass='lbcc-other hidden'];
-			define lbstat_lbreasnd   /display "Comp. Status-|Reason" style=[htmlclass='max-width-2-0 lbcc-other hidden'];
-			define lbspec            /display "Specimen|Type" style=[htmlclass='lbcc-other hidden'];
-			define lbcoval           /display "Comments" style=[htmlclass='max-width-6-0 lbcc-other hidden'];
+			define lbrefid           /display "Specimen|ID" style=[htmlclass='lbco-other hidden'];
+			define yob_sex           /display "YOB-|Sex" style=[htmlclass='lbco-other hidden'];
+			define lbfast_dec        /display "Fast?" style=[htmlclass='lbco-other hidden'];
+			*define lbcat             /display "Lab|Cagegory" style=[htmlclass='lbco-other hidden'];
+			define lbstat_lbreasnd   /display "Comp. Status-|Reason" style=[htmlclass='max-width-2-0 lbco-other hidden'];
+			define lbspec            /display "Specimen|Type" style=[htmlclass='lbco-other hidden'];
+			define lbcoval           /display "Comments" style=[htmlclass='max-width-6-0 lbco-other hidden'];
 
 			*compute foldername;
 				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
