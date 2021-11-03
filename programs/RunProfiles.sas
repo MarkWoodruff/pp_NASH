@@ -34,8 +34,8 @@ ods listing close;
 ** BUILD EACH REPORTABLE DOMAIN ACROSS ALL PATIENTS **;
 ******************************************************;/*
 %include "&macros.\INFCON_build.sas"   / nosource2;
-%include "&macros.\RECON_build.sas"    / nosource2;*/
-%include "&macros.\ELIG_build.sas"     / nosource2;/*
+%include "&macros.\RECON_build.sas"    / nosource2;
+%include "&macros.\ELIG_build.sas"     / nosource2;
 %include "&macros.\RAND_build.sas"     / nosource2;
 %include "&macros.\DM_build.sas"       / nosource2;
 %include "&macros.\MH_build.sas"       / nosource2;
@@ -48,8 +48,8 @@ ods listing close;
 %include "&macros.\PE_build.sas"       / nosource2;
 %include "&macros.\CM_build.sas"       / nosource2;
 %include "&macros.\VCTE_build.sas"     / nosource2;
-%include "&macros.\IP_build.sas"       / nosource2;*/
-%include "&macros.\ULTRA_build.sas"    / nosource2;/*
+%include "&macros.\IP_build.sas"       / nosource2;
+%include "&macros.\ULTRA_build.sas"    / nosource2;
 %include "&macros.\MRI_build.sas"      / nosource2;
 %include "&macros.\FPG_build.sas"      / nosource2;
 %include "&macros.\DA_build.sas"       / nosource2;
@@ -62,8 +62,8 @@ ods listing close;
 %include "&macros.\QSS_build.sas"      / nosource2;
 %include "&macros.\PD_build.sas"       / nosource2;
 %include "&macros.\LBC_build.sas"      / nosource2;
-%include "&macros.\LB_build.sas"       / nosource2;
-*/
+%include "&macros.\LB_build.sas"       / nosource2;*/
+%include "&macros.\AE_build.sas"       / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -362,7 +362,8 @@ proc format;
 	"LBCC_report_Central Lab - Chemistry.sas" =29
 	"LBCH_report_Central Lab - Hematology.sas"=30
 	"LBCO_report_Central Lab - Others.sas"    =31
-	"IP_report_MORE IN PROGRESS.sas"          =32;
+	"AE_report_Adverse Events.sas"            =32
+	"IP_report_MORE IN PROGRESS.sas"          =33;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -1066,7 +1067,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 *%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=100,ept=100,spn=16,epn=16);
+%patients_domains(spt=101,ept=101,spn=32,epn=32);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1123,7 +1124,7 @@ run;
 
 
 
-
+/*
 
 
 *****************************;
@@ -1495,3 +1496,4 @@ data _null_;
 run;
 
 %put Program started at &starttm. and ended at &endtm.;
+*/

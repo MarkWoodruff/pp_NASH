@@ -19,11 +19,13 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update AE_build.sas to handle AE.DELETED var appropriately.";
 run;
 
-data pp_final_ae(keep=subnum visitid visname aenone_aespid aesi_aeisr aestdat aeendat start);* iestdat iestdat_c ieorres_dec ieenroll_dec ietestcd_dec sf_mri mostdat_c iereplc_dec iereplcn);
-	set crf.ie(encoding=any where=(pagename='Adverse Events' and deleted='f'));
+data pp_final_ae(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat aeendat start stop aeout_aesev aerel_aeser aeacn_
+				      sae_hosp aeslife aesdisab aescong aesmie aesdth_ coding);
+	set crf.ae(encoding=any where=(pagename='Adverse Events' and deleted='f'));
 
 	length aenone_aespid $20;
-	if aenone^='' or aespid>.z then aenone_aespid=catx('/frcbrk',aenone,strip(put(aespid,best.)));
+	if aenone^='' then aenone_aespid='None';
+		else if aespid>.z then aenone_aespid=strip(put(aespid,best.));
 
 	length aesi_aeisr $100;
 	aesi_aeisr=catx('/frcbrk',aeaesiyn_dec,aeisryn_dec);
@@ -40,8 +42,31 @@ data pp_final_ae(keep=subnum visitid visname aenone_aespid aesi_aeisr aestdat ae
 		else put "ER" "ROR: update AE_build.sas for stop date/time algorithm.";
 	if aeongo^='' and aeentmun^='' then put "ER" "ROR: update AE_build.sas for stop time both unknown and ongoing.";
 
-	proc sort;
-		by subnum aestdat aeendat aeterm;
-run;
+	length aeout_aesev $100;
+	aeout_aesev=catx('/frcbrk',aeout,aesev);
 
-%check_dates(dsn=pp_final_elig,date=iestdat_c);
+	length aerel_aeser $100;
+	aerel_aeser=catx('/frcbrk',aerel,aeser);
+
+	length coding $5000;
+	coding=catx('/frcbrk',aeterm,coalescec(soc_term,'UNCODED'),coalescec(pt_term,'UNCODED'));
+
+	length aeacn_ $100;
+	aeacn_=catx('/frcbrk',aeacn,catx(': ',aeacnsub,aeacnsot));
+
+	length hosp_dates $100;
+	if aeadmiss>.z and aedischa>.z then hosp_dates=catx('/frcbrk',put(aeadmiss,yymmdd10.),put(aedischa,yymmdd10.));
+		else if aeadmiss>.z and aehospon^='' then hosp_dates=catx('/frcbrk',put(aeadmiss,yymmdd10.),'Continuing');
+		else if aeadmiss>.z then hosp_dates=strip(put(aeadmiss,yymmdd10.))||'/';
+
+	length sae_hosp $100;
+	sae_hosp=catx(': ',aeshosp_dec,hosp_dates);
+	if aeadmiss>.z or aedischa>.z then put "ER" "ROR: update AE_build.sas now that SAE Hospitalization is updated.";
+
+	length aesdth_ $100;
+	if aedthdat>.z then aesdth_=catx('/frcbrk',aesdth,strip(put(aedthdat,yymmdd10.)));
+		else aesdth_=strip(aesdth);
+
+	proc sort;
+		by subnum aespid aestdat aeendat aeterm;
+run;
