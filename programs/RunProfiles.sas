@@ -32,7 +32,7 @@ ods listing close;
 
 ******************************************************;
 ** BUILD EACH REPORTABLE DOMAIN ACROSS ALL PATIENTS **;
-******************************************************;/*
+******************************************************;
 %include "&macros.\INFCON_build.sas"   / nosource2;
 %include "&macros.\RECON_build.sas"    / nosource2;
 %include "&macros.\ELIG_build.sas"     / nosource2;
@@ -46,7 +46,10 @@ ods listing close;
 %include "&macros.\VS_build.sas"       / nosource2;
 %include "&macros.\ECG_build.sas"      / nosource2;
 %include "&macros.\PE_build.sas"       / nosource2;
+%include "&macros.\AE_build.sas"       / nosource2;
 %include "&macros.\CM_build.sas"       / nosource2;
+%include "&macros.\LBC_build.sas"      / nosource2;
+%include "&macros.\LB_build.sas"       / nosource2;
 %include "&macros.\VCTE_build.sas"     / nosource2;
 %include "&macros.\IP_build.sas"       / nosource2;
 %include "&macros.\ULTRA_build.sas"    / nosource2;
@@ -61,9 +64,6 @@ ods listing close;
 %include "&macros.\QSM_build.sas"      / nosource2;
 %include "&macros.\QSS_build.sas"      / nosource2;
 %include "&macros.\PD_build.sas"       / nosource2;
-%include "&macros.\LBC_build.sas"      / nosource2;
-%include "&macros.\LB_build.sas"       / nosource2;*/
-%include "&macros.\AE_build.sas"       / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -339,30 +339,34 @@ proc format;
 	"UNS_report_Unscheduled Visit.sas"	      = 6
 	"DM_report_Demographics.sas"		      = 7
 	"MH_report_Medical History.sas"		      = 8
-	"BODY_report_Body Measurements.sas"	      = 9
-	"PREG_report_Urine Pregnancy Test.sas"    =10
-	"VS_report_Vital Signs.sas"               =11
-	"ECG_report_ECG.sas"                      =12
-	"PE_report_Physical Exam.sas"             =13
-	"CM_report_Concomitant Medications.sas"   =14
-	"VCTE_report_Fibroscan (VCTE).sas"        =15
-	"ULTRA_report_Ultrasound.sas"             =16
-	"MRI_report_MRI.sas"                      =17
-	"FPG_report_Fasting Plasma Glucose.sas"   =18
-	"DA_report_Study Drug Dispensing.sas"     =19
-	"EX_report_Study Drug Administration.sas" =20
-	"PK_report_PK Sampling.sas"               =21
-	"ADA_report_ADA Sample.sas"               =22
-	"BIO_report_Exploratory Biomarkers.sas"   =23
-	"QS_report_Monthly Questionnaire.sas"     =24
-	"QSM_report_Menstrual Cycles.sas"         =25
-	"QSS_report_Menstrual Summary.sas"        =26
-	"PD_report_Protocol Deviations.sas"       =27
-	"LB_report_Central Lab.sas"               =28
-	"LBCC_report_Central Lab - Chemistry.sas" =29
-	"LBCH_report_Central Lab - Hematology.sas"=30
-	"LBCO_report_Central Lab - Others.sas"    =31
-	"AE_report_Adverse Events.sas"            =32
+	
+	"DA_report_Study Drug Dispensing.sas"     = 9
+	"EX_report_Study Drug Administration.sas" =10
+	"PK_report_PK Sampling.sas"               =11
+
+	"BODY_report_Body Measurements.sas"	      =12
+	"PREG_report_Urine Pregnancy Test.sas"    =13
+	"PE_report_Physical Exam.sas"             =14
+	"VS_report_Vital Signs.sas"               =15
+	"ECG_report_ECG.sas"                      =16
+	"AE_report_Adverse Events.sas"            =17
+	"CM_report_Concomitant Medications.sas"   =18
+	"LB_report_Central Lab.sas"               =19
+	"LBCC_report_Central Lab - Chemistry.sas" =20
+	"LBCH_report_Central Lab - Hematology.sas"=21
+	"LBCO_report_Central Lab - Others.sas"    =22
+
+	"VCTE_report_Fibroscan (VCTE).sas"        =23
+	"ULTRA_report_Ultrasound.sas"             =24
+	"MRI_report_MRI.sas"                      =25
+	"FPG_report_Fasting Plasma Glucose.sas"   =26
+	"ADA_report_ADA Sample.sas"               =27
+	"BIO_report_Exploratory Biomarkers.sas"   =28
+
+	"QS_report_Monthly Questionnaire.sas"     =29
+	"QSM_report_Menstrual Cycles.sas"         =30
+	"QSS_report_Menstrual Summary.sas"        =31
+	"PD_report_Protocol Deviations.sas"       =32
 	"IP_report_MORE IN PROGRESS.sas"          =33;
 run;
 
@@ -408,6 +412,7 @@ data report_links(keep=report_link_html);
 
 	if num=1 then report_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(report_link)||"</a></li>";
 		else if eof then report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Profile: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
+		else if num in (9,12,23,29) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 		else report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 run;
 
@@ -744,6 +749,17 @@ options mprint mlogic symbolgen;
 					_infile_=tranwrd(_infile_,%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px">')),%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px"><div class="table-container">')));
 				%mend frozen_columns;
 				%frozen_columns(idx=6, key_good=%str(>Unscheduled),key_bad=,colspan_frz=5);
+				%frozen_columns(idx=17,key_good=%str(>Adverse),key_bad=,colspan_frz=2);
+
+				** Add frozen columns to AEs with spanning column headers **;
+				if index(_infile_,'AE1FX')>0 then do;
+					_infile_=tranwrd(_infile_,'"header"','"header fixed aefixed1"');
+					_infile_=tranwrd(_infile_,'AE1FX','&#160;');
+				end;
+				if index(_infile_,'AE2FX')>0 then do;
+					_infile_=tranwrd(_infile_,'"header"','"header fixed aefixed2"');
+					_infile_=tranwrd(_infile_,'AE2FX','&#160;');
+				end;
 
 				************************************************************************************************************************;
 				** CENTERING OF SPANNING COLUMN HEADERS AND SOME MANUAL ADJUSTMENTS OF NESTED SPANNING HEADERS THAT SAS CANNOT HANDLE **;
@@ -1066,8 +1082,8 @@ options mprint mlogic symbolgen;
 	%patients;
 	ods listing;
 %mend patients_domains;
-*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=101,ept=101,spn=32,epn=32);
+%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+*%patients_domains(spt=101,ept=101,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1124,7 +1140,7 @@ run;
 
 
 
-/*
+
 
 
 *****************************;
@@ -1496,4 +1512,3 @@ data _null_;
 run;
 
 %put Program started at &starttm. and ended at &endtm.;
-*/

@@ -203,6 +203,10 @@ sup {
 	grid-column: 1 / -1;
 }
 
+.domain-sidebar-border {
+	border-top: 1px solid #fff;
+}
+
 .patient-sidebar {
 	grid-row: 3;
 	grid-column: 1;
@@ -342,6 +346,18 @@ td {
 	min-width: 340px;
 	max-width: 340px;
 	width: 340px;
+	border-right: 1px solid black;
+}
+
+.aefixed1 {
+	left: 0;
+	min-width: 44px;
+	max-width: 44px;
+	width: 44px;
+}
+
+.aefixed2 {
+	left: 44px;
 	border-right: 1px solid black;
 }
 

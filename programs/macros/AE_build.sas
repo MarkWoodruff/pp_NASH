@@ -43,16 +43,16 @@ data pp_final_ae(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat aeen
 	if aeongo^='' and aeentmun^='' then put "ER" "ROR: update AE_build.sas for stop time both unknown and ongoing.";
 
 	length aeout_aesev $100;
-	aeout_aesev=catx('/frcbrk',aeout,aesev);
+	aeout_aesev=catx('/frcbrk',aeout_dec,aesev_dec);
 
 	length aerel_aeser $100;
-	aerel_aeser=catx('/frcbrk',aerel,aeser);
+	aerel_aeser=catx('/frcbrk',aerel_dec,aeser_dec);
 
 	length coding $5000;
 	coding=catx('/frcbrk',aeterm,coalescec(soc_term,'UNCODED'),coalescec(pt_term,'UNCODED'));
 
 	length aeacn_ $100;
-	aeacn_=catx('/frcbrk',aeacn,catx(': ',aeacnsub,aeacnsot));
+	aeacn_=catx('/frcbrk',aeacn_dec,catx(': ',aeacnsub_dec,aeacnsot_dec));
 
 	length hosp_dates $100;
 	if aeadmiss>.z and aedischa>.z then hosp_dates=catx('/frcbrk',put(aeadmiss,yymmdd10.),put(aedischa,yymmdd10.));

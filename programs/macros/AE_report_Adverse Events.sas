@@ -36,17 +36,17 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column aespid aenone_aespid coding start stop aesi_aeisr aeout_aesev aerel_aeser aeacn_
-				      sae_hosp aeslife aesdisab aescong aesmie aesdth_;
+			column aespid ("AE1FX" aenone_aespid) ("AE2FX" coding) start stop aesi_aeisr aeout_aesev aeacn_ aerel_aeser
+				      ("SAE, check all that applySPNHDRFRCNDRLNCNTR" sae_hosp aeslife aesdisab aescong aesmie) aesdth_;
 			define aespid        /order order=internal noprint;
-			define aenone_aespid /display "AE#";
-			define coding        /display "Adverse Event/|System Organ Class/|Preferred Term" style=[htmlclass='max-width-4-0'];
+			define aenone_aespid /display "AE#" style=[htmlclass='fixed aefixed1'];
+			define coding        /display "Adverse Event/|SOC/PT" style=[htmlclass='max-width-4-0 fixed aefixed2'];
 			define start         /display "Start Date/|Start Time" style=[htmlclass='min-width-1-0'];
 			define stop          /display "Stop Date/|Stop Time" style=[htmlclass='min-width-1-0'];
 			define aesi_aeisr    /display "AESI?|ISR?";
 			define aeout_aesev   /display "Outcome/|Severity";
-			define aerel_aeser   /display "Rel. to Drug/|Serious?";
 			define aeacn_        /display "Action w/ Drug/|Action w/ Subject";
+			define aerel_aeser   /display "Rel. to Drug/|Serious?";
 			define sae_hosp      /display "Req. or Prol.|Hosp., Dates";
 			define aeslife       /display "Life|Threat.";
 			define aesdisab      /display "Disab. or|Incap.";
@@ -59,7 +59,7 @@ run;
 			endcomp;
 		%end;
 
-		compute before _page_ / style=[just=l htmlclass="domain-title"];
+		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];
 			line "Adverse Events";
 		endcomp;
 	run;
