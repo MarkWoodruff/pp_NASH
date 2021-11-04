@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-11-04 Mark Woodruff add AE_FLAG.
 ******************************************************************************************;
 
 data domain_data;
@@ -36,10 +37,11 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column aespid ("AE1FX" aenone_aespid) ("AE2FX" coding) start stop aesi_aeisr aeout_aesev aeacn_ aerel_aeser
+			column aespid ("AE1FX" aenone_aespid) ae_flag ("AE2FX" coding) start stop aesi_aeisr aeout_aesev aeacn_ aerel_aeser
 				      ("SAE, check all that applySPNHDRFRCNDRLNCNTR" sae_hosp aeslife aesdisab aescong aesmie) aesdth_;
 			define aespid        /order order=internal noprint;
 			define aenone_aespid /display "AE#" style=[htmlclass='fixed aefixed1'];
+			define ae_flag       /display noprint;
 			define coding        /display "Adverse Event/|SOC/PT" style=[htmlclass='max-width-4-0 fixed aefixed2'];
 			define start         /display "Start Date/|Start Time" style=[htmlclass='min-width-1-0'];
 			define stop          /display "Stop Date/|Stop Time" style=[htmlclass='min-width-1-0'];
@@ -53,11 +55,13 @@ run;
 			define aescong       /display "CA or|Birth Def.";
 			define aesmie        /display "Other|MIE";
 			define aesdth_       /display "Death/|Death Date";
-
-			compute iestdat_c;
-				if iestdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
-			endcomp;
 		%end;
+
+		footnote "ae-footnote";
+
+		compute coding;
+			if ae_flag=1 then call define(_col_,"style/merge","style=[background=yellow");
+		endcomp;
 
 		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];
 			line "Adverse Events";

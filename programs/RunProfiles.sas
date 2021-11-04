@@ -32,7 +32,7 @@ ods listing close;
 
 ******************************************************;
 ** BUILD EACH REPORTABLE DOMAIN ACROSS ALL PATIENTS **;
-******************************************************;
+******************************************************;/*
 %include "&macros.\INFCON_build.sas"   / nosource2;
 %include "&macros.\RECON_build.sas"    / nosource2;
 %include "&macros.\ELIG_build.sas"     / nosource2;
@@ -52,8 +52,8 @@ ods listing close;
 %include "&macros.\LB_build.sas"       / nosource2;
 %include "&macros.\VCTE_build.sas"     / nosource2;
 %include "&macros.\IP_build.sas"       / nosource2;
-%include "&macros.\ULTRA_build.sas"    / nosource2;
-%include "&macros.\MRI_build.sas"      / nosource2;
+%include "&macros.\ULTRA_build.sas"    / nosource2;*/
+%include "&macros.\MRI_build.sas"      / nosource2;/*
 %include "&macros.\FPG_build.sas"      / nosource2;
 %include "&macros.\DA_build.sas"       / nosource2;
 %include "&macros.\EX_build.sas"       / nosource2;
@@ -64,7 +64,7 @@ ods listing close;
 %include "&macros.\QSM_build.sas"      / nosource2;
 %include "&macros.\QSS_build.sas"      / nosource2;
 %include "&macros.\PD_build.sas"       / nosource2;
-
+*/
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
 ****************************************************************;
@@ -801,11 +801,16 @@ options mprint mlogic symbolgen;
 				** FOOTNOTES **;
 				***************;
 				** dates that do not match SV **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">date-footnote</span> </p>',
-					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span></p>');
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">mri-footnote</span> </p>',
+					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
+						<span class="footnote-num">SUPER1 From BioTel</span><br>
+					 	<span class="footnote-num">SUPER2 Averages are independently calculated in this column and the BioTel average is flagged in <span class="red-footnote">red</span> if not matching.</span>
+					 </p>');
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">mridate-footnote</span> </p>',
 					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
-						<span class="footnote">Note: External MRI data from BioTel Research will be added once it is received.</span></p>');
+						<span class="footnote-num">SUPER1 From BioTel</span><br>
+					 	<span class="footnote-num">SUPER2 Averages are independently calculated in this column and the BioTel average is flagged in <span class="red-footnote">red</span> if not matching.</span>
+					 </p>');
 
 				** VS - Vital Signs **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">vs-footnote</span> </p>'
@@ -849,6 +854,10 @@ options mprint mlogic symbolgen;
 					,'<p><span class="footnote">Note: <span class="red-footnote">red</span> flags values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span><br>
 						 <span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span>
 					  </p>');
+
+				** AE - Adverse Events footnote **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">ae-footnote</span> </p>'
+					,'<p><span class="footnote">Note: Nausea, Vomiting, Diarrhea of Grade 3 or higher are flagged in <span class="yellow-footnote">yellow</span>.</span></p>');
 					  
 				** LBC - Central Labs (Chemistry) **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxchem-footnote</span> </p>'
@@ -1082,8 +1091,8 @@ options mprint mlogic symbolgen;
 	%patients;
 	ods listing;
 %mend patients_domains;
-%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=101,ept=101,spn=1,epn=&num_domains.);
+*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+%patients_domains(spt=99,ept=99,spn=25,epn=25);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1140,7 +1149,7 @@ run;
 
 
 
-
+/*
 
 
 *****************************;
@@ -1512,3 +1521,4 @@ data _null_;
 run;
 
 %put Program started at &starttm. and ended at &endtm.;
+*/

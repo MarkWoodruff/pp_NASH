@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-11-04 Mark Woodruff add AE_FLAG.
 ******************************************************************************************;
 
 data _null_;
@@ -20,7 +21,7 @@ data _null_;
 run;
 
 data pp_final_ae(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat aeendat start stop aeout_aesev aerel_aeser aeacn_
-				      sae_hosp aeslife aesdisab aescong aesmie aesdth_ coding);
+				      sae_hosp aeslife aesdisab aescong aesmie aesdth_ coding ae_flag);
 	set crf.ae(encoding=any where=(pagename='Adverse Events' and deleted='f'));
 
 	length aenone_aespid $20;
@@ -52,7 +53,7 @@ data pp_final_ae(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat aeen
 	coding=catx('/frcbrk',aeterm,coalescec(soc_term,'UNCODED'),coalescec(pt_term,'UNCODED'));
 
 	length aeacn_ $100;
-	aeacn_=catx('/frcbrk',aeacn_dec,catx(': ',aeacnsub_dec,aeacnsot_dec));
+	aeacn_=catx('/frcbrk',aeacn_dec,catx(': ',aeacnsub_dec,aeacnsot));
 
 	length hosp_dates $100;
 	if aeadmiss>.z and aedischa>.z then hosp_dates=catx('/frcbrk',put(aeadmiss,yymmdd10.),put(aedischa,yymmdd10.));
@@ -66,6 +67,11 @@ data pp_final_ae(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat aeen
 	length aesdth_ $100;
 	if aedthdat>.z then aesdth_=catx('/frcbrk',aesdth,strip(put(aedthdat,yymmdd10.)));
 		else aesdth_=strip(aesdth);
+
+	if (index(upcase(aeterm),'NAUS')>0 or index(upcase(aeterm),'DIARR')>0 or index(upcase(aeterm),'VOMIT')>0 or
+	   index(upcase(soc_term),'NAUS')>0 or index(upcase(soc_term),'DIARR')>0 or index(upcase(soc_term),'VOMIT')>0 or
+	   index(upcase(pt_term),'NAUS')>0 or index(upcase(pt_term),'DIARR')>0 or index(upcase(pt_term),'VOMIT')>0) and
+	   aesev_dec='Grade 3' then ae_flag=1;
 
 	proc sort;
 		by subnum aespid aestdat aeendat aeterm;
