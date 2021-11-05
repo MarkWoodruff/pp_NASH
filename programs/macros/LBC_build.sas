@@ -10,6 +10,7 @@
 * 2021-10-25 Mark Woodruff add LABFLAG.
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-01 Mark Woodruff use lbornrhin rather than lbornrhi in computations.
+* 2021-11-05 Mark Woodruff added Cortisol flagging
 ******************************************************************************************;
 
 data _null_;
@@ -19,13 +20,16 @@ data _null_;
 
 	** ensure DELETED var is being handled correctly **;
 	if deleted^='f' then put "ER" "ROR: update LBC_build.sas to handle LBX.DELETED var appropriately.";
-run;
+run;	
 
 data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_c lbfast_dec lbcat lbtestcd lbtest lborres_lborresu nr lbstresc_lbstresu nrst
 					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag_lbnrind labflag_tanja lborresn lbornrhin lborresu);
 	set crf.lbx(encoding=any where=(pagename='Lab Results' and deleted='f') rename=(lbstresn=lbstresn_theirs));
 
 	if lbdat=. then put "ER" "ROR: update LBC_build.sas to handle Unscheduled visits and/or missing dates correctly.";
+
+	** flag Cortisol **;
+	if lbtest in ('Midnight Cortisol','PM Cortisol') and lborres^='' then put "ER" "ROR: check LBC_build.sas for custom Cortisol flagging";
 
 	** for check_dates macro **;
 	visname=strip(visit);
@@ -93,6 +97,9 @@ data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_
 		end;
 		else if lbtest='Prothrombin Intl. Normalized Ratio' then do;
 			if lborresn>1.5 then labflag_tanja=1;
+		end;
+		else if lbtest in ('Midnight Cortisol','PM Cortisol') and lbnrind^='' then do;
+			labflag_tanja=1;
 		end;
 
 	proc sort;

@@ -55,13 +55,13 @@ run;
 			define aescong       /display "CA or|Birth Def.";
 			define aesmie        /display "Other|MIE";
 			define aesdth_       /display "Death/|Death Date";
+
+			footnote "ae-footnote";
+
+			compute coding;
+				if ae_flag=1 then call define(_col_,"style/merge","style=[background=yellow");
+			endcomp;
 		%end;
-
-		footnote "ae-footnote";
-
-		compute coding;
-			if ae_flag=1 then call define(_col_,"style/merge","style=[background=yellow");
-		endcomp;
 
 		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];
 			line "Adverse Events";

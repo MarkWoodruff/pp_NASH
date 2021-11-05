@@ -66,7 +66,7 @@ run;
 			define measc_avg      /display "Internally|CalculatedSUPER2" style=[htmlclass='overline created'];
 
 			compute measc_1;
-				if meas_flag=1 then call define(_col_,"style","style=[background=red]");
+				*if meas_flag=1 then call define(_col_,"style","style=[background=red]");
 			endcomp;
 
 			%if &mostdat_cflag_foot.=1 %then %do;

@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-01 Mark Woodruff use lbco for button.
+* 2021-11-05 Mark Woodruff added Cortisol flagging
 ******************************************************************************************;
 
 data domain_data;
@@ -18,6 +19,53 @@ data domain_data;
 run;
 
 %nobs(domain_data);
+
+** get all lab categories for each patient for dropdown **;
+data lbcat;
+	set pp_final_lbc(where=(subnum="&ptn." and lbcat not in ('Hematology','Chemistry') and lbtest^=''));
+
+	proc sort;
+		by subnum lbcat;
+run;
+
+data lbcat(keep=subnum lbcat);
+	set lbcat;
+	by subnum lbcat;
+	if first.lbcat;
+run;
+
+data _null_ test;
+	set lbcat end=eof;
+
+	length valuetag $50;
+	valuetag=lowcase(strip(compress(compress(lbcat,''),')')));
+	valuetag=tranwrd(valuetag,'%','-');
+	valuetag=tranwrd(valuetag,'(','-');
+	valuetag=tranwrd(valuetag,',','-');
+	valuetag=tranwrd(valuetag,'/','-');
+	valuetag=tranwrd(valuetag,'\','-');
+	valuetag=tranwrd(valuetag,'.','-');
+	valuetag=tranwrd(valuetag,'#','-');
+
+	length text $2000;
+	if _n_=1 then text="<select id='catnamddo'><option value='catnamddo-all' selected>-- Show All --</option><option value='"||strip(valuetag)||"'>"||strip(lbcat)||"</option>";
+		else text="<option value='"||strip(valuetag)||"'>"||strip(lbcat)||"</option>";
+	if eof then text=strip(text)||'</select>';
+
+	length catnamddo $5000;
+	retain catnamddo;
+	if valuetag^='' then catnamddo=cats(catnamddo,text);
+	if length(catnamddo)>4800 then put "ER" "ROR: update LBCO_report_Central Lab - Others.sas for length of catnamddo";
+
+	if valuetag not in ('c-peptide','crp','ctx','coagulation','cortisol','covid-19','egfr','estradiol','fsh','glucagon','hba1c','insulin','lipidpanel',
+						'meldscore','osteocalcin','pinp','pthintact','patientcomments','serology','serumpregnancy','thyroidpanel','vitamind')
+		then put "ER" "ROR: update LBCO_report_Central Lab - Others.sas and catnamddo.js for LBCAT values for dropdown: " valuetag=;
+	%global catnamddo;
+	%let catnamddo= ;
+	call symput('catnamddo',strip(catnamddo));
+run;
+
+%put catnamddo=&catnamddo.;
 
 ** get all lab tests for each patient for dropdown **;
 data tstnam;
@@ -93,7 +141,7 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column lbdat visit lbdat_cflag lbdat_c lbtest labflag_tanja
+			column lbdat visit lbdat_cflag lbdat_c lbcat lbtest labflag_tanja
 				("Original UnitsSPNHDRFRCCNTR" lborres_lborresu nr) space 
 				("Standard UnitsSPNHDRFRCCNTR" lbstresc_lbstresu nrst) labflag_lbnrind lbnrind 
 				 lbrefid yob_sex lbfast_dec lbstat_lbreasnd lbspec lbcoval;* lbcat;
@@ -101,7 +149,8 @@ run;
 			define visit             /display "Visit|Name";
 			define lbdat_cflag       /display noprint;
 			define lbdat_c           /display "Lab Date" style=[htmlclass='min-width-1-0'];
-			define lbtest            /display "Lab Test-TSTNAMDDO" style=[htmlclass='picklbnm min-width-1-75'];
+			define lbcat             /display "Lab Category-CATNAMDDO" style=[htmlclass='picklbct min-width-1-75'];
+			define lbtest            /display "Lab Test" style=[htmlclass='picklbnm min-width-1-75'];
 			define labflag_tanja     /display noprint;
 			define lborres_lborresu  /display "Result-UnitsSUPER1" style=[htmlclass='overline'];
 			define nr                /display "Normal|Range" style=[htmlclass='overline'];
@@ -144,6 +193,7 @@ run;
 			%mend makered;
 			%makered(var=visit);
 			%makered(var=lbdat_c);
+			%makered(var=lbcat);
 			%makered(var=lbtest);
 			%makered(var=lborres_lborresu);
 			%makered(var=nr);

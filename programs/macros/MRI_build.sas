@@ -8,6 +8,8 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
+* 2021-11-04 Mark Woodruff add external data
+* 2021-11-05 Mark Woodruff use mri_nobs instead of nobs.
 ******************************************************************************************;
 
 data _null_;
@@ -113,12 +115,25 @@ data mri_external_x(keep=subnum visitid visname mosttim_c meas_: measc_:);
 
 	if nmiss(meas_2-meas_10)>0 then put "ER" "ROR: update MRI_build.sas for average calculation.";
 	if nmiss(meas_2-meas_10)=0 then meas_avg=mean(of meas_2-meas_10);
+	if nmiss(meas_1-meas_9)=0 then meas_avg2=mean(of meas_1-meas_9);
+
+	length measc_avg $20;
 	if meas_avg>.z then measc_avg=strip(put(round(meas_avg,.01),8.2));
 
 	if meas_avg^=meas_1 then meas_flag=1;
+
+	measc_avg='in progressSUPER2';
 run;
 
-%nobs(mri_crf);
+%macro mri_nobs(dsn);
+	%symdel nobs / nowarn;
+	%global nobs nobs_&dsn.;
+	%let dsid=%sysfunc(open(&dsn.));
+	%let nobs=%sysfunc(attrn(&dsid.,nlobs));
+	%let nobs_&dsn.=%sysfunc(attrn(&dsid.,nlobs));
+	%let rc=%sysfunc(close(&dsid.));
+%mend mri_nobs;
+%mri_nobs(mri_crf);
 
 data pp_final_mri;
 	merge mri_crf(in=inm)
@@ -127,7 +142,7 @@ data pp_final_mri;
 	if inm;
 run;
 
-%nobs(pp_final_mri);
+%mri_nobs(pp_final_mri);
 
 data _null_;
 	%if &nobs_mri_crf.^=&nobs_pp_final_mri. %then %do;

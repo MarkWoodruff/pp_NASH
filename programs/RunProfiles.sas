@@ -32,7 +32,7 @@ ods listing close;
 
 ******************************************************;
 ** BUILD EACH REPORTABLE DOMAIN ACROSS ALL PATIENTS **;
-******************************************************;/*
+******************************************************;
 %include "&macros.\INFCON_build.sas"   / nosource2;
 %include "&macros.\RECON_build.sas"    / nosource2;
 %include "&macros.\ELIG_build.sas"     / nosource2;
@@ -52,8 +52,8 @@ ods listing close;
 %include "&macros.\LB_build.sas"       / nosource2;
 %include "&macros.\VCTE_build.sas"     / nosource2;
 %include "&macros.\IP_build.sas"       / nosource2;
-%include "&macros.\ULTRA_build.sas"    / nosource2;*/
-%include "&macros.\MRI_build.sas"      / nosource2;/*
+%include "&macros.\ULTRA_build.sas"    / nosource2;
+%include "&macros.\MRI_build.sas"      / nosource2;
 %include "&macros.\FPG_build.sas"      / nosource2;
 %include "&macros.\DA_build.sas"       / nosource2;
 %include "&macros.\EX_build.sas"       / nosource2;
@@ -64,7 +64,7 @@ ods listing close;
 %include "&macros.\QSM_build.sas"      / nosource2;
 %include "&macros.\QSS_build.sas"      / nosource2;
 %include "&macros.\PD_build.sas"       / nosource2;
-*/
+
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
 ****************************************************************;
@@ -699,6 +699,7 @@ options mprint mlogic symbolgen;
 					 <script src="..\programs\assets\js\tstnamddc.js"></script>
 					 <script src="..\programs\assets\js\tstnamddh.js"></script>
 					 <script src="..\programs\assets\js\tstnamddo.js"></script>
+					 <script src="..\programs\assets\js\catnamddo.js"></script>
 					 <script src="..\programs\assets\js\lbc_dt.js"></script>
 					 </body>');  
 
@@ -804,12 +805,12 @@ options mprint mlogic symbolgen;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">mri-footnote</span> </p>',
 					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
 						<span class="footnote-num">SUPER1 From BioTel</span><br>
-					 	<span class="footnote-num">SUPER2 Averages are independently calculated in this column and the BioTel average is flagged in <span class="red-footnote">red</span> if not matching.</span>
+					 	<span class="footnote-num">SUPER2 Averages are independently calculated in this column and the BioTel average is flagged in <span class="red-footnote">red</span> if not matching.  Internally calculated average and CFB will be presented soon.</span>
 					 </p>');
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">mridate-footnote</span> </p>',
 					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
 						<span class="footnote-num">SUPER1 From BioTel</span><br>
-					 	<span class="footnote-num">SUPER2 Averages are independently calculated in this column and the BioTel average is flagged in <span class="red-footnote">red</span> if not matching.</span>
+					 	<span class="footnote-num">SUPER2 Averages are independently calculated in this column and the BioTel average is flagged in <span class="red-footnote">red</span> if not matching.  Internally calculated average and CFB will be presented soon.</span>
 					 </p>');
 
 				** VS - Vital Signs **;
@@ -845,15 +846,6 @@ options mprint mlogic symbolgen;
 							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (>500 msec)</span><br>
 					  	 <span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span>
 					  </p>');
-					  
-				** LBC - Central Labs (non-Chemistry) **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbx-footnote</span> </p>'
-					,'<p><span class="footnote">Note: <span class="red-footnote">red</span> flags values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span><br>
-					 </p>');
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxdate-footnote</span> </p>'
-					,'<p><span class="footnote">Note: <span class="red-footnote">red</span> flags values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span><br>
-						 <span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span>
-					  </p>');
 
 				** AE - Adverse Events footnote **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">ae-footnote</span> </p>'
@@ -887,7 +879,7 @@ options mprint mlogic symbolgen;
 								<span class="tab2">>2.5 x ULN - 5 x ULN in <span class="yellow-footnote">yellow</span></span><br>
 			    				<span class="tab2">>5 x ULN - 20 x ULN in <span class="orange-footnote">orange</span></span><br>
 			    				<span class="tab2">>20 x ULN in <span class="red-footnote">red</span></span><br>
-					  	 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
+					  	 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.</span>
 					 </p>'); 
 
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxchemdate-footnote</span> </p>'
@@ -918,7 +910,7 @@ options mprint mlogic symbolgen;
 								<span class="tab2">>2.5 x ULN - 5 x ULN in <span class="yellow-footnote">yellow</span></span><br>
 			    				<span class="tab2">>5 x ULN - 20 x ULN in <span class="orange-footnote">orange</span></span><br>
 			    				<span class="tab2">>20 x ULN in <span class="red-footnote">red</span></span><br>
-					  	 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
+					  	 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.</span>
 					 </p>');
 					  
 				** LBC - Central Labs (Hematology) **;
@@ -926,29 +918,33 @@ options mprint mlogic symbolgen;
 					,'<p><span class="footnote-num">SUPER1 Custom lab test flagging:<br>
 						 <span class="tab1">&#8226;Platelets</span><br>
 								<span class="tab2"><150 10^9/L in <span class="yellow-footnote">yellow</span></span></span><br>
-						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
+						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.</span>
 					 </p>');
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxhemadate-footnote</span> </p>'
 					,'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
 					     <span class="footnote-num">SUPER1 Custom lab test flagging:<br>
 						 <span class="tab1">&#8226;Platelets</span><br>
 								<span class="tab2"><150 10^9/L in <span class="yellow-footnote">yellow</span></span></span><br>
-						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
+						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.</span>
 					 </p>');
 					  
 				** LBC - Central Labs (Other Categories) **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxoth-footnote</span> </p>'
 					,'<p><span class="footnote-num">SUPER1 Custom lab test flagging:<br>
 						 <span class="tab1">&#8226;Prothrombin Intl. Normalized Ratio</span><br>
-								<span class="tab2">>1.5 in <span class="yellow-footnote">yellow</span></span></span><br>
-						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
+								<span class="tab2">>1.5 in <span class="yellow-footnote">yellow</span></span><br>
+						 <span class="tab1">&#8226;Midnight Cortisol, PM Cortisol</span><br>
+								<span class="tab2">Outside normal range in <span class="yellow-footnote">yellow</span></span></span><br>
+						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.</span>
 					 </p>');
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbxothdate-footnote</span> </p>'
 					,'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
 					     <span class="footnote-num">SUPER1 Custom lab test flagging:<br>
 						 <span class="tab1">&#8226;Prothrombin Intl. Normalized Ratio</span><br>
-								<span class="tab2">>1.5 in <span class="yellow-footnote">yellow</span></span></span><br>
-						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.  Custom lab test flagging is in progress and will be visible soon.</span>
+								<span class="tab2">>1.5 in <span class="yellow-footnote">yellow</span></span><br>
+						 <span class="tab1">&#8226;Midnight Cortisol, PM Cortisol</span><br>
+								<span class="tab2">Outside normal range in <span class="yellow-footnote">yellow</span></span></span><br>
+						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.</span>
 					 </p>');
 
 /*
@@ -1039,6 +1035,20 @@ options mprint mlogic symbolgen;
 					test=tranwrd(test,'#','-');
 					if index(test,'160')=0 and test not in ('','/td') then _infile_=tranwrd(_infile_,'class="','class=" '||strip(test)||" ");
 				end;
+				
+				if index(_infile_,'Category-CATNAMDDO')>0 then _infile_=tranwrd(_infile_,'Category-CATNAMDDO',"Category<br>&catnamddo.");
+				if index(_infile_,'<td class="')>0 and index(_infile_,'picklbct')>0 then do;
+					length test $100;
+					test=lowcase(scan(compress(compress(tranwrd(scan(_infile_,2,'>'),'&#160;',''),''),')'),1,'<'));
+					test=tranwrd(test,'(','-');
+					test=tranwrd(test,'%','-');
+					test=tranwrd(test,',','-');
+					test=tranwrd(test,'/','-');
+					test=tranwrd(test,'\','-');
+					test=tranwrd(test,'.','-');
+					test=tranwrd(test,'#','-');
+					if index(test,'160')=0 and test not in ('','/td') then _infile_=tranwrd(_infile_,'class="','class=" '||strip(test)||" ");
+				end;
 
 				** insert MORE IN PROGRESS domain **;
 				_infile_=tranwrd(_infile_,">MORE IN PROGRESS","id='red-domain'>MORE IN PROGRESS");
@@ -1091,8 +1101,8 @@ options mprint mlogic symbolgen;
 	%patients;
 	ods listing;
 %mend patients_domains;
-*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-%patients_domains(spt=99,ept=99,spn=25,epn=25);
+%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+*%patients_domains(spt=98,ept=98,spn=22,epn=22);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1149,7 +1159,7 @@ run;
 
 
 
-/*
+
 
 
 *****************************;
@@ -1521,4 +1531,3 @@ data _null_;
 run;
 
 %put Program started at &starttm. and ended at &endtm.;
-*/
