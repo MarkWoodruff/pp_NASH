@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
+* 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 ******************************************************************************************;
 
 data domain_data;
@@ -16,7 +17,12 @@ data domain_data;
 	space=' ';
 run;
 
+%check_dates(dsn=domain_data,date=lbdat_c,mrgvars=visname);
 %nobs(domain_data);
+
+proc sort data=domain_data;
+	by subnum lbdat lbcat lbtest;
+run;
 
 ** get all lab tests for each patient for dropdown **;
 data tstnam;

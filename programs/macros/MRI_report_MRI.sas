@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-04 Mark Woodruff add external data.
+* 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 ******************************************************************************************;
 
 data domain_data;
@@ -17,6 +18,7 @@ data domain_data;
 	space=' ';
 run;
 
+%check_dates(dsn=domain_data,date=mostdat_c);
 %nobs(domain_data);
 
 %macro report_domain;
@@ -64,6 +66,10 @@ run;
 			define meas_flag     /display noprint;
 			define measc_1        /display "BiotelSUPER1" style=[htmlclass='overline'];
 			define measc_avg      /display "Internally|CalculatedSUPER2" style=[htmlclass='overline created'];
+
+			compute mostdat_c;
+				if mostdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
+			endcomp;
 
 			compute measc_1;
 				*if meas_flag=1 then call define(_col_,"style","style=[background=red]");

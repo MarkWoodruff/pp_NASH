@@ -10,6 +10,7 @@
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-04 Mark Woodruff add external data
 * 2021-11-05 Mark Woodruff use mri_nobs instead of nobs.
+* 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 ******************************************************************************************;
 
 data _null_;
@@ -150,4 +151,3 @@ data _null_;
 	%end;
 run;
 
-%check_dates(dsn=pp_final_mri,date=mostdat_c);

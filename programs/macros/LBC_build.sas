@@ -11,6 +11,7 @@
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-01 Mark Woodruff use lbornrhin rather than lbornrhi in computations.
 * 2021-11-05 Mark Woodruff added Cortisol flagging
+* 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 ******************************************************************************************;
 
 data _null_;
@@ -183,8 +184,6 @@ data pp_final_lbc;
 		end;
 	end;
 run;
-
-%check_dates(dsn=pp_final_lbc,date=lbdat_c,mrgvars=visname);
 
 proc sort data=pp_final_lbc;
 	by subnum lbdat lbcat lbtest;

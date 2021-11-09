@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-21 Mark Woodruff add EGQTCF.
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
+* 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 ******************************************************************************************;
 
 data _null_;
@@ -59,4 +60,3 @@ data pp_final_ecg(keep=subnum visitid visname egnd_reas egdat egdat_c egtims_c e
 		by subnum egdat;
 run;
 
-%check_dates(dsn=pp_final_ecg,date=egdat_c);

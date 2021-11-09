@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching VS.
+* 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 ******************************************************************************************;
 
 data _null_;
@@ -39,4 +40,3 @@ data pp_final_body(keep=subnum visitid visname vsperf_n vsreasnd vsdat vsdat_c w
 		by subnum vsdat;
 run;
 
-%check_dates(dsn=pp_final_body,date=vsdat_c);

@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 ******************************************************************************************;
 
 data _null_;
@@ -37,8 +38,6 @@ data pp_final_lb(keep=subnum visitid visname lbhem_dec lbchem_dec lbser_dec lbco
 	proc sort;
 		by subnum lbdat lbtim;
 run;
-
-%check_dates(dsn=pp_final_lb,date=lbdat_c);
 
 proc sort data=pp_final_lb;
 	by subnum lbdat lbtim;

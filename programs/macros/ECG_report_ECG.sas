@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-21 Mark Woodruff add EGQTCF.
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
+* 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 ******************************************************************************************;
 
 data domain_data;
@@ -17,6 +18,7 @@ data domain_data;
 	space=' ';
 run;
 
+%check_dates(dsn=domain_data,date=egdat_c);
 %nobs(domain_data);
 
 %macro report_domain;

@@ -36,12 +36,11 @@ run;
 		style(column)=[just=l asis=on] 
 		style(lines) =[just=l asis=on];
 
-		column subnum fadat visitid visname fadat_cflag fadat_c faperf_reas faorres_g_dec faorres_s_dec faorres_any faorres_dec;
+		column subnum fadat visitid visname fadat_c faperf_reas faorres_g_dec faorres_s_dec faorres_any faorres_dec;
 		define subnum        /order order=internal "Patient" style=[htmlclass='patient-link ultra min-width-0-75'];
 		define fadat         /order order=internal noprint;
 		define visitid       /order order=internal noprint;
 		define visname       /display "Visit";
-		define fadat_cflag   /display noprint;
 		define fadat_c       /display "Date" style=[htmlclass='min-width-1-0'];
 		define faperf_reas   /display "Performed?|If No, Reason" style=[htmlclass='max-width-5-0'];
 		define faorres_g_dec /display "Does Subject|Have Gallstones?" style=[htmlclass='boldyes'];

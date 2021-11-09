@@ -802,9 +802,13 @@ options mprint mlogic symbolgen;
 				** FOOTNOTES **;
 				***************;
 				** dates that do not match SV **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">date-footnote</span> </p>',
+					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span>
+					</p>');
+
+				** MRI **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">mri-footnote</span> </p>',
-					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
-						<span class="footnote-num">SUPER1 From BioTel</span><br>
+					'<p><span class="footnote-num">SUPER1 From BioTel</span><br>
 					 	<span class="footnote-num">SUPER2 Averages are independently calculated in this column and the BioTel average is flagged in <span class="red-footnote">red</span> if not matching.  Internally calculated average and CFB will be presented soon.</span>
 					 </p>');
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">mridate-footnote</span> </p>',
@@ -1102,7 +1106,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=98,ept=98,spn=22,epn=22);
+*%patients_domains(spt=100,ept=100,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;

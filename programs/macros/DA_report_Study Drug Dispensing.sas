@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
+* 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 ******************************************************************************************;
 
 data domain_data;
@@ -15,6 +16,7 @@ data domain_data;
 	where subnum="&ptn.";
 run;
 
+%check_dates(dsn=domain_data,date=dadisdat_c);
 %nobs(domain_data);
 
 %macro report_domain;

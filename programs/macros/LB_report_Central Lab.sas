@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-10-27 Mark Woodruff put date/time for main sample under header.
+* 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 ******************************************************************************************;
 
 data domain_data;
@@ -16,7 +17,13 @@ data domain_data;
 	space=' ';
 run;
 
+%check_dates(dsn=domain_data,date=lbdat_c);
 %nobs(domain_data);
+
+proc sort data=domain_data;
+	by subnum lbdat lbtim;
+run;
+
 
 %macro report_domain;
 	%if &nobs.=0 %then %do;
