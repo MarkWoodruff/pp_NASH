@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching VS.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2021-11-10 Mark Woodruff use standardized temperature variable to handle both C and F.
 ******************************************************************************************;
 
 data domain_data;
@@ -40,7 +41,7 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column vsdat visname vsnd_reas vsdat_cflag vsdat_c vspos vstimp_c vstim1_c hrn hr rr tempn ("Temp.SUPER2SPNHDRFRCCNTR" temp vstempl_dec) space
+			column vsdat visname vsnd_reas vsdat_cflag vsdat_c vspos vstimp_c vstim1_c hrn hr rr tempn tempn_std ("Temp.SUPER2SPNHDRFRCCNTR" temp vstempl_dec) space
 			("Blood Pressure (mmHg)SUPER3SPNHDRFRCNDRLNCNTR" 
 				bp1_sysn bp1_dian ("Value #1SPNHDRFRCCNTR" bp1_sys bp1_dia) space
 				bp2_sysn bp2_dian ("Value #2SPNHDRFRCCNTR" vstim2_c bp2_sys bp2_dia) space 
@@ -58,6 +59,7 @@ run;
 			define hr          /display "Heart|RateSUPER1";
 			define rr          /display "Resp.|Rate";
 			define tempn       /display noprint;
+			define tempn_std   /display noprint;
 			define temp        /display "Value" style=[htmlclass='overline'];
 			define vstempl_dec /display "Loc." style=[htmlclass='overline'];
 			define space       /display " ";
@@ -84,7 +86,7 @@ run;
 				if .z<hrn<60 or hrn>100 then call define(_col_,"style/merge","style=[background=cxff7676");
 			endcomp;
 			compute temp;
-				if .z<tempn<=35 or tempn>=38 then call define(_col_,"style/merge","style=[background=cxff7676");
+				if .z<tempn_std<=35 or tempn_std>=38 then call define(_col_,"style/merge","style=[background=cxff7676");
 			endcomp;
 			compute bp1_sys;
 				if 120<=bp1_sysn<140 then call define(_col_,"style/merge","style=[background=yellow");

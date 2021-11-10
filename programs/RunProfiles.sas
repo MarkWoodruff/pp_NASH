@@ -44,6 +44,7 @@ ods listing close;
 %include "&macros.\BODY_build.sas"     / nosource2;
 %include "&macros.\PREG_build.sas"     / nosource2;
 %include "&macros.\VS_build.sas"       / nosource2;
+%include "&macros.\VSPLOT_build.sas"   / nosource2;
 %include "&macros.\ECG_build.sas"      / nosource2;
 %include "&macros.\PE_build.sas"       / nosource2;
 %include "&macros.\AE_build.sas"       / nosource2;
@@ -64,7 +65,7 @@ ods listing close;
 %include "&macros.\QSM_build.sas"      / nosource2;
 %include "&macros.\QSS_build.sas"      / nosource2;
 %include "&macros.\PD_build.sas"       / nosource2;
-
+*/
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
 ****************************************************************;
@@ -348,26 +349,27 @@ proc format;
 	"PREG_report_Urine Pregnancy Test.sas"    =13
 	"PE_report_Physical Exam.sas"             =14
 	"VS_report_Vital Signs.sas"               =15
-	"ECG_report_ECG.sas"                      =16
-	"AE_report_Adverse Events.sas"            =17
-	"CM_report_Concomitant Medications.sas"   =18
-	"LB_report_Central Lab.sas"               =19
-	"LBCC_report_Central Lab - Chemistry.sas" =20
-	"LBCH_report_Central Lab - Hematology.sas"=21
-	"LBCO_report_Central Lab - Others.sas"    =22
+	"VSPLOT_report_Vital Signs Plot.sas"      =16
+	"ECG_report_ECG.sas"                      =17
+	"AE_report_Adverse Events.sas"            =18
+	"CM_report_Concomitant Medications.sas"   =19
+	"LB_report_Central Lab.sas"               =20
+	"LBCC_report_Central Lab - Chemistry.sas" =21
+	"LBCH_report_Central Lab - Hematology.sas"=22
+	"LBCO_report_Central Lab - Others.sas"    =23
 
-	"VCTE_report_Fibroscan (VCTE).sas"        =23
-	"ULTRA_report_Ultrasound.sas"             =24
-	"MRI_report_MRI.sas"                      =25
-	"FPG_report_Fasting Plasma Glucose.sas"   =26
-	"ADA_report_ADA Sample.sas"               =27
-	"BIO_report_Exploratory Biomarkers.sas"   =28
+	"VCTE_report_Fibroscan (VCTE).sas"        =24
+	"ULTRA_report_Ultrasound.sas"             =25
+	"MRI_report_MRI.sas"                      =26
+	"FPG_report_Fasting Plasma Glucose.sas"   =27
+	"ADA_report_ADA Sample.sas"               =28
+	"BIO_report_Exploratory Biomarkers.sas"   =29
 
-	"QS_report_Monthly Questionnaire.sas"     =29
-	"QSM_report_Menstrual Cycles.sas"         =30
-	"QSS_report_Menstrual Summary.sas"        =31
-	"PD_report_Protocol Deviations.sas"       =32
-	"IP_report_MORE IN PROGRESS.sas"          =33;
+	"QS_report_Monthly Questionnaire.sas"     =30
+	"QSM_report_Menstrual Cycles.sas"         =31
+	"QSS_report_Menstrual Summary.sas"        =32
+	"PD_report_Protocol Deviations.sas"       =33
+	"IP_report_MORE IN PROGRESS.sas"          =34;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -412,7 +414,7 @@ data report_links(keep=report_link_html);
 
 	if num=1 then report_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(report_link)||"</a></li>";
 		else if eof then report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Profile: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
-		else if num in (9,12,23,29) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
+		else if num in (9,12,24,30) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 		else report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 run;
 
@@ -750,7 +752,7 @@ options mprint mlogic symbolgen;
 					_infile_=tranwrd(_infile_,%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px">')),%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px"><div class="table-container">')));
 				%mend frozen_columns;
 				%frozen_columns(idx=6, key_good=%str(>Unscheduled),key_bad=,colspan_frz=5);
-				%frozen_columns(idx=17,key_good=%str(>Adverse),key_bad=,colspan_frz=2);
+				%frozen_columns(idx=18,key_good=%str(>Adverse),key_bad=,colspan_frz=2);
 
 				** Add frozen columns to AEs with spanning column headers **;
 				if index(_infile_,'AE1FX')>0 then do;
@@ -820,7 +822,7 @@ options mprint mlogic symbolgen;
 				** VS - Vital Signs **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">vs-footnote</span> </p>'
 					,'<p><span class="footnote-num">SUPER1 For pulse, <span class="red-footnote">red</span> flags values outside the normal range of 60 - 100 beats/min.</span><br>
-						 <span class="footnote-num">SUPER2 For temperature, <span class="red-footnote">red</span> flags values outside the normal range of 35 - 38 &#176;C</span><br>
+						 <span class="footnote-num">SUPER2 For temperature, <span class="red-footnote">red</span> flags values outside the normal range of 35 - 38 &#176;C.  Values are converted from &#176;F to &#176;C before flagging.</span><br>
 						 <span class="footnote-num">SUPER3 For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 							<span class="yellow-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yellow</span> &nbsp;= Grade 1 (&#8805;120 - <140 systolic, &#8805;80 - <90 diastolic), <br>
 							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (&#8805;140 - <160 systolic, &#8805;90 - <100 diastolic), <br>
@@ -828,12 +830,23 @@ options mprint mlogic symbolgen;
 					  </p>');
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">vsdate-footnote</span> </p>'
 					,'<p><span class="footnote-num">SUPER1 For pulse, <span class="red-footnote">red</span> flags values outside the normal range of 60 - 100 beats/min.</span><br>
-						 <span class="footnote-num">SUPER2 For temperature, <span class="red-footnote">red</span> flags values outside the normal range of 35 - 38 &#176;C</span><br>
+						 <span class="footnote-num">SUPER2 For temperature, <span class="red-footnote">red</span> flags values outside the normal range of 35 - 38 &#176;C.  Values are converted from &#176;F to &#176;C before flagging.</span><br>
 						 <span class="footnote-num">SUPER3 For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 							<span class="yellow-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yellow</span> &nbsp;= Grade 1 (&#8805;120 - <140 systolic, &#8805;80 - <90 diastolic), <br>
 							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (&#8805;140 - <160 systolic, &#8805;90 - <100 diastolic), <br>
 							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (&#8805;160 systolic, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8805;100 diastolic).</span><br>
 						 <span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span>
+					  </p>');
+
+				** VSPLOT - Vital Signs Plots **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">vsplot-footnote</span> </p>'
+					,'<p><span class="footnote">Note: <span class="blue-footnote">Blue</span> bands note normal ranges.<br>
+For pulse, <span class="red-footnote">red</span> flags values outside the normal range of 60 - 100 beats/min.<br>
+For temperature, <span class="red-footnote">red</span> flags values outside the normal range of 35 - 38 &#176;C<br>
+For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
+							<span class="yellow-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yellow</span> &nbsp;= Grade 1 (&#8805;120 - <140 systolic, &#8805;80 - <90 diastolic), <br>
+							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (&#8805;140 - <160 systolic, &#8805;90 - <100 diastolic), <br>
+							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (&#8805;160 systolic, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8805;100 diastolic).</span>
 					  </p>');
 					  
 				** ECG - Electrocardiogram **;
@@ -951,6 +964,7 @@ options mprint mlogic symbolgen;
 						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.</span>
 					 </p>');
 
+
 /*
 				
 				** DM - Demographics **;
@@ -972,10 +986,6 @@ options mprint mlogic symbolgen;
 				** HTWT - Height and Weight **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">htwt-footnote</span> </p>',
 					'<p><span class="footnote-num">SUPER1 Screening/Baseline records are from the Height and Weight CRF, post-Screening/Baseline records are from the Weight CRF.</span></p>');
-
-				** VSPLOT - Vital Signs Plots **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">vsplot-footnote</span> </p>'
-					,'<p><span class="footnote">Note: For temperature, <span class="red-footnote">red</span> flags values outside the normal range of >35 - <38 &#176;C.<br>For pulse, <span class="red-footnote">red</span> flags values outside the normal range of 60 - 100 beats/min.<br>For blood pressure, colors flag CTCAE Grades of Hypertension: <span class="yellow-footnote">yellow</span> = Grade 1 (&#8805;120 - <140 systolic, &#8805;80 - <90 diastolic), <span class="orange-footnote">orange</span> = Grade 2 (&#8805;140 - <160 systolic, &#8805;90 - <100 diastolic), <span class="red-footnote">red</span> = Grade 3 (&#8805;160 systolic, &#8805;100 diastolic).</span></p>');
 
 				** ECG - Electrocardiogram **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">ecg-footnote</span> </p>'
@@ -1106,7 +1116,7 @@ options mprint mlogic symbolgen;
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=100,ept=100,spn=1,epn=&num_domains.);
+*%patients_domains(spt=116,ept=116,spn=15,epn=16);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1143,7 +1153,6 @@ data _null_;
 
 	put _infile_;
 run;
-
 
 
 

@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2021-11-10 Mark Woodruff keep EXSTDAT.
 ******************************************************************************************;
 
 data _null_;
@@ -20,7 +21,8 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update EX_build.sas to handle EX.DELETED var appropriately.";
 run;
 
-data pp_final_ex(keep=subnum visitid visname exyn_dec exinjn_dec exstdat_c exsttim_c exloc1_ exloc2_ exloc3_ exvamtt_c exdoseyn_dec exreas_ exrxnyn_dec excoval);
+data pp_final_ex(keep=subnum visitid visname exyn_dec exinjn_dec exstdat exstdat_c exsttim_c exloc1_ exloc2_ exloc3_ exvamtt_c exdoseyn_dec exreas_ 
+		exrxnyn_dec excoval);
 	set crf.ex(encoding=any where=(pagename='Study Drug Administration' and deleted='f'));
 
 	length exstdat_c $12;
