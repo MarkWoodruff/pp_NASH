@@ -22,3 +22,7 @@ data/crf/MD5.txt
 *.log
 
 programs/checklogs.lst
+
+*.xlsx
+
+*.html

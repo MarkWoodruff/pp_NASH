@@ -115,8 +115,8 @@ data mri_external_x(keep=subnum visitid visname mosttim_c meas_: measc_:);
 	if modtc^='' then mosttim_c=scan(modtc,2,'T');
 
 	if nmiss(meas_2-meas_10)>0 then put "ER" "ROR: update MRI_build.sas for average calculation.";
-	if nmiss(meas_2-meas_10)=0 then meas_avg=mean(of meas_2-meas_10);
-	if nmiss(meas_1-meas_9)=0 then meas_avg2=mean(of meas_1-meas_9);
+	if nmiss(meas_2-meas_10)=0 then meas_avg=round(((meas_2*1.77)+(meas_3*4.91)+(meas_4*4.91)+(meas_5*4.91)+(meas_6*4.91)
+		+(meas_7*4.91)+(meas_8*4.91)+(meas_9*4.91)+(meas_10*4.91))/41.05,.01);
 
 	length measc_avg $20;
 	if meas_avg>.z then measc_avg=strip(put(round(meas_avg,.01),8.2));
@@ -124,6 +124,11 @@ data mri_external_x(keep=subnum visitid visname mosttim_c meas_: measc_:);
 	if meas_avg^=meas_1 then meas_flag=1;
 
 	measc_avg='in progressSUPER2';
+run;
+
+proc print data=mri_external_x (obs=20) width=min;
+	where subnum='105-005x';
+	var subnum visitid visname meas_avg meas_2 meas_3 meas_4 meas_5 meas_6 meas_7 meas_8 meas_9 meas_10 meas_1 meas_flag;
 run;
 
 %macro mri_nobs(dsn);

@@ -34,15 +34,6 @@ DS dataset
 	-Randomization (5316892)
 	-Reconsent (5656976)
 
-*******************
-** Patient Cards **
-*******************
-Part: Cohort + Dose (lower left)
-Latest Visit (upper right)
-Status: Active/Discontinued/Screen Fail (upper left)
-Lower Right: Indicator for SAE or G3/G4 AE
--put Part A-Cohort x on cards, not dose.
-
 *************
 ** DOMAINS **
 *************
@@ -51,7 +42,7 @@ Registration
 	-Eligibility (DONE)
 	-Randomization (DONE)
 	-Reconsent Log (DONE)
-	-PI Signature (NO DATA)
+	-PI Signature (WILL ALERT)
 Screening
 	-Visit Date (DONE)
 	-Unscheduled Visit (DONE)
@@ -63,7 +54,7 @@ Safety
 	-Vital Signs (DONE)
 	-ECG (DONE)
 	-Physical Exam (DONE)
-	-AE (NO DATA)
+	-AE (DONE)
 	-Conmeds (DONE)
 	-Local Labs (WILL ALERT)
 	-Safety Labs (DONE)
@@ -89,10 +80,10 @@ End of Treatment (WILL ALERT)
 ***********
 ** TO-DO **
 ***********
--finish base build (AEs)
--finish Tanya ranges
+-add graphs for labs
+-finish domains with no data, will alert (Local Labs, EOS, EOT, PI)
 -macro to sort with unscheduled visits, update all domains
--add graphs for labs, vitals, ecg including color flagging
+-patient dashboard - Lower Right: Indicator for SAE or G3/G4 AE
 
 ** Walkthrough **;
 110-013 for Vitals
@@ -123,8 +114,9 @@ Study Setup
 	Total Duration for each subject is approximately 21 weeks
 
 *********
-** SRT **
+** SRT in January **
 *********
+-Placebo won't be there - 300 mg Q4W (no mention of PBO or BOS)
 -SRT will formally look at blinded tables/listings on a quarterly basis.  
 -But teams also looking more often, to maintain safety overview.  
 -Pretty consistent with 721 or 738.  
@@ -132,8 +124,32 @@ Study Setup
 -ECGs Tanya seems to be thinking on what she wants to see.  
 -SRT Charter is a starting point, not a firm concrete guidance.
 
+BOTH - Disposition
+BOTH - Demographics - T2D is from FGF form at baseline, checkbox if doesn't have
+IA - Exposure - weight compliance by last visit completed
+SRT - ECG - markedly abnormal table
+BOTH - Vitals - markedly abnormal 14.3.6.2.x
+BOTH - AE Summary
+BOTH - AE by SOC/PT
+	-related
+	-by max sev
+	-sae
+SRT - Labs (hema, chem, coag) - shift of grades, add Grade 0
+SRT - Cortisol - observed and CFB
+Listing of
+	disposition
+	eligibility
+	ECG - include flag for markedly abnormal
+	Ultrasound
+PRIORITY - Listing of AEs - Excel, interactive
+Listing of Labs - Excel, interactive.  Include CFB.  Include Cortisol.
+	-Cortisol - include CFB.  Either alone or separate.
+Listing of Vitals - Excel, interactive, include flag for markedly abnormal, add QTCF CFB from table.
+
+
+
 **********************
-** INTERIM ANALYSIS **
+** INTERIM ANALYSIS - data-cut March at earliest.  IA sometime 1Q 2022 (maybe even later).  Readout in May or June. **
 **********************
 -FDA asked for this.  Cato may do interim, currently 5w, trying to get it to 4w.  
 -May rely on some of my tables (baseline + AE), Cato could do others.  Craig was OK with that.  Regulatory weighing in too.  
@@ -142,10 +158,9 @@ Study Setup
 -Nuventra will do PK stuff and Biomarker stuff.
 -HFF response - from MRI, Cato will do
 -have time on study and time on treatment in disposition.
--group all placebo together.  have totals in baseline tables.  possible button for blinded/unblinded.
--maybe have 580 unblinded card, OR have SRT tab, interim tab.
--30th and first week of October for randomization.
--first meeting mid-October
--meet once a quarter after that
+-group all placebo together.  have totals in baseline tables.
+-have SRT tab, interim tab.
+-first safety meeting mid-October, then once a quarter
 -FDA asked about Cortisol
 -shift tables for triglycerides and cholesterol
+on part b tables, have A Overall, B Overall, Overall Overall

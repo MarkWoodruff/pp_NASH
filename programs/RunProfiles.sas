@@ -46,6 +46,7 @@ ods listing close;
 %include "&macros.\VS_build.sas"       / nosource2;
 %include "&macros.\VSPLOT_build.sas"   / nosource2;
 %include "&macros.\ECG_build.sas"      / nosource2;
+%include "&macros.\ECGPLOT_build.sas"  / nosource2;
 %include "&macros.\PE_build.sas"       / nosource2;
 %include "&macros.\AE_build.sas"       / nosource2;
 %include "&macros.\CM_build.sas"       / nosource2;
@@ -65,7 +66,8 @@ ods listing close;
 %include "&macros.\QSM_build.sas"      / nosource2;
 %include "&macros.\QSS_build.sas"      / nosource2;
 %include "&macros.\PD_build.sas"       / nosource2;
-*/
+%include "&macros.\PI_build.sas"       / nosource2;
+
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
 ****************************************************************;
@@ -118,20 +120,39 @@ data part_cohort(keep=subnum part_cohort);
 run;
 
 ** patient status, for upper left of patient cards **;
-** enrolled **;
-data enrolled(keep=subnum iestdat enrolled);
+** eligible **;
+data eligible(keep=subnum iestdat eligible);
 	set crf.ie(encoding=any where=(deleted='f'));
 
-	enrolled=strip(ieorres);
+	eligible=strip(ieorres);
 
 	proc sort;
 		by subnum iestdat;
 run;
 
-data enrolled(keep=subnum enrolled);
-	set enrolled;
+data eligible(keep=subnum eligible);
+	set eligible;
 	by subnum iestdat;
 	if last.subnum;
+run;
+
+** randomized? **;
+data rand(keep=subnum rand);
+	set crf.ds(encoding=utf8 where=(pagename='Randomization' and cohort_dec^=''));
+
+	rand=1;
+
+	proc sort nodupkey;
+		by subnum;
+run;
+
+** informed consent **;
+data infcon(keep=subnum infcon);
+	set crf.ds(encoding=any where=(pagename='Informed Consent' and dsstdat>.z));
+	infcon=1;
+
+	proc sort nodupkey;
+		by subnum;
 run;
 
 ** discontinued or completed **;
@@ -150,15 +171,19 @@ data eos(keep=subnum eos);
 run;
 
 data patient_status(keep=subnum patient_status);
-	merge enrolled
+	merge eligible
+		  rand
+		  infcon
 		  eos;
 	by subnum;
 
 	length patient_status $100;
 	if eos=1 then patient_status='Discont.';
-		else if enrolled='Y' then patient_status='Active';
-		else if enrolled='N' then patient_status='Not Eligible';
-		else put "ER" "ROR: update RunProfiles.sas to populate PATIENT_STATUS for new cases.";
+		else if eligible='Y' and infcon=1 and rand=1 then patient_status='Active';
+		else if eligible='Y' and infcon=1 and rand^=1 then patient_status='Eligible';
+		else if eligible='N' then patient_status='Not Eligible';
+		else if eligible='' and infcon=1 then patient_status='Consented';
+		else if eligible^='' or eos>.z then put "ER" "ROR: update RunProfiles.sas to populate PATIENT_STATUS for new cases.";
 run;
 
 ** latest visit **;
@@ -191,21 +216,6 @@ data latest_visit(keep=subnum latest_visit);
 	latest_visit=strip(visname);
 run;
 
-%macro mult(dsn=);
-	proc freq data=&dsn. noprint;
-		tables subnum/out=&dsn._m;
-	run;
-
-	data &dsn._m;
-		set &dsn._m;
-		by subnum;
-		if count>1;
-	run;
-%mend mult;
-%mult(dsn=latest_visit);
-%mult(dsn=part_cohort);
-%mult(dsn=patient_status);
-
 data patient_cards(keep=subnum part_cohort latest_visit patient_status);
 	merge latest_visit
 		  part_cohort
@@ -220,7 +230,8 @@ data patient_cards_code(keep=patient_cards_code);
 	by subnum;
 	
 	length status_tag $100;
-	if lowcase(patient_status)='active' or (patient_status='' and index(upcase(latest_visit),'SCREENING')>0) then status_tag='active-patient';
+	if lowcase(patient_status) in ('enrolled','eligible','consented','active') then status_tag='active-patient';
+		else if lowcase(patient_status)='not yet rand.' then status_tag='active-patient';
 		else status_tag='discontinued-patient';
 
 	length patient_cards_code $32767;
@@ -351,25 +362,26 @@ proc format;
 	"VS_report_Vital Signs.sas"               =15
 	"VSPLOT_report_Vital Signs Plot.sas"      =16
 	"ECG_report_ECG.sas"                      =17
-	"AE_report_Adverse Events.sas"            =18
-	"CM_report_Concomitant Medications.sas"   =19
-	"LB_report_Central Lab.sas"               =20
-	"LBCC_report_Central Lab - Chemistry.sas" =21
-	"LBCH_report_Central Lab - Hematology.sas"=22
-	"LBCO_report_Central Lab - Others.sas"    =23
+	"ECGPLOT_report_ECG Plot.sas"             =18
+	"AE_report_Adverse Events.sas"            =19
+	"CM_report_Concomitant Medications.sas"   =20
+	"LB_report_Central Lab.sas"               =21
+	"LBCC_report_Central Lab - Chemistry.sas" =22
+	"LBCH_report_Central Lab - Hematology.sas"=23
+	"LBCO_report_Central Lab - Others.sas"    =24
 
-	"VCTE_report_Fibroscan (VCTE).sas"        =24
-	"ULTRA_report_Ultrasound.sas"             =25
-	"MRI_report_MRI.sas"                      =26
-	"FPG_report_Fasting Plasma Glucose.sas"   =27
-	"ADA_report_ADA Sample.sas"               =28
-	"BIO_report_Exploratory Biomarkers.sas"   =29
+	"VCTE_report_Fibroscan (VCTE).sas"        =25
+	"ULTRA_report_Ultrasound.sas"             =26
+	"MRI_report_MRI.sas"                      =27
+	"FPG_report_Fasting Plasma Glucose.sas"   =28
+	"ADA_report_ADA Sample.sas"               =29
+	"BIO_report_Exploratory Biomarkers.sas"   =30
 
-	"QS_report_Monthly Questionnaire.sas"     =30
-	"QSM_report_Menstrual Cycles.sas"         =31
-	"QSS_report_Menstrual Summary.sas"        =32
-	"PD_report_Protocol Deviations.sas"       =33
-	"IP_report_MORE IN PROGRESS.sas"          =34;
+	"QS_report_Monthly Questionnaire.sas"     =31
+	"QSM_report_Menstrual Cycles.sas"         =32
+	"QSS_report_Menstrual Summary.sas"        =33
+	"PD_report_Protocol Deviations.sas"       =34
+	"IP_report_MORE IN PROGRESS.sas"          =35;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -414,7 +426,7 @@ data report_links(keep=report_link_html);
 
 	if num=1 then report_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(report_link)||"</a></li>";
 		else if eof then report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Profile: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
-		else if num in (9,12,24,30) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
+		else if num in (9,12,25,31) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 		else report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 run;
 
@@ -556,8 +568,8 @@ options mprint mlogic symbolgen;
 					<!------------>          
 						<nav class="header-outnav">                     
 							<a href=".\index.html">studies</a>                                    
-							<a href=".\patients-bos-580-201.html">patients</a>
-							<a href="#" class="dead-link">srt</a>  
+							<a href=".\patients-bos-580-201.html">patients</a>                  
+							<a href=".\BOS-580-201_SRT.htm">srt</a>
 							<a href="#" class="dead-link">ia</a>    
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FProtocols" target="_blank">protocol</a> 
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FData%5FMgmt%2FCRFs" target="_blank">crf</a>                          
@@ -714,7 +726,7 @@ options mprint mlogic symbolgen;
 				_infile_=tranwrd(_infile_,'add-no-plottable-data</span> </p>',
 										  '</span> </p><p><span class="footnote">No valid plottable values for this patient/domain.</span></p>');
 				_infile_=tranwrd(_infile_,'add-no-dosing-data</span> </p>',
-										  '</span> </p><p><span class="footnote-no-indent">AE/CM data exists, but cannot plot by relative study day until dosing information is entered.</span></p>');
+										  '</span> </p><p><span class="footnote-no-indent">Data exists, but cannot plot by relative study day until dosing information is entered.</span></p>');
 				_infile_=tranwrd(_infile_,'add-only-prior-data</span> </p>',
 										  '</span> </p><p><span class="footnote-no-indent">AE/CM data exists, but outside of the plot area.  Only AEs and Meds after study day -42 will be plotted.  See AE and CM prints for detail.</span></p>');
 
@@ -752,7 +764,7 @@ options mprint mlogic symbolgen;
 					_infile_=tranwrd(_infile_,%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px">')),%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px"><div class="table-container">')));
 				%mend frozen_columns;
 				%frozen_columns(idx=6, key_good=%str(>Unscheduled),key_bad=,colspan_frz=5);
-				%frozen_columns(idx=18,key_good=%str(>Adverse),key_bad=,colspan_frz=2);
+				%frozen_columns(idx=19,key_good=%str(>Adverse),key_bad=,colspan_frz=2);
 
 				** Add frozen columns to AEs with spanning column headers **;
 				if index(_infile_,'AE1FX')>0 then do;
@@ -964,7 +976,13 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 						 <span class="footnote-num">SUPER2 <span class="red-footnote">Red</span> flags Reference Range Indicator column for values outside the normal range.</span>
 					 </p>');
 
-
+				** ECGPLOT - Electrocardiogram Plots **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">ecgplot-footnote</span> </p>'
+					,'<p><span class="footnote">Note: For QTcF, colors flag CTCAE Grades: <br>
+							<span class="yellow-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yellow</span> &nbsp;= Grade 1 (>450 - &#8804;480 msec), <br>
+							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (>480 - &#8804;500 msec), <br>
+							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (>500 msec)</span>
+					  </p>');
 /*
 				
 				** DM - Demographics **;
@@ -990,10 +1008,6 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				** ECG - Electrocardiogram **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">ecg-footnote</span> </p>'
 					,'<p><span class="footnote-num">SUPER1 QTcF (msec) values >470 at Screening/Baseline are highlighted in <span class="red-footnote">red</span>, as this was an inclusion criteria.</span><br><span class="footnote-num">SUPER2 NCS = Not Clinically Significant, CS = Clinically Significant.  CS Interpretations will be highlighted in <span class="red-footnote">red.</span></span> </p>');
-
-				** ECGPLOT - Electrocardiogram Plots **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">ecgplot-footnote</span> </p>'
-					,'<p><span class="footnote">Note: QTcF (msec) values >470 at Screening/Baseline are highlighted in <span class="red-footnote">red</span>, as this was an inclusion criteria.<br>Timepoints with an interpretation of "Abnormal, Clinically Significant" will have all values at that timepoint highlighted in <span class="red-footnote">red.</span></span></p>');
 
 				** SCT - Subsequent Cancer Therapy **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">sct-footnote</span> </p>'
@@ -1087,8 +1101,8 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				file "&output.\aspx\&PTN..aspx";
 				input;
 
-				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_QSR.htm',
-							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FData%5FMgmt%2FPatient%20Profiles%2Foutput/BOS-580-201.aspx');
+				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201.aspx');
 				_infile_=tranwrd(_infile_,'.html','.aspx');	
 				_infile_=tranwrd(_infile_,'.htm','.aspx');	
 
@@ -1116,7 +1130,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=116,ept=116,spn=15,epn=16);
+*%patients_domains(spt=1,ept=1,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1145,8 +1159,8 @@ data _null_;
 	file "&output.\aspx\patients-BOS-580-201.aspx";
 	input;
 
-	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_QSR.htm',
-							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FData%5FMgmt%2FPatient%20Profiles%2Foutput/BOS-580-201_QSR.aspx');
+	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 	_infile_=tranwrd(_infile_,'.html','.aspx');	
 	_infile_=tranwrd(_infile_,'.htm','.aspx');	
 	_infile_=tranwrd(_infile_,' – ',' &#8209; ');
@@ -1162,7 +1176,7 @@ run;
 
 
 
-
+/*
 
 
 
@@ -1544,3 +1558,4 @@ data _null_;
 run;
 
 %put Program started at &starttm. and ended at &endtm.;
+*/

@@ -10,6 +10,7 @@
 * 2021-10-21 Mark Woodruff add EGQTCF.
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2021-11-11 Mark Woodruff keep numeric values for ECGPLOT.
 ******************************************************************************************;
 
 data _null_;
@@ -22,7 +23,8 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update ECG_build.sas to handle ECG.DELETED var appropriately.";
 run;
 
-data pp_final_ecg(keep=subnum visitid visname egnd_reas egdat egdat_c egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf egqtcf_c egorres_c);
+data pp_final_ecg(keep=subnum visitid visname egnd egnd_reas egdat egdat_c egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf egqtcf_c egorres_c
+		eghr egqt egpr egqrs egrr egqtcf);
 	set crf.eg(encoding=any where=(pagename='ECG' and deleted='f'));
 
 	length egnd_reas $500;
@@ -59,4 +61,3 @@ data pp_final_ecg(keep=subnum visitid visname egnd_reas egdat egdat_c egtims_c e
 	proc sort;
 		by subnum egdat;
 run;
-
