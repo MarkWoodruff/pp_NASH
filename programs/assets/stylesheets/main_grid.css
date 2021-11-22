@@ -361,6 +361,25 @@ td {
 	border-right: 1px solid black;
 }
 
+.aelfixed1 {
+	left: 0;
+	min-width: 70px;
+	max-width: 70px;
+	width: 70px;
+}
+
+.aelfixed2 {
+	left: 70px;
+	min-width: 44px;
+	max-width: 44px;
+	width: 44px;
+}
+
+.aelfixed3 {
+	left: 114px;
+	border-right: 1px solid black;
+}
+
 .lbcc-other.hidden,
 .lbch-other.hidden,
 .lbco-other.hidden,

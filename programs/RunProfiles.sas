@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-11-19 Mark Woodruff added Listing of AEs.
 ******************************************************************************************;
 dm 'output' clear;
 dm 'log' clear;
@@ -560,6 +561,8 @@ options mprint mlogic symbolgen;
 				file "&output.\&PTN..htm";
 				input;
 
+				*<a href=".\BOS-580-201_SRT.htm">srt</a>;
+
 				_infile_=tranwrd(_infile_,'</head>','<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900"></head>');
 
 				_infile_=tranwrd(_infile_,'<body class="body">','<body class="body">
@@ -568,8 +571,8 @@ options mprint mlogic symbolgen;
 					<!------------>          
 						<nav class="header-outnav">                     
 							<a href=".\index.html">studies</a>                                    
-							<a href=".\patients-bos-580-201.html">patients</a>                  
-							<a href=".\BOS-580-201_SRT.htm">srt</a>
+							<a href=".\patients-bos-580-201.html">patients</a>   
+							<a href="#" class="dead-link">srt</a>    
 							<a href="#" class="dead-link">ia</a>    
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FProtocols" target="_blank">protocol</a> 
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FData%5FMgmt%2FCRFs" target="_blank">crf</a>                          
@@ -712,7 +715,6 @@ options mprint mlogic symbolgen;
 					 <script src="..\programs\assets\js\ecg_dt.js"></script>
 					 <script src="..\programs\assets\js\tstnamddc.js"></script>
 					 <script src="..\programs\assets\js\tstnamddh.js"></script>
-					 <script src="..\programs\assets\js\tstnamddo.js"></script>
 					 <script src="..\programs\assets\js\catnamddo.js"></script>
 					 <script src="..\programs\assets\js\lbc_dt.js"></script>
 					 </body>');  
@@ -1050,20 +1052,6 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 					if index(test,'160')=0 and test not in ('','/td') then _infile_=tranwrd(_infile_,'class="','class=" '||strip(test)||" ");
 				end;
 				
-				if index(_infile_,'Test-TSTNAMDDO')>0 then _infile_=tranwrd(_infile_,'Test-TSTNAMDDO',"Test<br>&tstnamddo.");
-				if index(_infile_,'<td class="')>0 and index(_infile_,'picklbnm')>0 then do;
-					length test $100;
-					test=lowcase(scan(compress(compress(tranwrd(scan(_infile_,2,'>'),'&#160;',''),''),')'),1,'<'));
-					test=tranwrd(test,'(','-');
-					test=tranwrd(test,'%','-');
-					test=tranwrd(test,',','-');
-					test=tranwrd(test,'/','-');
-					test=tranwrd(test,'\','-');
-					test=tranwrd(test,'.','-');
-					test=tranwrd(test,'#','-');
-					if index(test,'160')=0 and test not in ('','/td') then _infile_=tranwrd(_infile_,'class="','class=" '||strip(test)||" ");
-				end;
-				
 				if index(_infile_,'Category-CATNAMDDO')>0 then _infile_=tranwrd(_infile_,'Category-CATNAMDDO',"Category<br>&catnamddo.");
 				if index(_infile_,'<td class="')>0 and index(_infile_,'picklbct')>0 then do;
 					length test $100;
@@ -1176,7 +1164,7 @@ run;
 
 
 
-/*
+
 
 
 
@@ -1197,7 +1185,8 @@ proc format;
 	value $list_ord
 	"SF_listing_Listing of Screen Failures.sas"=1
 	"SF_table_Table of Screen Failures.sas"    =2
-	"ULTRA_listing_Listing of Ultrasounds.sas" =3;
+	"ULTRA_listing_Listing of Ultrasounds.sas" =3
+	"AE_listing_Listing of Adverse Events.sas" =4;
 run;				
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -1411,8 +1400,34 @@ options mprint mlogic symbolgen;
 		%mend ier_offset_anchors;
 		%ier_offset_anchors;	
 
+		***********************************************;
+		** FROZEN COLUMNS TITLES MUST SPAN CORRECTLY **;
+		***********************************************;
+		** for domains with frozen columns, must make sure title only spans as many columns as necessary, to stick correctly.  this is now automatic. **;
+		** for domains with frozen columns, must add a table container div, and a closing div for it.  manual component below. **;
+		** for this study, use the NUM value above created via format **;
+		span_loc=.;
+		colspan=.;
+		colspan_rmn=.;
+		%macro frozen_columns(idx=,key_good=,key_bad=,colspan_frz=,);
+			if index(_infile_,'td class="fixed-domain-title')>0 and index(_infile_,"&key_good.")>0 %if &key_bad.^=  %then %do; and index(_infile_,"&key_bad.")=0 %end; then do;
+				span_loc=find(_infile_,'colspan="');
+				if span_loc>0 then do;
+					colspan=input(strip(scan(substr(_infile_,span_loc+9),1,'"')),best.);
+					if colspan=. then colspan=0;
+					if colspan>.z and %eval(&colspan_frz.)>.z then colspan_rmn=colspan-&colspan_frz.;
+						else colspan_rmn=0;
+					_infile_=tranwrd(_infile_,'colspan="'||strip(put(colspan,best.)),'colspan="'||strip(put(%eval(&colspan_frz.),best.)));
+					_infile_=tranwrd(_infile_,'</td>','</td><td class="domain-title" style="white-space: pre" colspan="'||strip(put(colspan_rmn,best.))||'"></td>');
+				end;
+			end;
+			_infile_=tranwrd(_infile_,%unquote(%nrbquote('</table></div></div></div></div><div style="padding-bottom: 8px; padding-top: 1px"><hr class="pagebreak"/><span class="anchor" id="IDX&idx.">')),%unquote(%nrbquote('</table></div></div></div></div></div><div style="padding-bottom: 8px; padding-top: 1px"><hr class="pagebreak"/><span class="anchor" id="IDX&idx.">')));
+			_infile_=tranwrd(_infile_,%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px">')),%unquote(%nrbquote('id="_IDX%eval(&idx.-1)" style="padding-bottom: 8px; padding-top: 1px"><div class="table-container">')));
+		%mend frozen_columns;
+		%frozen_columns(idx=4,key_good=%str(>Adverse),key_bad=,colspan_frz=3);
+
 		** for listings, create links back to related IDX of patient profile **;
-		if index(_infile_,"data patient-link sf")>0 then do;
+		if index(_infile_,"data patient-link sf")>0 or index(_infile_,"data fixed aelfixed1 patient-link ae")>0 then do;
 			pat=strip(scan(scan(_infile_,2,'>'),1,'<'));
 			if length(pat)=7 then do;
 				_infile_=tranwrd(_infile_,'pre">','pre"><a href=".\'||strip(pat)||'.htm#IDX">');
@@ -1453,11 +1468,41 @@ options mprint mlogic symbolgen;
 		_infile_=tranwrd(_infile_,'<p><span class="footnote">ultra-footnote</span> </p>',
 			'<p><span class="footnote">Note: <span class="green-footnote">Green</span> column headers indicate the column was programmatically created.</span></p>');
 
+		** AE - Adverse Events footnote **;
+		_infile_=tranwrd(_infile_,'<p><span class="footnote">ae-footnote</span> </p>'
+			,'<p><span class="footnote">Note: Nausea, Vomiting, Diarrhea of Grade 3 or higher are flagged in <span class="yellow-footnote">yellow</span>.</span></p>');
+
 		** handle superscripts **;
 		_infile_=tranwrd(_infile_,'SUPER1','<sup>1</sup>');	
 		_infile_=tranwrd(_infile_,'SUPER2','<sup>2</sup>');	
 		_infile_=tranwrd(_infile_,'SUPER3','<sup>3</sup>');	
 		_infile_=tranwrd(_infile_,'SUPER4','<sup>4</sup>');	
+
+		** Add frozen columns to AEs with spanning column headers **;
+		if index(_infile_,'AEL1FX')>0 then do;
+			_infile_=tranwrd(_infile_,'"header"','"header fixed aelfixed1"');
+			_infile_=tranwrd(_infile_,'AEL1FX','&#160;');
+		end;
+		if index(_infile_,'AEL2FX')>0 then do;
+			_infile_=tranwrd(_infile_,'"header"','"header fixed aelfixed2"');
+			_infile_=tranwrd(_infile_,'AEL2FX','&#160;');
+		end;
+		if index(_infile_,'AEL3FX')>0 then do;
+			_infile_=tranwrd(_infile_,'"header"','"header fixed aelfixed3"');
+			_infile_=tranwrd(_infile_,'AEL3FX','&#160;');
+		end;
+
+		************************************************************************************************************************;
+		** CENTERING OF SPANNING COLUMN HEADERS AND SOME MANUAL ADJUSTMENTS OF NESTED SPANNING HEADERS THAT SAS CANNOT HANDLE **;
+		************************************************************************************************************************;
+		if index(_infile_,'SPNHDRFRCNDRLNCNTR') then do;
+			_infile_=tranwrd(_infile_,"header",'header center underline');
+			_infile_=tranwrd(_infile_,'SPNHDRFRCNDRLNCNTR','');
+		end;
+		if index(_infile_,'SPNHDRFRCCNTR') then do;
+			_infile_=tranwrd(_infile_,"header",'header center');
+			_infile_=tranwrd(_infile_,'SPNHDRFRCCNTR','');
+		end;
 
 		** bold inclusion/exclusion numbers **;
 		_infile_=tranwrd(_infile_,'IN01','<span class="bold">IN01</span>');
@@ -1558,4 +1603,3 @@ data _null_;
 run;
 
 %put Program started at &starttm. and ended at &endtm.;
-*/

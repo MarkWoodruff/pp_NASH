@@ -12,6 +12,7 @@
 * 2021-11-01 Mark Woodruff use lbornrhin rather than lbornrhi in computations.
 * 2021-11-05 Mark Woodruff added Cortisol flagging
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2021-11-22 Mark Woodruff evolve Cortisol flagging.  Add visits to note to log.
 ******************************************************************************************;
 
 data _null_;
@@ -30,11 +31,11 @@ data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_
 	if lbdat=. then put "ER" "ROR: update LBC_build.sas to handle Unscheduled visits and/or missing dates correctly.";
 
 	** flag Cortisol **;
-	if lbtest in ('Midnight Cortisol','PM Cortisol') and lborres^='' then put "ER" "ROR: check LBC_build.sas for custom Cortisol flagging";
+	if lbtestcd in ('AMCORT','CORTISOL','MIDCORT','PMCORT') then cortisol=1;
 
 	** for check_dates macro **;
 	visname=strip(visit);
-	if visname not in ('Screening','Day 1','Day 8','Screening Retest','Unscheduled') then put "ER" "ROR: update LBC_build.sas for visits going into check_Dates";
+	if visname not in ('Screening','Day 1','Day 8','Day 15','Day 29','Screening Retest','Unscheduled') then put "ER" "ROR: update LBC_build.sas for visits going into check_Dates" VISNAME=;
 
 	length yob_sex $100;
 	yob_sex=catx(' - ',yob,sex);
@@ -99,8 +100,8 @@ data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_
 		else if lbtest='Prothrombin Intl. Normalized Ratio' then do;
 			if lborresn>1.5 then labflag_tanja=1;
 		end;
-		else if lbtest in ('Midnight Cortisol','PM Cortisol') and lbnrind^='' then do;
-			labflag_tanja=1;
+		else if cortisol=1 then do;
+			if lbstrescn>.z and lbstnrlon>.z and lbstnrhin>.z and ^(.z<lbstnrlon<lbstrescn<lbstnrhin) then labflag_tanja=1;
 		end;
 
 	proc sort;

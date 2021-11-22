@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-11-22 Mark Woodruff remove out of range notes to log.
 ******************************************************************************************;
 
 %include "&macros.\ECG_build.sas";
@@ -51,13 +52,6 @@ run;
 
 data ecgplot;
 	set ecgplot;
-
-	if eghr>.z and ^(45<eghr<90) then put "ER" "ROR: update ECGPLOT_build.sas for HR ranges" SUBNUM=;
-	if egqt>.z and ^(330<egqt<480) then put "ER" "ROR: update VSPLOT_build.sas for QT ranges" SUBNUM=;
-	if egpr>.z and ^(110<egpr<215) then put "ER" "ROR: update VSPLOT_build.sas for PR ranges" SUBNUM=;
-	if egqrs>.z and ^(-65<egqrs<130) then put "ER" "ROR: update VSPLOT_build.sas for QRS ranges" SUBNUM=;
-	if egrr>.z and ^(0<egrr<1200) then put "ER" "ROR: update VSPLOT_build.sas for RR ranges" SUBNUM=;
-	if egqtcf>.z and ^(350<egqtcf<470) then put "ER" "ROR: update VSPLOT_build.sas for QTcF ranges" SUBNUM=;
 	
 	format paneln ecgpaneln.;
 	%macro transpose(paneln=,varin=,low=,high=);

@@ -73,59 +73,6 @@ run;
 
 %put catnamddo=&catnamddo.;
 
-** get all lab tests for each patient for dropdown **;
-data tstnam;
-	set pp_final_lbc(where=(subnum="&ptn." and lbcat not in ('Hematology','Chemistry') and lbtest^=''));
-
-	length tstnam $100;
-	tstnam=strip(lbtest);
-
-	proc sort;
-		by subnum tstnam;
-run;
-
-data tstnam(keep=subnum tstnam);
-	set tstnam;
-	by subnum tstnam;
-	if first.tstnam;
-run;
-
-data _null_ test;
-	set tstnam end=eof;
-
-	length valuetag $50;
-	valuetag=lowcase(strip(compress(compress(tstnam,''),')')));
-	valuetag=tranwrd(valuetag,'%','-');
-	valuetag=tranwrd(valuetag,'(','-');
-	valuetag=tranwrd(valuetag,',','-');
-	valuetag=tranwrd(valuetag,'/','-');
-	valuetag=tranwrd(valuetag,'\','-');
-	valuetag=tranwrd(valuetag,'.','-');
-	valuetag=tranwrd(valuetag,'#','-');
-
-	length text $2000;
-	if _n_=1 then text="<select id='tstnamddo'><option value='tstnamddo-all' selected>-- Show All --</option><option value='"||strip(valuetag)||"'>"||strip(tstnam)||"</option>";
-		else text="<option value='"||strip(valuetag)||"'>"||strip(tstnam)||"</option>";
-	if eof then text=strip(text)||'</select>';
-
-	length tstnamddo $5000;
-	retain tstnamddo;
-	if valuetag^='' then tstnamddo=cats(tstnamddo,text);
-	if length(tstnamddo)>4800 then put "ER" "ROR: update LBCO_report_Central Lab - Others.sas for length of tstnamddo";
-
-	if valuetag not in ('-disclaimertext','25-hydroxyvitamind','amcortisol','beta-crosslapsb-ctx','creactiveprotein','c-peptide','cholesterol',
-'choriogonadotropinbeta-qualitative','coritsol','cortisolcollectiontime','estimatedglomerularfiltrationrate','estradiol','folliclestimulatinghormone',
-'glucagon','hdlcholesterol','hiv1-2','hemoglobina1c','hepatitisbsurfaceantigen','hepatitiscantibody','insulin','ldlcholesterol','meldscore',
-'midnightcortisol','osteocalcin','pmcortisol','parathyroidhormoneintact','patientcomments','procollageniintactn-terminal',
-'prothrombinintl-normalizedratio','prothrombintime','testresult','thyroidstimulatinghormone','triglycerides','wasdetected')
-		then put "ER" "ROR: update LBCO_report_Central Lab - Others.sas and tstnamddo.js for TSTNAM values for dropdown: " valuetag=;
-	%global tstnamddo;
-	%let tstnamddo= ;
-	call symput('tstnamddo',strip(tstnamddo));
-run;
-
-%put tstnamddo=&tstnamddo.;
-
 %macro report_domain;
 	%if &nobs.=0 %then %do;
 		data domain_data;
