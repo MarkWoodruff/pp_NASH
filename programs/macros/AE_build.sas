@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-11-04 Mark Woodruff add AE_FLAG.
+* 2021-11-29 Mark Woodruff add Ongoing to stop dates.
 ******************************************************************************************;
 
 data _null_;
@@ -39,8 +40,9 @@ data pp_final_ae(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat aeen
 	length stop $100;
 	if aeendat>.z and aeentim>.z then stop=catx('/frcbrk',put(aeendat,yymmdd10.),put(aeentim,time5.));
 		else if aeendat>.z and aeentmun^='' then stop=catx('/frcbrk',put(aeendat,yymmdd10.),'Unknown');
-		else if aeendat>.z and aeongo^='' then stop=catx('/frcbrk',put(aeendat,yymmdd10.),'Ongoing');
-		else put "ER" "ROR: update AE_build.sas for stop date/time algorithm.";
+		else if aeendat=. and aeentim=. and aeongo^='' then stop='Ongoing';
+		else if aeendat=. and aeentim=. and aeongo='' and aeentmun='' then stop='';
+		else put "ER" "ROR: update AE_build.sas for stop date/time algorithm." subnum= aeendat= aeentim= aeentmun= aeongo=;
 	if aeongo^='' and aeentmun^='' then put "ER" "ROR: update AE_build.sas for stop time both unknown and ongoing.";
 
 	length aeout_aesev $100;

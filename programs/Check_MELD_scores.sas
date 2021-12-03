@@ -41,33 +41,28 @@ run;
 
 %macro tests(test=);
 	data lbx_&test.(keep=subnum lbdat &test. visit);
-		set lbx(where=(lbtestcd="&test." and visit in ('Screening')));
+		set lbx(where=(lbtestcd="&test."));
 		&test.=lborresn;
 
 		proc sort;
-			by subnum lbdat;
+			by subnum visit lbdat;
 	run;
 
 	data lbx_&test.;
 		set lbx_&test.;
-		by subnum lbdat;
-		if last.subnum;
+		by subnum visit lbdat;
+		if last.visit;
 	run;
 %mend tests;
 %tests(test=INR);
 %tests(test=BILI);
 %tests(test=CREAT);
-*
-INR 1.1 (from Day 1, should be 1.2 from Screening)
-BILI 0.4
-CREAT 0.6;
-
 
 data screening;
 	merge lbx_inr
 		  lbx_bili
 		  lbx_creat;
-	by subnum;
+	by subnum visit;
 run;
 
 data screening;
@@ -86,12 +81,12 @@ data screening;
 	%adj(var=inr);
 
 	if log_creat>.z and log_bili>.z and log_inr>.z then meld_osd=(0.957*log_creat) + (0.378*log_bili) + (1.120*log_INR) + 0.643;
-	if log_creat_adj>.z and log_bili_adj>.z and log_inr_adj>.z then meld_paper=(9.57*log_creat_adj) + (3.78*log_bili_adj) + (11.20*log_INR_adj) + 6.43;
+	if log_creat_adj>.z and log_bili_adj>.z and log_inr_adj>.z then meld_paper=round(((9.57*log_creat_adj) + (3.78*log_bili_adj) + (11.20*log_INR_adj) + 6.43),1);
 run;
 
 proc print width=min;
 	*where subnum='110-001';
 	*where subnum='106-016';
-	var	subnum visit inr creat bili meld_paper meld_osd;
+	var	subnum visit inr creat bili meld_paper;
 	where meld_osd>.z;
 run;

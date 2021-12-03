@@ -10,6 +10,7 @@
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-04 Mark Woodruff add external data.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2021-12-03 Mark Woodruff drop independently programmed check on average as we do not know number of pixels.
 ******************************************************************************************;
 
 data domain_data;
@@ -42,8 +43,7 @@ run;
 		%end;
 		%else %do;
 			column mostdat visitid visname mostdat_cflag mostdat_c mosttim_c mriperf_reas mofastyn_dec mofastn_c
-				("Couinaud SegmentSUPER1SPNHDRFRCNDRLNCNTR" measc_2 measc_3 measc_4 measc_5 measc_6 measc_7 measc_8 measc_9 measc_10) space
-			    ("AverageSPNHDRFRCNDRLNCNTR" meas_flag measc_1 measc_avg);
+				("Couinaud SegmentSUPER1SPNHDRFRCNDRLNCNTR" measc_2 measc_3 measc_4 measc_5 measc_6 measc_7 measc_8 measc_9 measc_10 measc_1);
 			define mostdat       /order order=internal noprint;
 			define visitid       /order order=internal noprint;
 			define visname       /display "Visit";
@@ -62,17 +62,10 @@ run;
 			define measc_8        /display "VI" style=[htmlclass='overline'];
 			define measc_9        /display "VII" style=[htmlclass='overline'];
 			define measc_10       /display "VIII" style=[htmlclass='overline'];
-			define space         /display "";
-			define meas_flag     /display noprint;
-			define measc_1        /display "BiotelSUPER1" style=[htmlclass='overline'];
-			define measc_avg      /display "Internally|CalculatedSUPER2" style=[htmlclass='overline created'];
+			define measc_1        /display "Average" style=[htmlclass='overline'];
 
 			compute mostdat_c;
 				if mostdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
-			endcomp;
-
-			compute measc_1;
-				*if meas_flag=1 then call define(_col_,"style","style=[background=red]");
 			endcomp;
 
 			%if &mostdat_cflag_foot.=1 %then %do;
