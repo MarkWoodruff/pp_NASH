@@ -11,6 +11,7 @@
 * 2021-11-04 Mark Woodruff add external data
 * 2021-11-05 Mark Woodruff use mri_nobs instead of nobs.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2021-12-06 Mark Woodruff remove sort by dates (some are missing), add circuit breaker for unscheduleds.
 ******************************************************************************************;
 
 data _null_;
@@ -32,8 +33,10 @@ data mri_crf(keep=subnum mriperf_reas mofastyn_dec mofastn_c mostdat visitid vis
 	length mostdat_c $20;
 	if mostdat>.z then mostdat_c=strip(put(mostdat,yymmdd10.));
 
+	if visitid=777 or index(visname,'Uns')>0 then put "ER" "ROR: update MRI_build.sas for unscheduled ordering.";
+
 	proc sort;
-		by subnum mostdat visitid visname;
+		by subnum visitid visname;
 run;
 
 ** get latest external MRI file **;
@@ -155,4 +158,3 @@ data _null_;
 		put "ER" "ROR: update MRI_build.sas for merge with external data.";
 	%end;
 run;
-

@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-12-06 Mark Woodruff include ieenroll_dec now that populated.  remove circuit breaker for it.
 ******************************************************************************************;
 
 data sf_;
@@ -17,7 +18,8 @@ run;
 data sf;
 	set sf_;
 
-	if ieenroll_dec^='' then put "ER" "ROR: update SF_listing_Screen Failures.sas to include IEENROLL_DEC in listing, now that it is populated.";
+	if ieorres_dec^='No' then put "ER" "ROR: update SF_listing_Screen Failures.sas to populate ieorres_dec values of Yes.";
+	if ieenroll_dec not in ('','No') then put "ER" "ROR: update SF_listing_Screen Failures.sas to populate ieenroll_dec values of Yes.";
 
 	length iec $10000;
 	iec=strip(ietestcd_dec);

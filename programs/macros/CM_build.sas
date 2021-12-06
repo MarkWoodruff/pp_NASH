@@ -10,6 +10,7 @@
 * 2021-10-21 Mark Woodruff edit coding to use ATC2.
 * 2021-10-26 Mark Woodruff add pageseq_c.
 * 2021-11-22 Mark Woodruff do not print note to log if dose missing.
+* 2021-12-06 Mark Woodruff expand dose handling.
 ******************************************************************************************;
 
 data _null_;
@@ -37,6 +38,7 @@ data pp_final_cm;*(keep=subnum visitid visname pageseq pageseq_c cmtrt_c cmindc_
 	length dose $200;
 	if cmdosu_dec='Other' then dose=catx(' ',cmdose,cmdosuot);
 		else if index(cmdosu_dec,'=')>0 then dose=catx(' ',cmdose,scan(cmdosu_dec,1,'='));
+		else if cmdosu_dec='Puff' and cmdose^='' then dose=catx(' ',cmdose,cmdosu_dec);
 		else if cmdose^='' or cmdosu_dec^='' then put "ER" "ROR: update CM_build.sas for other dose units.";
 
 	length route $200;

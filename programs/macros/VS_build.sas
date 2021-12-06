@@ -11,6 +11,7 @@
 * 2021-10-26 Mark Woodruff add flagging for dates not matching VS.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-11-10 Mark Woodruff keep vsnd.  add tempn_std.
+* 2021-12-05 Mark Woodruff update buildvar macro for lengths.
 ******************************************************************************************;
 
 data _null_;
@@ -47,7 +48,7 @@ data pp_final_vs(keep=subnum visitid visname vsnd_reas vsdat vsdat_c vspos vstim
 		else if vstempu='C' then tempn_std=vstemp;
 
 	%macro build_var(outvar=,nd=,reas=,val=,unit=);
-		length hr $200;
+		length &outvar. $200;
 		if &nd.^='' or &reas.^='' then &outvar.='Not Done: '||strip(&reas.);
 			else if &val.>.z or &unit.^='' then &outvar.=catx(' ',strip(put(&val.,best.)),strip(&unit.));
 
