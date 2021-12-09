@@ -68,6 +68,7 @@ ods listing close;
 %include "&macros.\QSS_build.sas"      / nosource2;
 %include "&macros.\PD_build.sas"       / nosource2;
 %include "&macros.\PI_build.sas"       / nosource2;
+%include "&macros.\EOT_build.sas"      / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -156,10 +157,10 @@ data infcon(keep=subnum infcon);
 		by subnum;
 run;
 
-** discontinued or completed **;
+** End of Study **;
 data _null_;
 	set crf.ds;
-	if pagename not in ('Informed Consent','Randomization','Reconsent Log') then put "ER" "ROR: make sure end of study caught in patient cards.";
+	if pagename not in ('Informed Consent','Randomization','Reconsent Log','End of Treatment') then put "ER" "ROR: make sure end of study caught in patient cards.";
 run;
 
 data eos(keep=subnum eos);
@@ -171,15 +172,25 @@ data eos(keep=subnum eos);
 		by subnum;
 run;
 
+** End of Treatment **;
+data eot(keep=subnum eot complet_dec);
+	set crf.ds(encoding=any where=(pagename='End of Treatment'));
+
+	eot=1;
+run;
+
 data patient_status(keep=subnum patient_status);
 	merge eligible
 		  rand
 		  infcon
-		  eos;
+		  eos
+		  eot;
 	by subnum;
 
 	length patient_status $100;
-	if eos=1 then patient_status='Discont.';
+	if eot=1 and complet_dec='No' then patient_status='Early Term.';
+		else if eot=1 and complet_dec='Yes' then patient_status='Completed';
+		else if eos=1 then patient_status='Discont.';
 		else if eligible='Y' and infcon=1 and rand=1 then patient_status='Active';
 		else if eligible='Y' and infcon=1 and rand^=1 then patient_status='Eligible';
 		else if eligible='N' then patient_status='Not Eligible';
@@ -381,8 +392,9 @@ proc format;
 	"QS_report_Monthly Questionnaire.sas"     =31
 	"QSM_report_Menstrual Cycles.sas"         =32
 	"QSS_report_Menstrual Summary.sas"        =33
-	"PD_report_Protocol Deviations.sas"       =34
-	"IP_report_MORE IN PROGRESS.sas"          =35;
+	"EOT_report_End of Treatment.sas"         =34
+	"PD_report_Protocol Deviations.sas"       =35
+	"IP_report_MORE IN PROGRESS.sas"          =36;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -427,7 +439,7 @@ data report_links(keep=report_link_html);
 
 	if num=1 then report_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(report_link)||"</a></li>";
 		else if eof then report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Profile: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
-		else if num in (9,12,25,31) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
+		else if num in (9,12,25,31,34) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 		else report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 run;
 
@@ -833,6 +845,15 @@ options mprint mlogic symbolgen;
 					 	<span class="footnote-num">SUPER2 Averages are independently calculated in this column and the BioTel average is flagged in <span class="red-footnote">red</span> if not matching.  Internally calculated average and CFB will be presented soon.</span>
 					 </p>');
 
+				** EOT - End of Treatment **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">eot-footnote</span> </p>',
+					'<p><span class="footnote-num">SUPER1 Will include any additional detail fields entered regarding Subject Withdrawal, Physician Decision, COVID Related, and Other.</span><br>
+					 </p>');
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">eotdate-footnote</span> </p>',
+					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
+					 <p><span class="footnote-num">SUPER1 Will include any additional detail fields entered regarding Subject Withdrawal, Physician Decision, COVID Related, and Other.</span><br>
+					 </p>');
+
 				** VS - Vital Signs **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">vs-footnote</span> </p>'
 					,'<p><span class="footnote-num">SUPER1 For pulse, <span class="red-footnote">red</span> flags values outside the normal range of 60 - 100 beats/min.</span><br>
@@ -1118,7 +1139,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=1,ept=10,spn=1,epn=&num_domains.);
+*%patients_domains(spt=73,ept=73,spn=31,epn=31);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1155,7 +1176,6 @@ data _null_;
 
 	put _infile_;
 run;
-
 
 
 

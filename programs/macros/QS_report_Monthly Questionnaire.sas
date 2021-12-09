@@ -15,6 +15,7 @@ data domain_data;
 	set pp_final_qs;
 	where subnum="&ptn.";
 	space=' ';
+	visname_=visname;
 run;
 
 %check_dates(dsn=domain_data,date=qsdat_c);
@@ -40,12 +41,13 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column qsdat visname qsperf_reas qsdat_cflag qsdat_c c1 c2;*
+			column qsdat visname_ visname qsperf_reas qsdat_cflag qsdat_c c1 c2;*
 				   ("In the last month, on averageSPNHDRFRCNDRLNCNTR" 
 				   ("Juice/Soda (pop)SPNHDRFRCCNTR" qs01_dec qs02_dec qs03_dec qs04_dec qs05_dec) space
 				   ("AlcoholSPNHDRFRCCNTR" qs06_dec qs07_dec qs08_dec qs09_dec) space
 				   ("Sweet/DessertSPNHDRFRCCNTR" qs10_dec qs11_dec qs12_dec qs13_dec));
 			define qsdat       /order order=internal noprint;
+			define visname_    /display noprint;
 			define visname     /display group "Visit";
 			define qsperf_reas /display group "Completed?|Reason";
 			define qsdat_cflag /display noprint;
@@ -68,17 +70,32 @@ run;
 			define qs12_dec    /display "Candy, Candy Bars,|Chocolate, Chocolate Bars";
 			define qs13_dec    /display "Desire";*/
 
+			%macro break_visits(var=);
+				compute &var.;
+					visname_lag=lag(visname_);
+					if visname_^=visname_lag and visit^='Day 1' then call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
+				endcomp;
+			%mend break_visits;
+			%break_visits(var=visname);
+			%break_visits(var=qsperf_reas);
+
 			compute c1;
 				if c1 in ("BLDJuice/Soda (pop)X",'BLDAlcohol','BLDSweet/Dessert') then 
-					call define(_col_,"style","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
+					call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
+				visname_lag=lag(visname_);
+				if visname_^=visname_lag and visname_^='Day 1' then call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
 			endcomp;
 			compute c2;
 				if c1 in ("BLDJuice/Soda (pop)X",'BLDAlcohol','BLDSweet/Dessert') then 
-					call define(_col_,"style","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
+					call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
+				visname_lag=lag(visname_);
+				if visname_^=visname_lag and visname_^='Day 1' then call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
 			endcomp;
 
 			compute qsdat_c;
-				if qsdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
+				if qsdat_cflag=1 then call define(_col_,"style/merge","style=[background=yellow]");
+				visname_lag=lag(visname_);
+				if visname_^=visname_lag and visname_^='Day 1' then call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
 			endcomp;
 
 			%if &qsdat_cflag_foot.=1 %then %do;
