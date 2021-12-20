@@ -15,7 +15,7 @@
 data _null_;
 	set crf.ie(encoding=any);
 
-	** ensure only informed consent records are present in crf.ds **;
+	** ensure only informed consent records are present in crf.ie **;
 	if ^(pagename='Eligibility') then put "ER" "ROR: update ELIG_build.sas to read in only Eligibility records from crf.IE.";
 
 	** ensure DELETED var is being handled correctly **;
@@ -25,7 +25,7 @@ run;
 data _null_;
 	set crf.mo(encoding=any);
 
-	** ensure only informed consent records are present in crf.ds **;
+	** ensure only informed consent records are present in crf.mo **;
 	if ^(pagename in ('Eligibility','MRI-PDFF')) then put "ER" "ROR: update ELIG_build.sas to read in only Eligibility records from crf.MO.";
 
 	** ensure DELETED var is being handled correctly **;

@@ -69,6 +69,7 @@ ods listing close;
 %include "&macros.\PD_build.sas"       / nosource2;
 %include "&macros.\PI_build.sas"       / nosource2;
 %include "&macros.\EOT_build.sas"      / nosource2;
+%include "&macros.\EOS_build.sas"      / nosource2;
 
 ****************************************************************;
 ** SET UP INFRASTRUCTURE TO LOOP THROUGH PATIENTS AND DOMAINS **;
@@ -158,11 +159,6 @@ data infcon(keep=subnum infcon);
 run;
 
 ** End of Study **;
-data _null_;
-	set crf.ds;
-	if pagename not in ('Informed Consent','Randomization','Reconsent Log','End of Treatment') then put "ER" "ROR: make sure end of study caught in patient cards.";
-run;
-
 data eos(keep=subnum eos);
 	set crf.ds(encoding=any where=(upcase(pagename)='END OF STUDY' and dsstdat>.z));
 
@@ -188,7 +184,7 @@ data patient_status(keep=subnum patient_status);
 	by subnum;
 
 	length patient_status $100;
-	if eot=1 and complet_dec='No' then patient_status='Early Term.';
+	if eot=1 and complet_dec='No' then patient_status='Discont.';
 		else if eot=1 and complet_dec='Yes' then patient_status='Completed';
 		else if eos=1 then patient_status='Discont.';
 		else if eligible='Y' and infcon=1 and rand=1 then patient_status='Active';
@@ -393,8 +389,9 @@ proc format;
 	"QSM_report_Menstrual Cycles.sas"         =32
 	"QSS_report_Menstrual Summary.sas"        =33
 	"EOT_report_End of Treatment.sas"         =34
-	"PD_report_Protocol Deviations.sas"       =35
-	"IP_report_MORE IN PROGRESS.sas"          =36;
+	"EOS_report_End of Study.sas"             =35
+	"PD_report_Protocol Deviations.sas"       =36
+	"IP_report_MORE IN PROGRESS.sas"          =37;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -1139,7 +1136,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=73,ept=73,spn=31,epn=31);
+*%patients_domains(spt=73,ept=73,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1203,10 +1200,11 @@ run;
 ** get list of tables for sidebar links **;
 proc format;
 	value $list_ord
-	"SF_listing_Listing of Screen Failures.sas"=1
-	"SF_table_Table of Screen Failures.sas"    =2
-	"ULTRA_listing_Listing of Ultrasounds.sas" =3
-	"AE_listing_Listing of Adverse Events.sas" =4;
+	"SF_listing_Listing of Screen Failures.sas"   =1
+	"SF_table_Table of Screen Failures.sas"       =2
+	"ULTRA_listing_Listing of Ultrasounds.sas"    =3
+	"AE_listing_Listing of Adverse Events.sas"    =4
+	"EOTS_listing_Listing of Discontinuations.sas"=5;
 run;				
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";

@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-12-13 Mark Woodruff update primary reason.
 ******************************************************************************************;
 
 data _null_;
@@ -16,7 +17,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update EX_build.sas to handle EX.DELETED var appropriately.";
 run;
 
-data pp_final_eot(keep=subnum visitid visname dsexdat_c dsstdat_c complet_dec dsdecod_dec dsaeno dthdat_c dspdno dablind_dec);
+data pp_final_eot(keep=subnum visitid visname dsexdat_c dsstdat_c complet_dec dsdecod_dec dsaeno dthdat_c dspdno dablind_dec primary_reason);
 	set crf.ds(encoding=any where=(pagename='End of Treatment' and deleted='f'));
 
 	%macro datec(var=);

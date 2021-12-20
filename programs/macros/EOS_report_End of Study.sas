@@ -1,17 +1,16 @@
 /*****************************************************************************************/
-* Program Name  : EOT_report_End of Treatment.sas
+* Program Name  : EOS_report_End of Study.sas
 * Project       : BOS-580-201
 * Programmer    : Mark Woodruff
-* Creation Date : 2021-12-09
-* Description   : report EOT domain
+* Creation Date : 2021-12-13
+* Description   : report EOS domain
 *
 * Revision History
 * Date       By            Description of Change
-* 2021-12-13 Mark Woodruff update primary reason.
 ******************************************************************************************;
 
 data domain_data;
-	set pp_final_eot;
+	set pp_final_eos;
 	where subnum="&ptn.";
 run;
 
@@ -38,31 +37,27 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column dsexdat_c dsstdat_cflag dsstdat_c complet_dec primary_reason dsaeno dthdat_c dspdno dablind_dec;
-			define dsexdat_c   /display "Date of|Last Dose" style=[htmlclass='min-width-1-0'];
-			define dsstdat_cflag /display noprint;
-			define dsstdat_c   /display "Date of Completion|or Early Termination" style=[htmlclass='min-width-1-0'];
-			define complet_dec /display "Complete Treatment|per Protocol?";
-			define primary_reason /display "Primary Reason for|Early TerminationSUPER1" style=[htmlclass='max-width-4-0'];
-			define dsaeno      /display "Adverse|Event #";
-			define dthdat_c    /display "Death Date" style=[htmlclass='min-width-1-0'];
-			define dspdno      /display "Protocol|Deviation #";
-			define dablind_dec /display "Treatment|Unblinded?";
+			column dsstdat_cflag dsstdat_c dscomp_dec primary_reason dsdthdat_c dsaeno dspdno covid;
+			define dsstdat_cflag  /display noprint;
+			define dsstdat_c      /display "Date of Completion|or Early Termination" style=[htmlclass='min-width-1-0'];
+			define dscomp_dec     /display "Did the Subject|Complete the Trial?";
+			define primary_reason /display "Primary Reason for|Study Discontinuation" style=[htmlclass='max-width-4-0'];
+			define dsdthdat_c     /display "Death Date" style=[htmlclass='min-width-1-0'];
+			define dsaeno         /display "Adverse|Event #";
+			define dspdno         /display "Protocol|Deviation #";
+			define covid          /display "If COVID|related, specify";
 
 			compute dsstdat_c;
 				if dsstdat_cflag=1 then call define(_col_,"style","style=[background=yellow]");
 			endcomp;
 
 			%if &dsstdat_cflag_foot.=1 %then %do;
-				footnote "eotdate-footnote";
+				footnote "eosdate-footnote";
 			%end;
-				%else %do;
-					footnote "eot-footnote";
-				%end;
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="domain-title"];
-			line "End of Treatment";
+			line "End of Study";
 		endcomp;
 	run;
 	

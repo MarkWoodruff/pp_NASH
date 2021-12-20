@@ -7,12 +7,13 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-12-09 Mark Woodruff update comment.
 ******************************************************************************************;
 
 data _null_;
 	set crf.dm(encoding=any);
 
-	** ensure only informed consent records are present in crf.ds **;
+	** ensure only informed consent records are present in crf.dm **;
 	if ^(visname='Screening' and pagename='Demographics') then put "ER" "ROR: update DM_build.sas to read in only Demographics records from crf.DM.";
 
 	** ensure DELETED var is being handled correctly **;

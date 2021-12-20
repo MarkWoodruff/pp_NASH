@@ -13,6 +13,7 @@
 * 2021-11-05 Mark Woodruff added Cortisol flagging
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-11-22 Mark Woodruff evolve Cortisol flagging.  Add visits to note to log.
+* 2021-12-09 Mark Woodruff create visname_ to use in check_dates, more standardized.
 ******************************************************************************************;
 
 data _null_;
@@ -35,8 +36,7 @@ data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_
 
 	** for check_dates macro **;
 	visname=strip(visit);
-	if visname not in ('Screening','Day 1','Day 8','Day 15','Day 29','Screening Retest','Unscheduled') then put "ER" "ROR: update LBC_build.sas for visits going into check_Dates" VISNAME=;
-
+	
 	length yob_sex $100;
 	yob_sex=catx(' - ',yob,sex);
 
@@ -188,4 +188,27 @@ run;
 
 proc sort data=pp_final_lbc;
 	by subnum lbdat lbcat lbtest;
+run;
+
+** standardize visits for merging with check_dates **;
+data rand(keep=subnum cohort_dec);
+	set crf.ds(encoding=utf8 where=(pagename='Randomization'));
+
+	cohort_dec=tranwrd(cohort_dec,' –',' -');
+
+	proc sort;
+		by subnum;
+run;
+
+data pp_final_lbc;
+	merge rand
+		  pp_final_lbc(in=inl);
+	by subnum;
+	if inl;
+
+	visname_=strip(visname);
+	if visname_='Day 15' and cohort_dec in ('Part A - A1','Part A - A4','Part A - A5') then visname_='Day 15 monthly';
+		else if visname_='Day 15' and cohort_dec in ('Part A - A2','Part A - A3') then visname_='Day 15 bi-weekly';
+	if visname_='Day 43' and cohort_dec in ('Part A - A1','Part A - A4','Part A - A5') then visname_='Day 43 monthly';
+		else if visname_='Day 43' and cohort_dec in ('Part A - A2','Part A - A3') then visname_='Day 43 bi-weekly';
 run;

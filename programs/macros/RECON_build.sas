@@ -9,15 +9,8 @@
 * Date       By            Description of Change
 * 2021-10-01 Mark Woodruff refine check on pagename now that have more records.
 * 2021-10-15 Mark Woodruff use correct pagename value, now that it is populated with Reconsent records.
+* 2021-12-09 Mark Woodruff remove check on pagename.
 ******************************************************************************************;
-
-** ensure only informed consent records are present in crf.ds **;
-data _null_;
-	set crf.ds(encoding=any);
-
-	if ^(pagename in ('Randomization','Informed Consent','Reconsent Log')) then 
-		put "ER" "ROR: update RECON_build.sas to read in only Reconsent Log records.";
-run;
 
 ** ensure DELETED var is being handled correctly **;
 data _null_;

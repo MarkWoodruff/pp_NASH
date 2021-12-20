@@ -7,12 +7,13 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-12-09 Mark Woodruff update comment.
 ******************************************************************************************;
 
 data _null_;
 	set crf.dv(encoding=utf8);
 
-	** ensure only informed consent records are present in crf.ds **;
+	** ensure only informed consent records are present in crf.dv **;
 	if ^(pagename='Protocol Deviations') then put "ER" "ROR: update PD_build.sas to read in only Protocol Deviations records from crf.PD.";
 
 	** ensure DELETED var is being handled correctly **;

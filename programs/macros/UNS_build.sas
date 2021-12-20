@@ -7,12 +7,13 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-12-09 Mark Woodruff update comment.
 ******************************************************************************************;
 
 data _null_;
 	set crf.sv(encoding=any);
 
-	** ensure only informed consent records are present in crf.ds **;
+	** ensure only informed consent records are present in crf.sv **;
 	if ^(pagename='Visit Date') then put "ER" "ROR: update UNS_build.sas to read in only Unscheduled records from crf.SV.";
 
 	** ensure DELETED var is being handled correctly **;

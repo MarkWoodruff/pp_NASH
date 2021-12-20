@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2021-12-09 Mark Woodruff use newly created visname_ for check_dates.
 ******************************************************************************************;
 
 data domain_data;
@@ -17,7 +18,7 @@ data domain_data;
 	space=' ';
 run;
 
-%check_dates(dsn=domain_data,date=lbdat_c,mrgvars=visname);
+%check_dates(dsn=domain_data,date=lbdat_c,mrgvars=visname_);
 %nobs(domain_data);
 
 proc sort data=domain_data;

@@ -9,12 +9,14 @@
 * Date       By            Description of Change
 * 2021-11-04 Mark Woodruff add AE_FLAG.
 * 2021-11-29 Mark Woodruff add Ongoing to stop dates.
+* 2021-12-09 Mark Woodruff update comment.
+* 2021-12-19 Mark Woodruff stop totally blank start dates from triggering note to log.
 ******************************************************************************************;
 
 data _null_;
 	set crf.ae(encoding=any);
 
-	** ensure only informed consent records are present in crf.ds **;
+	** ensure only informed consent records are present in crf.ae **;
 	if ^(pagename='Adverse Events') then put "ER" "ROR: update AE_build.sas to read in only AE records from crf.AE.";
 
 	** ensure DELETED var is being handled correctly **;
@@ -35,7 +37,8 @@ data pp_final_ae(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat aeen
 	length start $100;
 	if aestdat>.z and aesttim>.z then start=catx('/frcbrk',put(aestdat,yymmdd10.),put(aesttim,time5.));
 		else if aestdat>.z and aesttmun^='' then start=catx('/frcbrk',put(aestdat,yymmdd10.),'Unknown');
-		else put "ER" "ROR: update AE_build.sas for start date/time algorithm.";
+		else if aestdat=. and aesttmun='' then start='';
+		else put "ER" "ROR: update AE_build.sas for start date/time algorithm." SUBNUM=;
 
 	length stop $100;
 	if aeendat>.z and aeentim>.z then stop=catx('/frcbrk',put(aeendat,yymmdd10.),put(aeentim,time5.));

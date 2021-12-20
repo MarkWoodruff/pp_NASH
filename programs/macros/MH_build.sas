@@ -10,12 +10,13 @@
 * 2021-10-01 Mark Woodruff remove visit from check on pagename var.
 * 2021-10-06 Mark Woodruff coding removed from DB.  edit sort.
 * 2021-10-22 Mark Woodruff add pageseq.
+* 2021-12-09 Mark Woodruff update comment.
 ******************************************************************************************;
 
 data _null_;
 	set crf.mh(encoding=any);
 
-	** ensure only informed consent records are present in crf.ds **;
+	** ensure only informed consent records are present in crf.mh **;
 	if ^(pagename='Medical History') then put "ER" "ROR: update MH_build.sas to read in only Medical History records from crf.MH.";
 
 	** ensure DELETED var is being handled correctly **;

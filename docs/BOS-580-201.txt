@@ -18,84 +18,30 @@ External Hepatologist
 	6) need to have RTF
 	7) listings can be Excel
 
-*******************
-** EXTERNAL DATA **
-*******************
-	1) MRI data from BioTel Research - comes monthly, first should have been end of September.
-	2) lab data from LabConnect - look in DMP, it specifies each lab test they will do.  They are taking external data and putting that in LB.
-	3) Nordic Biosciences (Pro-C3) - Biomarker.  DTA not done yet.
-	4) PPD (Biomarkers).  DTA not done yet.
-	5) LGC - PK and ADA.  DTA not done yet.
-
-DS dataset
-	-End of Study (5316860) (DSSTDAT, DSCOMP, DSDECOD_PRIM, DSTERM, DSDTHDAT, DSAENO, DSPDNO, DSDECOD_COVID, DSDECDOT)
-	-End of Treatment (5740868) (DSEXDAT, DSSTDAT, COMPLET, DSDECOD, DSAENO, DTHDAT, DSWSOOTH, DSPDOTH, DSPDNO, COVIDSP, DSTERMOT, DABLIND)
-	-Informed Consent (5731148) (DSSTDAT, DSICF_G, DSSTDAT_G, PVER, PART)
-	-Randomization (5316892)
-	-Reconsent (5656976)
-
 *************
 ** DOMAINS **
 *************
-Registration
-	-Informed Consent (DONE)
-	-Eligibility (DONE)
-	-Randomization (DONE)
-	-Reconsent Log (DONE)
-	-PI Signature (WILL ALERT)
-Screening
-	-Visit Date (DONE)
-	-Unscheduled Visit (DONE)
-	-Demographics (DONE)
-	-Medical History (DONE)
-	-Body Measurements (DONE)
-	-Urine Pregnancy (DONE)
-Safety
-	-Vital Signs (DONE)
-	-ECG (DONE)
-	-Physical Exam (DONE)
-	-AE (DONE)
-	-Conmeds (DONE)
-	-Local Labs (WILL ALERT)
-	-Safety Labs (DONE)
-	-Central Labs (DONE)
-	-Fibroscan (DONE)
-	-Ultrasound (DONE)
-	-MRI-PDFF (DONE - NEED EXTERNAL DATA)
-	-Fasting Plasma Glucose (DONE)
-Dosing
-	-Study Drug Dispensing (DONE)
-	-Study Drug Administration (DONE)
-	-PK Collection (DONE)
-	-ADA Collection (DONE)
-	-Exploratory Biomarkers (DONE)
-Other
-	-Monthly Visit Questionnaire (DONE)
-	-Menstrual Summary (DONE)
-	-Menstrual Cycle (DONE)
-PDs (DONE)
-End of Study (WILL ALERT)
-End of Treatment (WILL ALERT)
+-PI Signature (WILL ALERT)
+-Local Labs (WILL ALERT)
+-End of Study (WILL ALERT)
 
 ***********
 ** TO-DO **
 ***********
+-check unblinding
+-add subject numbers to HTML
+
 -add graphs for labs
--finish domains with no data, will alert (Local Labs, EOS, EOT, PI)
 -macro to sort with unscheduled visits, update all domains
 -patient dashboard - Lower Right: Indicator for SAE or G3/G4 AE
-
-** Walkthrough **;
-110-013 for Vitals
-
 
 **************
 ** SCHEDULE **
 **************
+-first SRT is 1/18.
+-TLs due 1/11.
+-Datacut 1/6. 
 -first interim analysis is 6 weeks after 90% of patients have completed week 6 assessment.
--baseline profiles on Sharepoint by 10/1
--full profiles set up by 10/8
--baseline tables set up by end of October
 
 Study Setup
 	Part A: 5 cohorts (A1 - A4, A5 randomized separately) - approximately 75 subjects.
@@ -124,8 +70,19 @@ Study Setup
 -ECGs Tanya seems to be thinking on what she wants to see.  
 -SRT Charter is a starting point, not a firm concrete guidance.
 
-BOTH - Disposition
-BOTH - Demographics - T2D is from FGF form at baseline, checkbox if doesn't have
+** Difficulties **
+1) programming with thin data - have to constantly backtrack to revisit things as data is populated
+2) SAP text and shells undergoing multiple revisions after I've already started work
+3) Coding not included.  Can not set up AE tables at beginning.
+
+gen_t_disp
+	t_disp_html_srt - A1 300mg Q4W, A2 150mg Q2W, A3 75mg Q2W, A4 75mg Q4W, A5 30mg Q4W, Overall(for BL tables)
+	t_disp_rtf_srt  - A1 300mg Q4W, A2 150mg Q2W, A3 75mg Q2W, A4 75mg Q4W, A5 30mg Q4W, Overall(for BL tables)
+	t_disp_html_ia - Placebo, A1, A2, A3, A4, A5, Overall(for BL tables)
+	t_disp_rtf_ia  - Placebo, A1, A2, A3, A4, A5, Overall(for BL tables)
+
+DONE - BOTH - Disposition
+DONE - BOTH - Demographics - T2D is from FGF form at baseline, checkbox if doesn't have
 IA - Exposure - weight compliance by last visit completed
 SRT - ECG - markedly abnormal table
 BOTH - Vitals - markedly abnormal 14.3.6.2.x
@@ -141,7 +98,7 @@ Listing of
 	eligibility
 	ECG - include flag for markedly abnormal
 	Ultrasound
-PRIORITY - Listing of AEs - Excel, interactive
+Listing of AEs - Excel
 Listing of Labs - Excel, interactive.  Include CFB.  Include Cortisol.
 	-Cortisol - include CFB.  Either alone or separate.
 Listing of Vitals - Excel, interactive, include flag for markedly abnormal, add QTCF CFB from table.
@@ -152,7 +109,7 @@ Listing of Vitals - Excel, interactive, include flag for markedly abnormal, add 
 ** INTERIM ANALYSIS - data-cut March at earliest.  IA sometime 1Q 2022 (maybe even later).  Readout in May or June. **
 **********************
 -FDA asked for this.  Cato may do interim, currently 5w, trying to get it to 4w.  
--May rely on some of my tables (baseline + AE), Cato could do others.  Craig was OK with that.  Regulatory weighing in too.  
+-some of my tables, Cato could do others.  Craig was OK with that.  Regulatory weighing in too.  
 -Not a fileable interim analysis, will not be submitted.  Mostly for internal.
 -Baseline Disease Hx table: include time from diag to study entry.  did they have gall bladder disease.  VCTE for those who reach week 12, if possible, otehrwise Cato will do.  
 -Nuventra will do PK stuff and Biomarker stuff.
@@ -164,3 +121,13 @@ Listing of Vitals - Excel, interactive, include flag for markedly abnormal, add 
 -FDA asked about Cortisol
 -shift tables for triglycerides and cholesterol
 on part b tables, have A Overall, B Overall, Overall Overall
+
+
+*******************
+** EXTERNAL DATA **
+*******************
+	1) MRI data from BioTel Research - comes monthly, first should have been end of September.
+	2) lab data from LabConnect - look in DMP, it specifies each lab test they will do.  They are taking external data and putting that in LB.
+	3) Nordic Biosciences (Pro-C3) - Biomarker.  DTA not done yet.
+	4) PPD (Biomarkers).  DTA not done yet.
+	5) LGC - PK and ADA.  DTA not done yet.

@@ -7,17 +7,21 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2021-12-09 Mark Woodruff add VISNAME_.
+* 2021-12-19 Mark Woodruff remove note to log for 'not done' records - they are fine.
 ******************************************************************************************;
 
 %macro check_dates(dsn=,date=,mrgvars=%str(visitid visname));
 
-	data dates(keep=subnum visitid visname svstdt_c);
+	data dates(keep=subnum visitid visname svstdt_c visname_);
 		set crf.sv(encoding=any where=(pagename='Visit Date' and deleted='f' and visname^='Unscheduled'));
 
-		if svnd^='' then put "ER" "ROR: update check_dates.sas to exclude 'not done' records.";
+		*if svnd^='' then put "ER" "ROR: update check_dates.sas to exclude 'not done' records.";
 
 		length svstdt_c $20;
 		if svstdt>.z then svstdt_c=strip(put(svstdt,yymmdd10.));
+
+		visname_=strip(visname);
 
 		proc sort;
 			by subnum &mrgvars.;
@@ -27,7 +31,7 @@
 		by subnum &mrgvars.;
 	run;
 
-	data &dsn.;
+	data &dsn.(drop=visname_);
 		merge dates
 		  	  &dsn.(in=inp);
 		by subnum &mrgvars.;

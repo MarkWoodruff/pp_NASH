@@ -15,11 +15,15 @@ data domain_data;
 	set pp_final_qs;
 	where subnum="&ptn.";
 	space=' ';
-	visname_=visname;
 run;
 
 %check_dates(dsn=domain_data,date=qsdat_c);
 %nobs(domain_data);
+
+data domain_data;
+	set domain_data;
+	visname_=visname;
+run;
 
 %macro report_domain;
 	%if &nobs.=0 %then %do;
@@ -73,7 +77,7 @@ run;
 			%macro break_visits(var=);
 				compute &var.;
 					visname_lag=lag(visname_);
-					if visname_^=visname_lag and visit^='Day 1' then call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
+					if visname_^=visname_lag and visname_^='Day 1' then call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
 				endcomp;
 			%mend break_visits;
 			%break_visits(var=visname);

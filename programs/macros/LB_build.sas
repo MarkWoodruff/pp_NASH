@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2021-12-19 Mark Woodruff only trigger note to log if actual lab tests were done.
 ******************************************************************************************;
 
 data _null_;
@@ -21,7 +22,7 @@ data pp_final_lb(keep=subnum visitid visname lbhem_dec lbchem_dec lbser_dec lbco
 					  lbcortsl_dec lbdatcort_c lbtimcort_c lbfast_dec lbcoval);
 	set crf.lb(encoding=any where=(pagename='Central Labs' and deleted='f'));
 
-	if lbdat=. then put "ER" "ROR: update LB_build.sas to handle Unscheduled visits and/or missing dates correctly.";
+	if lbdat=. and (lbhem^='' or lbchem^='') then put "ER" "ROR: update LB_build.sas to handle Unscheduled visits and/or missing dates correctly." SUBNUM=;
 
 	length lbdat_c $12;
 	if lbdat>.z then lbdat_c=strip(put(lbdat,yymmdd10.));
