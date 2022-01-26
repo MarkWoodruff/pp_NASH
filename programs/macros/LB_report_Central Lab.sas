@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-27 Mark Woodruff put date/time for main sample under header.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2022-01-05 Mark Woodruff handle sorting of missing dates.
 ******************************************************************************************;
 
 data domain_data;
@@ -21,7 +22,7 @@ run;
 %nobs(domain_data);
 
 proc sort data=domain_data;
-	by subnum lbdat lbtim;
+	by subnum lbdat_sort lbdat lbtim;
 run;
 
 
@@ -45,8 +46,9 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column lbdat lbtim visname ("Blood sample collected forSPNHDRFRCCNTR" lbhem_dec lbchem_dec lbser_dec lbcoag_dec lbtsh_dec lbfsh_dec lbhcg_dec lbcovid_dec lbdat_cflag lbdat_c lbtim_c)
+			column lbdat_sort lbdat lbtim visname ("Blood sample collected forSPNHDRFRCCNTR" lbhem_dec lbchem_dec lbser_dec lbcoag_dec lbtsh_dec lbfsh_dec lbhcg_dec lbcovid_dec lbdat_cflag lbdat_c lbtim_c)
 				   space ("CortisolSPNHDRFRCCNTR" lbcortsl_dec lbdatcort_c lbtimcort_c) lbfast_dec lbcoval;
+			define lbdat_sort    /order order=internal noprint;
 			define lbdat         /order order=internal noprint;
 			define lbtim         /order order=internal noprint;
 			define visname       /display "Visit";

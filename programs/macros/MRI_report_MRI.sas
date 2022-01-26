@@ -11,6 +11,8 @@
 * 2021-11-04 Mark Woodruff add external data.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-12-03 Mark Woodruff drop independently programmed check on average as we do not know number of pixels.
+* 2022-01-05 Mark Woodruff do not sort on dates.
+* 2022-01-19 Mark Woodruff add date of Biotel MRI transfer
 ******************************************************************************************;
 
 data domain_data;
@@ -42,9 +44,8 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column mostdat visitid visname mostdat_cflag mostdat_c mosttim_c mriperf_reas mofastyn_dec mofastn_c
+			column visitid visname mostdat_cflag mostdat_c mosttim_c mriperf_reas mofastyn_dec mofastn_c
 				("Couinaud SegmentSUPER1SPNHDRFRCNDRLNCNTR" measc_2 measc_3 measc_4 measc_5 measc_6 measc_7 measc_8 measc_9 measc_10 measc_1);
-			define mostdat       /order order=internal noprint;
 			define visitid       /order order=internal noprint;
 			define visname       /display "Visit";
 			define mostdat_cflag /display noprint;

@@ -10,6 +10,7 @@
 * 2021-10-21 Mark Woodruff add EGQTCF.
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2022-01-05 Mark Woodruff handle sorting of missing dates.
 ******************************************************************************************;
 
 data domain_data;
@@ -41,12 +42,13 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column egdat visname egnd_reas egdat_cflag egdat_c egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf egqtcf_c egorres_c;
+			column egdat_sort egdat visname egdat_cflag egdat_c egnd_reas egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf egqtcf_c egorres_c;
+			define egdat_sort  /order order=internal noprint;
 			define egdat       /order order=internal noprint;
 			define visname     /display "Visit";
-			define egnd_reas   /display "Not Done:|Reason";
 			define egdat_cflag /display noprint;
 			define egdat_c     /display "Date|Performed" style=[htmlclass='min-width-1-0'];
+			define egnd_reas   /display "Not Done:|Reason" style=[htmlclass='max-width-3-5'];
 			define egtims_c    /display "Start Time|Supine Position";
 			define egtim_c     /display "Time|Performed";
 			define eghr_c      /display "Heart|Rate";

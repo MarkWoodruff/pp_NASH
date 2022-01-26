@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2022-01-05 Mark Woodruff handle sorting of records with missing dates.
 ******************************************************************************************;
 
 data _null_;
@@ -21,8 +22,14 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update PK_build.sas to handle PC.DELETED var appropriately.";
 run;
 
-data pp_final_pk(keep=subnum visitid visname pcperf_reas pcdat_c pctim_c pccoval);
+data pc;
 	set crf.pc(encoding=any where=(pagename='PK Collection' and deleted='f'));
+run;
+
+%missing_dates(dsn=pc,date=pcdat,pgmname=PK_build);
+
+data pp_final_pk(keep=subnum visitid visname pcperf_reas pcdat_c pcdat_sort pctim_c pccoval);
+	set pc;
 
 	length pcperf_reas $700;
 	pcperf_reas=catx(': ',pcperf_dec,pcreasnd);

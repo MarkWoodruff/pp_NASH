@@ -19,6 +19,9 @@ data _null_;
 
 	** ensure DELETED var is being handled correctly **;
 	if deleted^='f' then put "ER" "ROR: update EX_build.sas to handle EX.DELETED var appropriately.";
+
+	** ensure missing dates are sorted correctly **;
+	if exstdat=. and visitid=777 then put "ER" "ROR: update EX_build.sas to sort missing dates appropriately." SUBNUM= VISNAME=;
 run;
 
 data pp_final_ex(keep=subnum visitid visname exyn_dec exinjn_dec exstdat exstdat_c exsttim_c exloc1_ exloc2_ exloc3_ exvamtt_c exdoseyn_dec exreas_ 

@@ -12,6 +12,7 @@
 * 2021-11-05 Mark Woodruff use mri_nobs instead of nobs.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-12-06 Mark Woodruff remove sort by dates (some are missing), add circuit breaker for unscheduleds.
+* 2022-01-10 Mark Woodruff handle post-Screening visits that are labeled differently than CRF (Week 6).
 ******************************************************************************************;
 
 data _null_;
@@ -43,22 +44,34 @@ run;
 %get_latest_file(fnstr=%str(bos_580_201_mri),macvarnm=latest_mri,onlyfn=2);
 %put latest_mri=&latest_mri.;
 
-data mri_external_;
+data mri_external_(drop=usubjid);
 	set crf.&latest_mri.;
-
-	moseqn=input(strip(moseq),best.);
-
-	proc sort;
-		by usubjid moseqn;
-run;
-
-data mri_external(drop=usubjid visitnum visit evalcom:);
-	set mri_external_;
-	by usubjid moseqn;
 
 	** standardize subnum to CRF **;
 	length subnum $100;
 	subnum=strip(usubjid);
+
+	moseqn=input(strip(moseq),best.);
+
+	proc sort;
+		by subnum moseqn;
+run;
+
+proc sort data=crf.ds out=cohort(keep=subnum cohort);
+	by subnum;
+	where pagename='Randomization' and cohort>.z;
+run;
+
+data mri_external_;
+	merge cohort
+		  mri_external_(in=ine);
+	by subnum;
+	if ine;
+run;
+
+data mri_external(drop=visitnum visit cohort);
+	set mri_external_;
+	by subnum moseqn;
 
 	** standardize visitid and visname to CRF **;
 	length visname $100;
@@ -66,11 +79,30 @@ data mri_external(drop=usubjid visitnum visit evalcom:);
 		visitid=1;
 		visname='Screening';
 	end;
+		else if visit='Week 6' then do;
+			if cohort in (1,4,5) then do; ** Q4W (monthly) **;
+				visitid=8;
+				visname='Day 43 monthly';
+			end;
+				else if cohort in (2,3) then do; ** Q2W (bi-weekly) **;
+					visitid=7;
+					visname='Day 43 bi-weekly';
+				end;
+		end;
 		else put "ER" "ROR: update MRI_build.sas for new BioTel visits that need standardizing.";
+run;
+
+proc sort data=mri_external;
+	by subnum visitid visname;* moseqn;
+run;
+
+data mri_external(drop=evalcom:);
+	set mri_external(rename=(moseq=moseq_));
+	by subnum visitid visname;* moseqn;
 
 	length first_comm $5000;
 	retain first_comm;
-	if first.usubjid then first_comm=strip(evalcom1);
+	if first.visitid then first_comm=strip(evalcom1);
 	if first_comm^=strip(evalcom1) then put "ER" "ROR: update MRI_build.sas for inconsistent comments.";
 	if evalcom2^='' then put "ER" "ROR: update MRI_build.sas for second comment field populated.";
 	if evalcom3^='' then put "ER" "ROR: update MRI_build.sas for third comment field populated.";
@@ -88,19 +120,27 @@ data mri_external(drop=usubjid visitnum visit evalcom:);
 	length comments $5000;
 	comments=catx(' ',evalcom1,evalcom2,evalcom3);
 
+	if moseq_^='' then moseq_n=input(strip(moseq_),best.);
+	if 1<=moseq_n<=10 then moseq=moseq_n;
+		else if 11<=moseq_n<=20 then moseq=moseq_n-10;
+		else if 21<=moseq_n<=30 then moseq=moseq_n-20;
+
+	length moseqc $2;
+	if moseq>.z then moseqc=strip(put(moseq,best.));
+
 	proc sort;
 		by subnum visitid visname modtc moseq;
 run;
 
 proc transpose data=mri_external out=mri_external_x(drop=_:) prefix=meas_;
 	by subnum visitid visname modtc;
-	id moseq;
+	id moseqc;
 	var mostresn;
 run;
 
 proc transpose data=mri_external out=mri_external_cx(drop=_:) prefix=measc_;
 	by subnum visitid visname modtc;
-	id moseq;
+	id moseqc;
 	var mostresc;
 run;
 
@@ -130,8 +170,13 @@ data mri_external_x(keep=subnum visitid visname mosttim_c meas_: measc_:);
 run;
 
 proc print data=mri_external_x (obs=20) width=min;
-	where subnum='105-005x';
+	where subnum='110-008x';
 	var subnum visitid visname meas_avg meas_2 meas_3 meas_4 meas_5 meas_6 meas_7 meas_8 meas_9 meas_10 meas_1 meas_flag;
+	title'ext';
+run;
+proc print data=mri_crf (obs=20) width=min;
+	where subnum='110-008x';
+	title'crf';
 run;
 
 %macro mri_nobs(dsn);

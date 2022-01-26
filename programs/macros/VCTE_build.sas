@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2022-01-05 Mark Woodruff make sure missing dates are sorted appropriately.
 ******************************************************************************************;
 
 data _null_;
@@ -16,6 +17,9 @@ data _null_;
 
 	** ensure DELETED var is being handled correctly **;
 	if deleted^='f' then put "ER" "ROR: update FA_build.sas to handle FA.DELETED var appropriately.";
+
+	** ensure missing dates are sorted correctly **;
+	if fadat=. and visname^='Screening' then put "ER" "ROR: update VCTE_build.sas to sort missing dates appropriately." SUBNUM= VISNAME=;
 run;
 
 data pp_final_vcte(keep=subnum visitid visname faperf_reas fafast8_dec fafast_c fadat fadat_c faorres_cap_c faorres_lsm_c facoval);

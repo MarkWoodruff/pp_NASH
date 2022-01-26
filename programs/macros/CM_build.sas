@@ -11,6 +11,7 @@
 * 2021-10-26 Mark Woodruff add pageseq_c.
 * 2021-11-22 Mark Woodruff do not print note to log if dose missing.
 * 2021-12-06 Mark Woodruff expand dose handling.
+* 2021-12-30 Mark Woodruff expand dose handling for 1 Spray.
 ******************************************************************************************;
 
 data _null_;
@@ -23,7 +24,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update CM_build.sas to handle CM.DELETED var appropriately.";
 run;
 
-data pp_final_cm;*(keep=subnum visitid visname pageseq pageseq_c cmtrt_c cmindc_c cmaeno cmmhno dose route frequency cmstdat cmendat dates coding);
+data pp_final_cm(keep=subnum visitid visname pageseq pageseq_c cmtrt_c cmindc_c cmaeno cmmhno dose route frequency cmstdat cmendat dates coding);
 	set crf.cm(encoding=any where=(pagename='Concomitant Medications' and deleted='f'));
 
 	if pageseq>.z then pageseq_c=strip(put(pageseq,best.));
@@ -38,8 +39,8 @@ data pp_final_cm;*(keep=subnum visitid visname pageseq pageseq_c cmtrt_c cmindc_
 	length dose $200;
 	if cmdosu_dec='Other' then dose=catx(' ',cmdose,cmdosuot);
 		else if index(cmdosu_dec,'=')>0 then dose=catx(' ',cmdose,scan(cmdosu_dec,1,'='));
-		else if cmdosu_dec='Puff' and cmdose^='' then dose=catx(' ',cmdose,cmdosu_dec);
-		else if cmdose^='' or cmdosu_dec^='' then put "ER" "ROR: update CM_build.sas for other dose units.";
+		else if cmdosu_dec in ('Spray','Puff') and cmdose^='' then dose=catx(' ',cmdose,cmdosu_dec);
+		else if cmdose^='' or cmdosu_dec^='' then put "ER" "ROR: update CM_build.sas for other dose units." cmdose= cmdosu_dec= subnum=;
 
 	length route $200;
 	route=catx(': ',cmroute_dec,cmrteot);

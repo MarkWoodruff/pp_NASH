@@ -8,6 +8,8 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-11-19 Mark Woodruff added Listing of AEs.
+* 2021-01-10 Mark Woodruff add active link to SRT.
+* 2022-01-19 Mark Woodruff add date of Biotel MRI transfer to MRI domain footnote and sidebar panel.
 ******************************************************************************************;
 dm 'output' clear;
 dm 'log' clear;
@@ -173,6 +175,9 @@ data eot(keep=subnum eot complet_dec);
 	set crf.ds(encoding=any where=(pagename='End of Treatment'));
 
 	eot=1;
+
+	proc sort;
+		by subnum;
 run;
 
 data patient_status(keep=subnum patient_status);
@@ -427,6 +432,40 @@ proc sql noprint;
 	select count(REPORT_PROG) into :num_domains trimmed from report_progs;
 quit;
 
+**************************;
+** get date of MRI data **;
+**************************;
+filename mri_data "&crf.";
+
+data biotel_(keep=filename);
+	did=dopen("mri_data");
+	filecount=dnum(did);
+	do i=1 to filecount;
+		filename=dread(did,i);
+		put filename= ;
+		output;
+	end;
+	rc=dclose(did);
+run;
+
+data biotel(keep=filename filedate:);
+	set biotel_;
+	if index(upcase(filename),'BOS_580_201_MRI')>0;
+	filedate=substr(filename,17,8);
+	format filedaten yymmdd10.;
+	filedaten=input(compress(filedate,'-'),yymmdd10.);
+	
+	proc sort;
+		by filedaten;
+run;
+
+%global biotel;
+data _null_;
+	set biotel;
+	by filedaten;
+	call symput('biotel',strip(put(filedaten,yymmdd10.)));
+run;
+
 *****************************************************************;
 ** get list of domain names (from filenames) for sidebar links **;
 *****************************************************************;
@@ -435,7 +474,7 @@ data report_links(keep=report_link_html);
 	by num;
 
 	if num=1 then report_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(report_link)||"</a></li>";
-		else if eof then report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Profile: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
+		else if eof then report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>MRI Data: &biotel.</p></li><li><p>Profile: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
 		else if num in (9,12,25,31,34) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 		else report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 run;
@@ -570,8 +609,6 @@ options mprint mlogic symbolgen;
 				file "&output.\&PTN..htm";
 				input;
 
-				*<a href=".\BOS-580-201_SRT.htm">srt</a>;
-
 				_infile_=tranwrd(_infile_,'</head>','<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900"></head>');
 
 				_infile_=tranwrd(_infile_,'<body class="body">','<body class="body">
@@ -581,7 +618,7 @@ options mprint mlogic symbolgen;
 						<nav class="header-outnav">                     
 							<a href=".\index.html">studies</a>                                    
 							<a href=".\patients-bos-580-201.html">patients</a>   
-							<a href="#" class="dead-link">srt</a>    
+							<a href=".\BOS-580-201_SRT.htm">srt</a>    
 							<a href="#" class="dead-link">ia</a>    
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FProtocols" target="_blank">protocol</a> 
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FData%5FMgmt%2FCRFs" target="_blank">crf</a>                          
@@ -833,14 +870,12 @@ options mprint mlogic symbolgen;
 
 				** MRI **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">mri-footnote</span> </p>',
-					'<p><span class="footnote-num">SUPER1 From BioTel</span><br>
-					 	<span class="footnote-num">SUPER2 Averages are independently calculated in this column and the BioTel average is flagged in <span class="red-footnote">red</span> if not matching.  Internally calculated average and CFB will be presented soon.</span>
-					 </p>');
+					"<p><span class='footnote-num'>SUPER1 From BioTel transfer on &biotel..</span><br>
+					 </p>");
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">mridate-footnote</span> </p>',
-					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
-						<span class="footnote-num">SUPER1 From BioTel</span><br>
-					 	<span class="footnote-num">SUPER2 Averages are independently calculated in this column and the BioTel average is flagged in <span class="red-footnote">red</span> if not matching.  Internally calculated average and CFB will be presented soon.</span>
-					 </p>');
+					"<p><span class='footnote'>Note: <span class='yellow-footnote'>yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
+						<span class='footnote-num'>SUPER1 From BioTel transfer on &biotel..</span><br>
+					 </p>");
 
 				** EOT - End of Treatment **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">eot-footnote</span> </p>',
@@ -1108,7 +1143,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				input;
 
 				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
-							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201.aspx');
+							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 				_infile_=tranwrd(_infile_,'.html','.aspx');	
 				_infile_=tranwrd(_infile_,'.htm','.aspx');	
 
@@ -1136,7 +1171,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=73,ept=73,spn=1,epn=&num_domains.);
+*%patients_domains(spt=46,ept=46,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1173,7 +1208,6 @@ data _null_;
 
 	put _infile_;
 run;
-
 
 
 
@@ -1329,8 +1363,8 @@ options mprint mlogic symbolgen;
 			<!------------>          
 			<nav class="header-outnav">                     
 				<a href=".\index.html">studies</a>                                    
-				<a href=".\patients-bos-580-201.html">patients</a>
-				<a href="#" class="dead-link">srt</a>  
+				<a href=".\patients-bos-580-201.html">patients</a> 
+				<a href=".\BOS-580-201_SRT.htm">srt</a>    
 				<a href="#" class="dead-link">ia</a>    
 				<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FProtocols" target="_blank">protocol</a> 
 				<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FData%5FMgmt%2FCRFs" target="_blank">crf</a>                          
@@ -1583,8 +1617,8 @@ options mprint mlogic symbolgen;
 		file "&output.\aspx\listings.aspx";
 		input;
 
-		*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\safety\output\BOS161721-02.htm',
-							  	  'https://bostonpharmaceuticals.sharepoint.com/721/AL/Clinical/Study%20BOS161721-02/Data_Mgmt/Patient%20Profiles/output/BOS161721-02.aspx');
+		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 		_infile_=tranwrd(_infile_,'.html','.aspx');	
 		_infile_=tranwrd(_infile_,'.htm','.aspx');	
 

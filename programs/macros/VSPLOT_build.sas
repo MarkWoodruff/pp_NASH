@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-11-29 Mark Woodruff update note to log for RR to not include 10.
+* 2022-01-05 Mark Woodruff notes to log no longer necessary, SAS adjusts automatically, removed.
 ******************************************************************************************;
 
 %include "&macros.\VS_build.sas";
@@ -51,12 +52,6 @@ run;
 
 data vsplot;
 	set vsplot;
-
-	if hrn>.z and ^(50<hrn<105) then put "ER" "ROR: update VSPLOT_build.sas for HR ranges" SUBNUM=;
-	if rrn>.z and ^(10<=rrn<25) then put "ER" "ROR: update VSPLOT_build.sas for RR ranges" SUBNUM= rrn= rr=;
-	if tempn_std>.z and ^(30<tempn_std<40) then put "ER" "ROR: update VSPLOT_build.sas for Temp ranges" SUBNUM=;
-	if bp_avg_sysn>.z and ^(80<bp_avg_sysn<210) then put "ER" "ROR: update VSPLOT_build.sas for Systolic ranges" SUBNUM=;
-	if bp_avg_dian>.z and ^(50<bp_avg_dian<120) then put "ER" "ROR: update VSPLOT_build.sas for Diastolic ranges" SUBNUM=;
 	
 	format paneln vspaneln.;
 	%macro transpose(paneln=,varin=,low=,high=,nr_low=,nr_high=);

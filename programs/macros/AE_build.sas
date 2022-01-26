@@ -11,6 +11,7 @@
 * 2021-11-29 Mark Woodruff add Ongoing to stop dates.
 * 2021-12-09 Mark Woodruff update comment.
 * 2021-12-19 Mark Woodruff stop totally blank start dates from triggering note to log.
+* 2022-01-18 Mark Woodruff increase length of aeacn_.
 ******************************************************************************************;
 
 data _null_;
@@ -23,7 +24,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update AE_build.sas to handle AE.DELETED var appropriately.";
 run;
 
-data pp_final_ae(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat aeendat start stop aeout_aesev aerel_aeser aeacn_
+data pp_final_ae;*(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat aeendat start stop aeout_aesev aerel_aeser aeacn_
 				      sae_hosp aeslife aesdisab aescong aesmie aesdth_ coding ae_flag);
 	set crf.ae(encoding=any where=(pagename='Adverse Events' and deleted='f'));
 
@@ -57,7 +58,7 @@ data pp_final_ae(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat aeen
 	length coding $5000;
 	coding=catx('/frcbrk',aeterm,coalescec(soc_term,'UNCODED'),coalescec(pt_term,'UNCODED'));
 
-	length aeacn_ $100;
+	length aeacn_ $5000;
 	aeacn_=catx('/frcbrk',aeacn_dec,catx(': ',aeacnsub_dec,aeacnsot));
 
 	length hosp_dates $100;

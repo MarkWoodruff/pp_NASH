@@ -12,6 +12,7 @@
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-11-10 Mark Woodruff keep vsnd.  add tempn_std.
 * 2021-12-05 Mark Woodruff update buildvar macro for lengths.
+* 2022-01-05 Mark Woodruff add note to log for missing dates.
 ******************************************************************************************;
 
 data _null_;
@@ -25,6 +26,9 @@ data _null_;
 
 	** catch cases where blood pressure units needs to be moved out of header **;
 	if vsbpu not in ('','mmHg') then put "ER" "ROR: update vs_build.sas to handle VSBPU units correctly.";
+
+	** ensure missing dates are sorted correctly **;
+	if vsdat=. and subnum^='115-001' then put "ER" "ROR: update vs_build.sas to handle missing dates in sorting correctly." SUBNUM=;
 run;
 
 data pp_final_vs(keep=subnum visitid visname vsnd_reas vsdat vsdat_c vspos vstimp_c vstim1_c hr hrn rr rrn temp tempn vstempl_dec bp1_sysn bp1_sys bp1_dian 

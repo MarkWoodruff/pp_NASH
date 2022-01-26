@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2022-01-05 Mark Woodruff make sure missing dates are sorted appropriately.
 ******************************************************************************************;
 
 data domain_data;
@@ -40,7 +41,8 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column visitid visname lbfast_dec lbperf1_ lbperf2_ lbperf3_ lbperf4_ lbdat_cflag lbdat_c lbtim_c lbcoval;
+			column lbdat_sort visitid visname lbfast_dec lbperf1_ lbperf2_ lbperf3_ lbperf4_ lbdat_cflag lbdat_c lbtim_c lbcoval;
+			define lbdat_sort  /order order=internal noprint;
 			define visitid     /order order=internal noprint;
 			define visname     /display "Visit";
 			define lbfast_dec  /display "Fasting for at|least 8 hours?";

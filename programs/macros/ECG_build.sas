@@ -11,6 +11,7 @@
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-11-11 Mark Woodruff keep numeric values for ECGPLOT.
+* 2022-01-05 Mark Woodruff handle sorting of missing dates.
 ******************************************************************************************;
 
 data _null_;
@@ -23,9 +24,15 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update ECG_build.sas to handle ECG.DELETED var appropriately.";
 run;
 
-data pp_final_ecg(keep=subnum visitid visname egnd egnd_reas egdat egdat_c egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf egqtcf_c egorres_c
-		eghr egqt egpr egqrs egrr egqtcf);
+data ecg;
 	set crf.eg(encoding=any where=(pagename='ECG' and deleted='f'));
+run;
+
+%missing_dates(dsn=ecg,date=egdat,pgmname=ECG_build);
+
+data pp_final_ecg(keep=subnum visitid visname egnd egnd_reas egdat_sort egdat egdat_c egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf egqtcf_c egorres_c
+		eghr egqt egpr egqrs egrr egqtcf);
+	set ecg;
 
 	length egnd_reas $500;
 	if egnd^='' or egreasnd^='' then egnd_reas='Not Done: '||strip(egreasnd);
@@ -59,5 +66,5 @@ data pp_final_ecg(keep=subnum visitid visname egnd egnd_reas egdat egdat_c egtim
 	if egorres_dec^='' or egspec^='' then egorres_c=catx(': ',egorres_dec,egspec);
 
 	proc sort;
-		by subnum egdat;
+		by subnum egdat_sort egdat;
 run;

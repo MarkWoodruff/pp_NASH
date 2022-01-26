@@ -1,22 +1,23 @@
+
+
+***********
+** TO-DO **
+*********** 
+
+
 For Etienne:
 	1) values that represent stopping criteria, as defined in the protocol
-	2) listing of G3 or G4 safety labs
-	3) listing of ECGs
-	3) AEs of Special Interest
-	4) listing of G3 or G4 vital signs
+	2) DONE - listing of G3 or G4 safety labs
+	3) DONE - listing of ECGs
+	3) DONE - AEs of Special Interest
+	4) DONE - listing of G3 or G4 vital signs
 	5) other things listed in Medical Monitor reports that he did not specifically call out
-		a) listing of physical exam
+		a) DONE - listing of physical exam
 		b) graph of QTcF (might as well do all)
-		c) listing of demographics
-	6) Shelley will provide table of site number and time zone, use that and TIME OF SYRINGE LOADED (will be added to DB) to determine timing difference between dose administration adn time of syringe loaded.  Flag those later than 24 hours.
+		c) DONE - listing of demographics
 External Hepatologist
 	1) Needs profile access
-	2) interim analysis will be sometime next year
-	3) first SRT will be sometime early December, all outputs ready 5 business days in advance.
-	4) for Tanya's ECG/Vitals emails, just do frequencies of those meeting things in her email.  Labs by grade.
 	5) ia will be me, tanja, alicia
-	6) need to have RTF
-	7) listings can be Excel
 
 *************
 ** DOMAINS **
@@ -25,21 +26,11 @@ External Hepatologist
 -Local Labs (WILL ALERT)
 -End of Study (WILL ALERT)
 
-***********
-** TO-DO **
-***********
--check unblinding
--add subject numbers to HTML
-
--add graphs for labs
--macro to sort with unscheduled visits, update all domains
--patient dashboard - Lower Right: Indicator for SAE or G3/G4 AE
-
 **************
 ** SCHEDULE **
 **************
 -first SRT is 1/18.
--TLs due 1/11.
+-TLs due EOD 1/10.
 -Datacut 1/6. 
 -first interim analysis is 6 weeks after 90% of patients have completed week 6 assessment.
 
@@ -81,6 +72,7 @@ gen_t_disp
 	t_disp_html_ia - Placebo, A1, A2, A3, A4, A5, Overall(for BL tables)
 	t_disp_rtf_ia  - Placebo, A1, A2, A3, A4, A5, Overall(for BL tables)
 
+DONE -need to add T2DM somewhere
 DONE - BOTH - Disposition
 DONE - BOTH - Demographics - T2D is from FGF form at baseline, checkbox if doesn't have
 IA - Exposure - weight compliance by last visit completed

@@ -45,12 +45,12 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column qsdat visname_ visname qsperf_reas qsdat_cflag qsdat_c c1 c2;*
+			column qsdat_sort visname_ visname qsperf_reas qsdat_cflag qsdat_c c1 c2;*
 				   ("In the last month, on averageSPNHDRFRCNDRLNCNTR" 
 				   ("Juice/Soda (pop)SPNHDRFRCCNTR" qs01_dec qs02_dec qs03_dec qs04_dec qs05_dec) space
 				   ("AlcoholSPNHDRFRCCNTR" qs06_dec qs07_dec qs08_dec qs09_dec) space
 				   ("Sweet/DessertSPNHDRFRCCNTR" qs10_dec qs11_dec qs12_dec qs13_dec));
-			define qsdat       /order order=internal noprint;
+			define qsdat_sort  /order order=internal noprint;
 			define visname_    /display noprint;
 			define visname     /display group "Visit";
 			define qsperf_reas /display group "Completed?|Reason";

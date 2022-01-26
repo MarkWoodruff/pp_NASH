@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2022-01-18 Mark Woodruff edit sort order for missing dates.
 ******************************************************************************************;
 
 data _null_;
@@ -17,7 +18,7 @@ data _null_;
 	** ensure DELETED var is being handled correctly **;
 	if deleted^='f' then put "ER" "ROR: update QS_build.sas to handle QS.DELETED var appropriately.";
 
-	if qsdat=. then put "ER" "ROR: update QS_build.sas to handle missing dates in sorting.";
+	*if qsdat=. then put "ER" "ROR: update QS_build.sas to handle missing dates in sorting.";
 run;
 
 data qs;
@@ -33,9 +34,15 @@ data qs;
 		by subnum qsdat visitid visname;
 run;
 
-data pp_final_qs(keep=subnum visitid visname qsperf_reas qsdat qsdat_c c1 c2);
+%missing_dates(dsn=qs,date=qsdat,date2=,pgmname=QS_build);
+
+proc sort data=qs;
+	by subnum qsdat_sort visitid visname;
+run;
+
+data pp_final_qs(keep=subnum visitid visname qsperf_reas qsdat qsdat_c qsdat_sort c1 c2);
 	set qs;
-	by subnum qsdat visitid visname;
+	by subnum qsdat_sort visitid visname;
 
 	length c1 c2 $200;
 	c1="BLDJuice/Soda (pop)"; c2=' ';

@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2022-01-24 Mark Woodruff refine note to log now that DSTERM is populated.
 ******************************************************************************************;
 
 data _null_;
@@ -28,7 +29,7 @@ data pp_final_eos(keep=subnum visitid visname dsstdat_c dscomp_dec dsdecod_prim_
 
 	length primary_reason $5000;
 	primary_reason=catx(': ',dsdecod_prim_dec,dsterm);
-	if dsdecdot^='' or dsdecod_covid_dec^='' or dsterm^='' then 
+	if dsdecdot^='' or dsdecod_covid_dec^='' then 
 		put "ER" "ROR: update EOS_build.sas to make sure EOS reasons working, they are now populated." SUBNUM=;
 
 	length covid $5000;

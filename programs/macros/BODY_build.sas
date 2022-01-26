@@ -9,17 +9,24 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching VS.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2022-01-05 Mark Woodruff handle sorting of records with missing dates.
 ******************************************************************************************;
 
 data _null_;
 	set crf.vs(encoding=any where=(pagename='Body Measurements'));
 
 	** ensure DELETED var is being handled correctly **;
-	if deleted^='f' then put "ER" "ROR: update UNS_build.sas to handle SV.DELETED var appropriately.";
+	if deleted^='f' then put "ER" "ROR: update BODY_build.sas to handle SV.DELETED var appropriately.";
 run;
 
-data pp_final_body(keep=subnum visitid visname vsperf_n vsreasnd vsdat vsdat_c waist weight height height_bmi vsbmi_c);
+data body;
 	set crf.vs(encoding=any where=(pagename='Body Measurements' and deleted='f'));
+run;
+
+%missing_dates(dsn=body,date=vsdat,pgmname=BODY_build);
+
+data pp_final_body(keep=subnum visitid visname vsperf_n vsreasnd vsdat_sort vsdat vsdat_c waist weight height height_bmi vsbmi_c);
+	set body;
 
 	length vsdat_c $20;
 	if vsdat>.z then vsdat_c=strip(put(vsdat,yymmdd10.));
@@ -37,6 +44,5 @@ data pp_final_body(keep=subnum visitid visname vsperf_n vsreasnd vsdat vsdat_c w
 	if vsbmi>.z then vsbmi_c=strip(put(vsbmi,best.));
 
 	proc sort;
-		by subnum vsdat;
+		by subnum vsdat_sort vsdat;
 run;
-

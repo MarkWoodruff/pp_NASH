@@ -10,12 +10,16 @@
 * 2021-10-01 Mark Woodruff refine check on pagename now that have more records.
 * 2021-10-15 Mark Woodruff use correct pagename value, now that it is populated with Reconsent records.
 * 2021-12-09 Mark Woodruff remove check on pagename.
+* 2022-01-05 Mark Woodruff make sure missing dates are sorted appropriately.
 ******************************************************************************************;
 
 ** ensure DELETED var is being handled correctly **;
 data _null_;
-	set crf.ds(encoding=any);
+	set crf.ds(encoding=any where=(pagename='Reconsent Log'));
 	if deleted^='f' then put "ER" "ROR: handle DELETED var appropriately.";
+
+	** ensure missing dates are sorted correctly **;
+	if ricdat=. then put "ER" "ROR: update RECON_build.sas to sort missing dates appropriately." SUBNUM=;
 run;
 
 data pp_final_recon(keep=subnum dsseq_c rpver ricv ricdat_c);

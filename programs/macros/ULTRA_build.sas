@@ -10,6 +10,7 @@
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-12-06 Mark Woodruff remove check now that faorres populated.
+* 2022-01-05 Mark Woodruff make sure missing dates are sorted appropriately.
 ******************************************************************************************;
 
 data _null_;
@@ -17,6 +18,9 @@ data _null_;
 
 	** ensure DELETED var is being handled correctly **;
 	if deleted^='f' then put "ER" "ROR: update ULTRA_build.sas to handle FA.DELETED var appropriately.";
+
+	** ensure missing dates are sorted correctly **;
+	*if fadat=. and visname^='Screening' then put "ER" "ROR: update ULTRA_build.sas to sort missing dates appropriately." SUBNUM= VISNAME=;
 run;
 
 data pp_final_ultra(keep=subnum visitid visname faperf_reas fadat fadat_c faorres_g_dec faorres_s_dec faorres_dec);
@@ -30,4 +34,10 @@ data pp_final_ultra(keep=subnum visitid visname faperf_reas fadat fadat_c faorre
 
 	proc sort;
 		by subnum fadat visitid;
+run;
+
+%missing_dates(dsn=pp_final_ultra,date=fadat,date2=,pgmname=ULTRA_build);
+
+proc sort;
+	by subnum fadat_sort visitid;
 run;

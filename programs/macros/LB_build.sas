@@ -9,6 +9,8 @@
 * Date       By            Description of Change
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-12-19 Mark Woodruff only trigger note to log if actual lab tests were done.
+* 2021-12-30 Mark Woodruff only trigger note to log if actual lab tests were done, using *_dec vars.
+* 2022-01-05 Mark Woodruff handle sorting of missing dates using both regular date and cortisol date.
 ******************************************************************************************;
 
 data _null_;
@@ -18,11 +20,17 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update LB_build.sas to handle LB.DELETED var appropriately.";
 run;
 
-data pp_final_lb(keep=subnum visitid visname lbhem_dec lbchem_dec lbser_dec lbcoag_dec lbtsh_dec lbfsh_dec lbhcg_dec lbcovid_dec lbdat lbdat_c lbtim lbtim_c
-					  lbcortsl_dec lbdatcort_c lbtimcort_c lbfast_dec lbcoval);
+data lb;
 	set crf.lb(encoding=any where=(pagename='Central Labs' and deleted='f'));
+run;
 
-	if lbdat=. and (lbhem^='' or lbchem^='') then put "ER" "ROR: update LB_build.sas to handle Unscheduled visits and/or missing dates correctly." SUBNUM=;
+%missing_dates(dsn=lb,date=lbdat,date2=lbdat_cort,pgmname=LB_build);
+
+data pp_final_lb(keep=subnum visitid visname lbhem_dec lbchem_dec lbser_dec lbcoag_dec lbtsh_dec lbfsh_dec lbhcg_dec lbcovid_dec lbdat_sort lbdat lbdat_c lbtim lbtim_c
+					  lbcortsl_dec lbdatcort_c lbtimcort_c lbfast_dec lbcoval);
+	set lb;
+
+	if lbdat=. and (lbhem_dec not in ('No','') or lbchem_dec not in ('No','')) then put "ER" "ROR: update LB_build.sas to handle Unscheduled visits and/or missing dates correctly." SUBNUM= lbdat= lbhem= lbchem=;
 
 	length lbdat_c $12;
 	if lbdat>.z then lbdat_c=strip(put(lbdat,yymmdd10.));
@@ -41,5 +49,5 @@ data pp_final_lb(keep=subnum visitid visname lbhem_dec lbchem_dec lbser_dec lbco
 run;
 
 proc sort data=pp_final_lb;
-	by subnum lbdat lbtim;
+	by subnum lbdat_sort lbdat lbtim;
 run;
