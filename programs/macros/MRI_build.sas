@@ -13,6 +13,7 @@
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-12-06 Mark Woodruff remove sort by dates (some are missing), add circuit breaker for unscheduleds.
 * 2022-01-10 Mark Woodruff handle post-Screening visits that are labeled differently than CRF (Week 6).
+* 2022-02-01 Mark Woodruff handle post-Screening visits that are labeled differently than CRF (Week 12).
 ******************************************************************************************;
 
 data _null_;
@@ -89,7 +90,11 @@ data mri_external(drop=visitnum visit cohort);
 					visname='Day 43 bi-weekly';
 				end;
 		end;
-		else put "ER" "ROR: update MRI_build.sas for new BioTel visits that need standardizing.";
+		else if visit='Week 12' then do;
+			visitid=12;
+			visname='Day 85';
+		end;
+		else put "ER" "ROR: update MRI_build.sas for new BioTel visits that need standardizing." cohort= visit=;
 run;
 
 proc sort data=mri_external;
