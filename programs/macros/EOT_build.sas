@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-12-13 Mark Woodruff update primary reason.
 * 2022-01-18 Mark Woodruff update note to log.
+* 2022-02-14 Mark Woodruff remove note to log as primary_reason working as intended.
 ******************************************************************************************;
 
 data _null_;
@@ -18,7 +19,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update EX_build.sas to handle EX.DELETED var appropriately.";
 run;
 
-data pp_final_eot;*(keep=subnum visitid visname dsexdat_c dsstdat_c complet_dec dsdecod_dec dsaeno dthdat_c dspdno dablind_dec primary_reason);
+data pp_final_eot(keep=subnum visitid visname dsexdat_c dsstdat_c complet_dec dsdecod_dec dsaeno dthdat_c dspdno dablind_dec primary_reason);
 	set crf.ds(encoding=any where=(pagename='End of Treatment' and deleted='f'));
 
 	%macro datec(var=);
@@ -31,8 +32,6 @@ data pp_final_eot;*(keep=subnum visitid visname dsexdat_c dsstdat_c complet_dec 
 
 	length primary_reason $5000;
 	primary_reason=catx(': ',dsdecod_dec,dswsoth,dspdoth,covidsp_dec,dstermot);
-	if subnum^='104-003' and (dswsoth^='' or dspdoth^='' or covidsp_dec^='' or dstermot^='') then 
-		put "ER" "ROR: update EOT_build.sas to make sure EOT reasons working, they are now populated.";
 
 	proc sort;
 		by subnum visitid visname;

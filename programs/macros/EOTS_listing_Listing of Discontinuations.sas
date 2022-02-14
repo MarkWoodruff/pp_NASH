@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2022-02-09 Mark Woodruff remove circuit breakers as EOT_REASON and EOS_REASON verified working.
 ******************************************************************************************;
 
 data eot(keep=subnum eot_lastdose eot_date eot_reason);	
@@ -18,8 +19,6 @@ data eot(keep=subnum eot_lastdose eot_date eot_reason);
 
 	length eot_reason $5000;
 	eot_reason=catx(': ',dsdecod_dec,dswsoth,dspdoth,covidsp_dec,dstermot);
-	if dswsoth^='' or dspdoth^='' or covidsp_dec^='' or dstermot^='' then 
-		put "ER" "ROR: update EOTS_listing.sas to make sure EOT reasons working, they are now populated.";
 
 	proc sort;
 		by subnum;
@@ -33,8 +32,6 @@ data eos(keep=subnum eos_date eos_reason);
 
 	length eos_reason $5000;
 	eos_reason=catx(': ',dsdecod_prim_dec,dsterm);
-	if dsdecdot^='' or dsdecod_covid_dec^='' or dsterm^='' then 
-		put "ER" "ROR: update EOTS_listing.sas to make sure EOS reasons working, they are now populated." SUBNUM=;
 
 	proc sort;
 		by subnum;

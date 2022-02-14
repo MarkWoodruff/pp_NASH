@@ -7,19 +7,20 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2022-02-14 Mark Woodruff also merge by visitseq so can populate unscheduleds.
 ******************************************************************************************;
 
 %macro missing_dates(dsn=,date=,date2=,pgmname=);
 
-	data sv(keep=subnum visitid visname svstdt);
-		set crf.sv(encoding=any where=(pagename='Visit Date' and deleted='f' and svstdt>.z and visitid^=777));
+	data sv(keep=subnum visitid visname visitseq svstdt);
+		set crf.sv(encoding=any where=(pagename='Visit Date' and deleted='f' and svstdt>.z));* and visitid^=777));
 
 		proc sort;
-			by subnum visitid visname;
+			by subnum visitid visname visitseq;
 	run;
 
 	proc sort data=&dsn.;
-		by subnum visitid visname;
+		by subnum visitid visname visitseq;
 	run;
 
 	data _null_;
@@ -38,7 +39,7 @@
 	data &dsn._nodate;
 		merge sv
 			  &dsn._nodate(in=inf);
-		by subnum visitid visname;
+		by subnum visitid visname visitseq;
 		if inf;
 	run;
 

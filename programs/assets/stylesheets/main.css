@@ -11,6 +11,7 @@
 * 2020-12-11 Mark Woodruff add green-text and db-locked-card
 * 2021-03-01 Mark Woodruff add p-smaller for 356-101 description now that locked
 * 2021-04-09 Mark Woodruff change green-text to db-locked-text
+* 2022-02-04 Mark Woodruff make screen failures different color than discontinued patients.
 ******************************************************************************************/
 
 /* http://meyerweb.com/eric/tools/css/reset/ 
@@ -192,6 +193,24 @@ body {
 	justify-content: center;
 	background: lightgray;
 	padding: 44px 0 44px 0;
+}
+
+.redirect {
+	padding: 100px 80px 40px 80px;
+	font-weight: normal;
+}
+
+.redirect-text {
+	font-size: 24px;
+	font-weight: 300;
+}
+
+.redirect-link {
+	color: lightgreen;
+	text-decoration: underline;
+	text-decoration-line: 24px;
+	font-size: 26px;
+	font-weight: 300;
 }
 
 .card-grid {
@@ -534,19 +553,24 @@ a {
 }
 
 .active-patient {
-	background: #e5fbe5;/*#ccebc5;	*/
+	background: #e5fbe5; /* light green */
 }
 
 .elig-not-rand-patient {
-	background: #d3d3d3;
+	background: #d3d3d3; /* light gray */
 }
 
 .discontinued-patient {
 	background: darkgrey;
 }
 
+.screen-failure {
+	background: lightgray;
+}
+
 .active-patient:hover,
 .elig-not-rand-patient:hover,
+.screen-failure:hover,
 .discontinued-patient:hover {
 	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 	transform: scale(1.05, 1.05);

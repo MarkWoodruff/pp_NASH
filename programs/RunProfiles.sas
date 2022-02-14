@@ -10,6 +10,9 @@
 * 2021-11-19 Mark Woodruff added Listing of AEs.
 * 2021-01-10 Mark Woodruff add active link to SRT.
 * 2022-01-19 Mark Woodruff add date of Biotel MRI transfer to MRI domain footnote and sidebar panel.
+* 2022-02-08 Mark Woodruff update Sharepoint link to new site.  Comment out new links so can update in old location.
+* 2022-02-09 Mark Woodruff fix the way 12- is changed to avoid break, and to now avoid messing up site 112 patient links.
+* 2022-02-09 Mark Woodruff add link for MRI Tracking spreadsheet.
 ******************************************************************************************;
 dm 'output' clear;
 dm 'log' clear;
@@ -238,13 +241,14 @@ data patient_cards(keep=subnum part_cohort latest_visit patient_status);
 	if index(part_cohort,': Cohort TBD')>0 and patient_status='Not Eligible' then part_cohort=strip(scan(part_cohort,1,':'));
 run;
 
-data patient_cards_code(keep=patient_cards_code);
+data patient_cards_code;*(keep=patient_cards_code);
 	set patient_cards;
 	by subnum;
 	
 	length status_tag $100;
 	if lowcase(patient_status) in ('enrolled','eligible','consented','active') then status_tag='active-patient';
 		else if lowcase(patient_status)='not yet rand.' then status_tag='active-patient';
+		else if lowcase(patient_status)='not eligible' then status_tag='screen-failure';
 		else status_tag='discontinued-patient';
 
 	length patient_cards_code $32767;
@@ -676,7 +680,7 @@ options mprint mlogic symbolgen;
 				if index(_infile_,'td class="')>0 and index(_infile_,'created')=0 then _infile_=tranwrd(_infile_,'created',' ');
 
 				** avoid hard breaks on hyphens **;
-				_infile_=tranwrd(_infile_,'12-','12&#8209;');
+				if index(_infile_,'112-0')=0 then _infile_=tranwrd(_infile_,'12-','12&#8209;');
 				_infile_=tranwrd(_infile_,'1-2','1&#8209;2');
 				_infile_=tranwrd(_infile_,'3-4','3&#8209;4');
 				_infile_=tranwrd(_infile_,'5-7','5&#8209;7');
@@ -843,22 +847,6 @@ options mprint mlogic symbolgen;
 				if index(_infile_,'Central')>0 and index(_infile_,'Chemistry</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Chemistry</td>','Chemistry<button class="toggle-button" id="toggle-lbcc" onclick="textLBCC()">Show Other Vars</button></td>');
 				if index(_infile_,'Central')>0 and index(_infile_,'Hematology</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Hematology</td>','Hematology<button class="toggle-button" id="toggle-lbch" onclick="textLBCH()">Show Other Vars</button></td>');
 				if index(_infile_,'Central')>0 and index(_infile_,'Categories</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Categories</td>','Categories<button class="toggle-button" id="toggle-lbco" onclick="textLBCO()">Show Other Vars</button></td>');
-				/*
-				** PCT coding toggling **;
-				if index(_infile_,'Prior')>0 and index(_infile_,'Cancer') and index(_infile_,'Therapy</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Therapy</td>','Therapy<button class="toggle-button" id="toggle-pct" onclick="textPCT()">Show Coding</button></td>');
-				
-				** CM coding toggling **;
-				if index(_infile_,'Concomitant')>0 and index(_infile_,'Medications</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Medications</td>','Medications<button class="toggle-button" id="toggle-cm" onclick="textCM()">Show Coding</button></td>');
-				
-				** AE coding toggling **;
-				if index(_infile_,'Adverse')>0 and index(_infile_,'Events</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Events</td>','Events<button class="toggle-button" id="toggle-ae" onclick="textAE()">Show Coding</button></td>');
-				
-				** TL toggle only measurements **;
-				if index(_infile_,'Target')>0 and index(_infile_,'Lesion')>0 and index(_infile_,'Assessments</td>')>0 and index(_infile_,'Non')=0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'Assessments</td>','Assessments<button class="toggle-button" id="toggle-tl" onclick="textTL()">Show Only Measurements</button></td>');
-
-				** RS toggle only investigator responses **;
-				if index(_infile_,'Response')>0 and index(_infile_,'Summary')>0 and index(_infile_,'1.1</td>')>0 and index(_infile_,'domain-title')>0 then _infile_=tranwrd(_infile_,'1.1</td>','1.1<button class="toggle-button" id="toggle-rs" onclick="textRS()">Show Only Investigator Responses</button></td>');
-*/
 
 				***************;
 				** FOOTNOTES **;
@@ -1038,44 +1026,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 							<span class="orange-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orange</span> = Grade 2 (>480 - &#8804;500 msec), <br>
 							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (>500 msec)</span>
 					  </p>');
-/*
-				
-				** DM - Demographics **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">dm-footnote</span> </p>'
-					,'<p><span class="footnote">Note: Ages <18 are highlighted in <span class="red-footnote">red</span>, as this was an inclusion criteria.</span> </p>');
 
-				** TL - Target Lesion **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">tl-footnote</span> </p>',
-					'<p><span class="footnote-num">SUPER1 LD = Longest Diameter, SAD = Short Axis Diameter (Nodes Only).</span><br><span class="footnote-num">SUPER2 Sum is calculated within clinical database.  Sum is checked against an independently calculated sum of measurements.  Incorrect values will be flaged in <span class="red-footnote">red</span>, and correct values will have a check mark (checkmark).  When a patient has any incorrect sums, an additional column showing the independently calculated sums will appear.</span></span></p>');
-
-				** RS - Response **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">rs-footnote</span> </p>',
-					'<p><span class="footnote">Note: <span class="green-footnote">Green</span> column headers indicate the column was programmatically created.  Target, Non-Target, and Overall responses are calculated independently and compared to the Investigator responses.  When they match, a check mark will be placed next to the Investigator response.  When they do not match, the Investigator response will be highlighted in <span class="red-footnote">red</span>, and an additional column showing the independently programmed response will appear, with a <span class="green-footnote">green</span> header.</span></span></p>');
-
-				** VD - Visit Dates **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">vd-footnote</span> </p>',
-					'<p><span class="footnote">Note: <span class="green-footnote">Green</span> column headers indicate the column was programmatically created.  <span class="red-footnote">Red</span> cells indicate visit occurred outside of protocol-defined window.</span> </p>');
-
-				** HTWT - Height and Weight **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">htwt-footnote</span> </p>',
-					'<p><span class="footnote-num">SUPER1 Screening/Baseline records are from the Height and Weight CRF, post-Screening/Baseline records are from the Weight CRF.</span></p>');
-
-				** ECG - Electrocardiogram **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">ecg-footnote</span> </p>'
-					,'<p><span class="footnote-num">SUPER1 QTcF (msec) values >470 at Screening/Baseline are highlighted in <span class="red-footnote">red</span>, as this was an inclusion criteria.</span><br><span class="footnote-num">SUPER2 NCS = Not Clinically Significant, CS = Clinically Significant.  CS Interpretations will be highlighted in <span class="red-footnote">red.</span></span> </p>');
-
-				** SCT - Subsequent Cancer Therapy **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">sct-footnote</span> </p>'
-					,'<p><span class="footnote-num">SUPER1 Treatment: WHODrug Anatomical Main Group/Product Name.<br>Surgery: MedDRA Body System/Preferred Term.</span></p>');
-
-				** LBPLOTH - Labs - Hema Plots **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbploth-footnote</span> </p>',
-					'<p><span class="footnote">Note:</span> <span class="footnote" style="color: #add8e6">Blue bands</span> <span class="footnote" style="color: #ffffff">indicate normal ranges.  Values outside those ranges are <span class="red-footnote">red</span>.</span></p>');
-
-				** AE - Adverse Events **;
-				_infile_=tranwrd(_infile_,'<p><span class="footnote">ae-footnote</span> </p>'
-					,"<p><span class='footnote-num'>SUPER1 These fields are from an SAE Summary spreadsheet, delivered monthly.  Current version is &sae_date.</span> </p>");
-*/
 				****************************;
 				** LAB DROPDOWN SELECTORS **;
 				****************************;
@@ -1142,8 +1093,14 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				file "&output.\aspx\&PTN..aspx";
 				input;
 
+				** old site **;
 				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
+
+				** new site **;
+				*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
+
 				_infile_=tranwrd(_infile_,'.html','.aspx');	
 				_infile_=tranwrd(_infile_,'.htm','.aspx');	
 
@@ -1200,8 +1157,14 @@ data _null_;
 	file "&output.\aspx\patients-BOS-580-201.aspx";
 	input;
 
+	** old site **;
 	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
+
+	** new site **;
+	*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
+
 	_infile_=tranwrd(_infile_,'.html','.aspx');	
 	_infile_=tranwrd(_infile_,'.htm','.aspx');	
 	_infile_=tranwrd(_infile_,' – ',' &#8209; ');
@@ -1281,10 +1244,16 @@ data listing_links(keep=listing_link_html);
 	set listing_progs end=eof;
 	by num;
 
+	length listing_link_html $5000;
 	if num=1 then listing_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(listing_link)||"</a></li>";
-		else if eof then listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Report: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
+		else if eof then listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Report: &today.</p></li>
+		<li><br><a href='https://bostonpharmaceuticals.sharepoint.com/:x:/r/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_MRI_tracking.xlsx' target='_blank'>
+		MRI Tracking<br><img src='..\programs\assets\images\Excel_64x64.png' alt='Excel'></a></li><br><li><a href='#top'>Return to Top</a></li>";
 		else listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li>";
 run;
+
+*OLD WAY https://bostonpharmaceuticals.sharepoint.com/:x:/r/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output;
+*NEW WAY https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output;
 
 data _null_;
 	set listing_links end=eof;
@@ -1411,7 +1380,7 @@ options mprint mlogic symbolgen;
 		if index(_infile_,'td class="')>0 and index(_infile_,'created')=0 then _infile_=tranwrd(_infile_,'created',' ');
 
 		** avoid hard breaks on hyphens **;
-		if index(_infile_,'href')=0 then _infile_=tranwrd(_infile_,'12-','12&#8209;');
+		if index(_infile_,'href')=0 and index(_infile_,'112-0')=0 then _infile_=tranwrd(_infile_,'12-','12&#8209;');
 		_infile_=tranwrd(_infile_,'Gamma-','Gamma&#8209;');
 		_infile_=tranwrd(_infile_,'Life-','Life&#8209;');
 		_infile_=tranwrd(_infile_,'gastro-','gastro&#8209;');
@@ -1617,8 +1586,14 @@ options mprint mlogic symbolgen;
 		file "&output.\aspx\listings.aspx";
 		input;
 
+		** old site **;
 		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
+
+		** new site **;
+		*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
+
 		_infile_=tranwrd(_infile_,'.html','.aspx');	
 		_infile_=tranwrd(_infile_,'.htm','.aspx');	
 

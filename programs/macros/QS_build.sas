@@ -10,6 +10,7 @@
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2022-01-18 Mark Woodruff edit sort order for missing dates.
+* 2022-02-14 Mark Woodruff add VISITSEQ to missing dates call.
 ******************************************************************************************;
 
 data _null_;
@@ -31,16 +32,16 @@ data qs;
 	if qsdat>.z then qsdat_c=strip(put(qsdat,yymmdd10.));
 
 	proc sort;
-		by subnum qsdat visitid visname;
+		by subnum qsdat visitid visitseq visname;
 run;
 
 %missing_dates(dsn=qs,date=qsdat,date2=,pgmname=QS_build);
 
 proc sort data=qs;
-	by subnum qsdat_sort visitid visname;
+	by subnum qsdat_sort visitid visitseq visname;
 run;
 
-data pp_final_qs(keep=subnum visitid visname qsperf_reas qsdat qsdat_c qsdat_sort c1 c2);
+data pp_final_qs(keep=subnum visitid visitseq visname qsperf_reas qsdat qsdat_c qsdat_sort c1 c2);
 	set qs;
 	by subnum qsdat_sort visitid visname;
 

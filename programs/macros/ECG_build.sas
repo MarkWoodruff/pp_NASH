@@ -12,6 +12,7 @@
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-11-11 Mark Woodruff keep numeric values for ECGPLOT.
 * 2022-01-05 Mark Woodruff handle sorting of missing dates.
+* 2022-02-14 Mark Woodruff add VISITSEQ to missing dates call.
 ******************************************************************************************;
 
 data _null_;
@@ -30,7 +31,7 @@ run;
 
 %missing_dates(dsn=ecg,date=egdat,pgmname=ECG_build);
 
-data pp_final_ecg(keep=subnum visitid visname egnd egnd_reas egdat_sort egdat egdat_c egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf egqtcf_c egorres_c
+data pp_final_ecg(keep=subnum visitid visname visitseq egnd egnd_reas egdat_sort egdat egdat_c egtims_c egtim_c eghr_c egqt_c egpr_c egqrs_c egrr_c egqtcf egqtcf_c egorres_c
 		eghr egqt egpr egqrs egrr egqtcf);
 	set ecg;
 

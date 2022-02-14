@@ -3,28 +3,14 @@
 ***********
 ** TO-DO **
 *********** 
-
-
-For Etienne:
-	1) values that represent stopping criteria, as defined in the protocol
-	2) DONE - listing of G3 or G4 safety labs
-	3) DONE - listing of ECGs
-	3) DONE - AEs of Special Interest
-	4) DONE - listing of G3 or G4 vital signs
-	5) other things listed in Medical Monitor reports that he did not specifically call out
-		a) DONE - listing of physical exam
-		b) graph of QTcF (might as well do all)
-		c) DONE - listing of demographics
-External Hepatologist
-	1) Needs profile access
-	5) ia will be me, tanja, alicia
+MRI Tracking
+	-no Unscheduleds.  Have an alert in my program for if those happen.
 
 *************
 ** DOMAINS **
 *************
 -PI Signature (WILL ALERT)
 -Local Labs (WILL ALERT)
--End of Study (WILL ALERT)
 
 **************
 ** SCHEDULE **

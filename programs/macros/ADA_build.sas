@@ -21,7 +21,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update ADA_build.sas to handle LB.DELETED var appropriately.";
 run;
 
-data pp_final_ada(keep=subnum visitid visname lbperf_reas lbdat lbdat_c lbtim_c lbcoval);
+data pp_final_ada(keep=subnum visitid visname visitseq lbperf_reas lbdat lbdat_c lbtim_c lbcoval);
 	set crf.lb(encoding=any where=(pagename='ADA Collection' and deleted='f'));
 
 	length lbperf_reas $700;
@@ -34,7 +34,7 @@ data pp_final_ada(keep=subnum visitid visname lbperf_reas lbdat lbdat_c lbtim_c 
 	if lbtim>.z then lbtim_c=strip(put(lbtim,time5.));
 
 	proc sort;
-		by subnum visitid;
+		by subnum visitid visitseq;
 run;
 
 %missing_dates(dsn=pp_final_ada,date=lbdat,date2=,pgmname=ADA_build);

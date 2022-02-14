@@ -11,6 +11,7 @@
 * 2021-12-19 Mark Woodruff only trigger note to log if actual lab tests were done.
 * 2021-12-30 Mark Woodruff only trigger note to log if actual lab tests were done, using *_dec vars.
 * 2022-01-05 Mark Woodruff handle sorting of missing dates using both regular date and cortisol date.
+* 2022-02-14 Mark Woodruff add VISITSEQ to missing dates call.
 ******************************************************************************************;
 
 data _null_;
@@ -26,7 +27,7 @@ run;
 
 %missing_dates(dsn=lb,date=lbdat,date2=lbdat_cort,pgmname=LB_build);
 
-data pp_final_lb(keep=subnum visitid visname lbhem_dec lbchem_dec lbser_dec lbcoag_dec lbtsh_dec lbfsh_dec lbhcg_dec lbcovid_dec lbdat_sort lbdat lbdat_c lbtim lbtim_c
+data pp_final_lb(keep=subnum visitid visname visitseq lbhem_dec lbchem_dec lbser_dec lbcoag_dec lbtsh_dec lbfsh_dec lbhcg_dec lbcovid_dec lbdat_sort lbdat lbdat_c lbtim lbtim_c
 					  lbcortsl_dec lbdatcort_c lbtimcort_c lbfast_dec lbcoval);
 	set lb;
 

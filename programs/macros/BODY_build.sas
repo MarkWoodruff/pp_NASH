@@ -10,6 +10,7 @@
 * 2021-10-26 Mark Woodruff add flagging for dates not matching VS.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2022-01-05 Mark Woodruff handle sorting of records with missing dates.
+* 2022-02-14 Mark Woodruff add VISITSEQ to missing dates call.
 ******************************************************************************************;
 
 data _null_;
@@ -25,7 +26,7 @@ run;
 
 %missing_dates(dsn=body,date=vsdat,pgmname=BODY_build);
 
-data pp_final_body(keep=subnum visitid visname vsperf_n vsreasnd vsdat_sort vsdat vsdat_c waist weight height height_bmi vsbmi_c);
+data pp_final_body(keep=subnum visitid visname visitseq vsperf_n vsreasnd vsdat_sort vsdat vsdat_c waist weight height height_bmi vsbmi_c);
 	set body;
 
 	length vsdat_c $20;

@@ -11,6 +11,7 @@
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-12-06 Mark Woodruff remove check now that faorres populated.
 * 2022-01-05 Mark Woodruff make sure missing dates are sorted appropriately.
+* 2022-02-14 Mark Woodruff add VISITSEQ to missing dates call.
 ******************************************************************************************;
 
 data _null_;
@@ -23,7 +24,7 @@ data _null_;
 	*if fadat=. and visname^='Screening' then put "ER" "ROR: update ULTRA_build.sas to sort missing dates appropriately." SUBNUM= VISNAME=;
 run;
 
-data pp_final_ultra(keep=subnum visitid visname faperf_reas fadat fadat_c faorres_g_dec faorres_s_dec faorres_dec);
+data pp_final_ultra(keep=subnum visitid visname visitseq faperf_reas fadat fadat_c faorres_g_dec faorres_s_dec faorres_dec);
 	set crf.fa(encoding=any where=(pagename='Ultrasound' and deleted='f'));
 
 	length faperf_reas $700;
@@ -33,11 +34,11 @@ data pp_final_ultra(keep=subnum visitid visname faperf_reas fadat fadat_c faorre
 	if fadat>.z then fadat_c=strip(put(fadat,yymmdd10.));
 
 	proc sort;
-		by subnum fadat visitid;
+		by subnum fadat visitid visitseq;
 run;
 
 %missing_dates(dsn=pp_final_ultra,date=fadat,date2=,pgmname=ULTRA_build);
 
 proc sort;
-	by subnum fadat_sort visitid;
+	by subnum fadat_sort visitid visitseq;
 run;
