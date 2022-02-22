@@ -13,6 +13,7 @@
 * 2022-02-08 Mark Woodruff update Sharepoint link to new site.  Comment out new links so can update in old location.
 * 2022-02-09 Mark Woodruff fix the way 12- is changed to avoid break, and to now avoid messing up site 112 patient links.
 * 2022-02-09 Mark Woodruff add link for MRI Tracking spreadsheet.
+* 2022-02-22 Mark Woodruff add local lab domain.
 ******************************************************************************************;
 dm 'output' clear;
 dm 'log' clear;
@@ -58,6 +59,7 @@ ods listing close;
 %include "&macros.\CM_build.sas"       / nosource2;
 %include "&macros.\LBC_build.sas"      / nosource2;
 %include "&macros.\LB_build.sas"       / nosource2;
+%include "&macros.\LLB_build.sas"      / nosource2;
 %include "&macros.\VCTE_build.sas"     / nosource2;
 %include "&macros.\IP_build.sas"       / nosource2;
 %include "&macros.\ULTRA_build.sas"    / nosource2;
@@ -386,21 +388,22 @@ proc format;
 	"LBCC_report_Central Lab - Chemistry.sas" =22
 	"LBCH_report_Central Lab - Hematology.sas"=23
 	"LBCO_report_Central Lab - Others.sas"    =24
+	"LLB_report_Local Lab.sas"                =25
 
-	"VCTE_report_Fibroscan (VCTE).sas"        =25
-	"ULTRA_report_Ultrasound.sas"             =26
-	"MRI_report_MRI.sas"                      =27
-	"FPG_report_Fasting Plasma Glucose.sas"   =28
-	"ADA_report_ADA Sample.sas"               =29
-	"BIO_report_Exploratory Biomarkers.sas"   =30
+	"VCTE_report_Fibroscan (VCTE).sas"        =26
+	"ULTRA_report_Ultrasound.sas"             =27
+	"MRI_report_MRI.sas"                      =28
+	"FPG_report_Fasting Plasma Glucose.sas"   =29
+	"ADA_report_ADA Sample.sas"               =30
+	"BIO_report_Exploratory Biomarkers.sas"   =31
 
-	"QS_report_Monthly Questionnaire.sas"     =31
-	"QSM_report_Menstrual Cycles.sas"         =32
-	"QSS_report_Menstrual Summary.sas"        =33
-	"EOT_report_End of Treatment.sas"         =34
-	"EOS_report_End of Study.sas"             =35
-	"PD_report_Protocol Deviations.sas"       =36
-	"IP_report_MORE IN PROGRESS.sas"          =37;
+	"QS_report_Monthly Questionnaire.sas"     =32
+	"QSM_report_Menstrual Cycles.sas"         =33
+	"QSS_report_Menstrual Summary.sas"        =34
+	"EOT_report_End of Treatment.sas"         =35
+	"EOS_report_End of Study.sas"             =36
+	"PD_report_Protocol Deviations.sas"       =37
+	"IP_report_MORE IN PROGRESS.sas"          =38;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -479,7 +482,7 @@ data report_links(keep=report_link_html);
 
 	if num=1 then report_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(report_link)||"</a></li>";
 		else if eof then report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>MRI Data: &biotel.</p></li><li><p>Profile: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
-		else if num in (9,12,25,31,34) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
+		else if num in (9,12,26,32,35) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 		else report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 run;
 
@@ -1094,11 +1097,11 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				input;
 
 				** old site **;
-				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+				*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
 				** new site **;
-				*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 
 				_infile_=tranwrd(_infile_,'.html','.aspx');	
@@ -1128,7 +1131,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=46,ept=46,spn=1,epn=&num_domains.);
+*%patients_domains(spt=92,ept=92,spn=25,epn=25);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1158,11 +1161,11 @@ data _null_;
 	input;
 
 	** old site **;
-	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+	*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
 	** new site **;
-	*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 
 	_infile_=tranwrd(_infile_,'.html','.aspx');	
@@ -1247,7 +1250,7 @@ data listing_links(keep=listing_link_html);
 	length listing_link_html $5000;
 	if num=1 then listing_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(listing_link)||"</a></li>";
 		else if eof then listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Report: &today.</p></li>
-		<li><br><a href='https://bostonpharmaceuticals.sharepoint.com/:x:/r/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_MRI_tracking.xlsx' target='_blank'>
+		<li><br><a href='https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_MRI_tracking.xlsx' target='_blank'>
 		MRI Tracking<br><img src='..\programs\assets\images\Excel_64x64.png' alt='Excel'></a></li><br><li><a href='#top'>Return to Top</a></li>";
 		else listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li>";
 run;
@@ -1587,11 +1590,11 @@ options mprint mlogic symbolgen;
 		input;
 
 		** old site **;
-		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+		*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
 		** new site **;
-		*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 
 		_infile_=tranwrd(_infile_,'.html','.aspx');	
