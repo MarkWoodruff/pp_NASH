@@ -12,6 +12,7 @@
 * 2021-12-09 Mark Woodruff update comment.
 * 2021-12-19 Mark Woodruff stop totally blank start dates from triggering note to log.
 * 2022-01-18 Mark Woodruff increase length of aeacn_.
+* 2022-02-28 Mark Woodruff remove note to log, working correctly.
 ******************************************************************************************;
 
 data _null_;
@@ -68,7 +69,6 @@ data pp_final_ae;*(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat ae
 
 	length sae_hosp $100;
 	sae_hosp=catx(': ',aeshosp_dec,hosp_dates);
-	if aeadmiss>.z or aedischa>.z then put "ER" "ROR: update AE_build.sas now that SAE Hospitalization is updated.";
 
 	length aesdth_ $100;
 	if aedthdat>.z then aesdth_=catx('/frcbrk',aesdth,strip(put(aedthdat,yymmdd10.)));

@@ -3,22 +3,22 @@
 ***********
 ** TO-DO **
 *********** 
-MRI Tracking
-	-no Unscheduleds.  Have an alert in my program for if those happen.
 
 *************
 ** DOMAINS **
 *************
 -PI Signature (WILL ALERT)
--Local Labs (WILL ALERT)
 
 **************
 ** SCHEDULE **
 **************
--first SRT is 1/18.
--TLs due EOD 1/10.
--Datacut 1/6. 
--first interim analysis is 6 weeks after 90% of patients have completed week 6 assessment.
+-first IA is 6 weeks after 90% of patients have completed week 6 assessment.
+	-quicker, expedited version
+		-CATO gets all data by 5/9.  I get CRF data 4/28.
+		-delivery needed 5/24 for sponsor review of draft 1 TLFs.
+	-later version
+		-CATO gets all data by 5/30.  I get CRF data 4/28.
+		-delivery needed 6/14 for sponsor review of draft 1 TLFs.
 
 Study Setup
 	Part A: 5 cohorts (A1 - A4, A5 randomized separately) - approximately 75 subjects.
@@ -30,15 +30,10 @@ Study Setup
 	Part B: MAYBE, after Week 6 interim analysis for A1-A4 are reviewed by FDA.
 		Bx: up to ~30 subjects
 
-	Screening 1 (Day -35 to Day -10)
-	Screening 2 (Day -28 to Day -4) - Imaging Evaluation
-	Study Treatment Period
-	Post-Treatment Follow-up, including a visit 4 weeks after last dose.
-	Total Duration for each subject is approximately 21 weeks
-
-*********
-** SRT in January **
-*********
+*************************
+** SRT in January 2022 **
+*************************
+-first SRT is 1/18 (TLs due 1/10, datacut 1/6)
 -Placebo won't be there - 300 mg Q4W (no mention of PBO or BOS)
 -SRT will formally look at blinded tables/listings on a quarterly basis.  
 -But teams also looking more often, to maintain safety overview.  
@@ -46,11 +41,6 @@ Study Setup
 -Section 10.0 of Charter shows what tables and listings will be created.  
 -ECGs Tanya seems to be thinking on what she wants to see.  
 -SRT Charter is a starting point, not a firm concrete guidance.
-
-** Difficulties **
-1) programming with thin data - have to constantly backtrack to revisit things as data is populated
-2) SAP text and shells undergoing multiple revisions after I've already started work
-3) Coding not included.  Can not set up AE tables at beginning.
 
 gen_t_disp
 	t_disp_html_srt - A1 300mg Q4W, A2 150mg Q2W, A3 75mg Q2W, A4 75mg Q4W, A5 30mg Q4W, Overall(for BL tables)
