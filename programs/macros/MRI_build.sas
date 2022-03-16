@@ -14,6 +14,7 @@
 * 2021-12-06 Mark Woodruff remove sort by dates (some are missing), add circuit breaker for unscheduleds.
 * 2022-01-10 Mark Woodruff handle post-Screening visits that are labeled differently than CRF (Week 6).
 * 2022-02-01 Mark Woodruff handle post-Screening visits that are labeled differently than CRF (Week 12).
+* 2022-03-14 Mark Woodruff add warn!ng note to log if average record is not on MOSEQ=10,20,30,etc. record.
 ******************************************************************************************;
 
 data _null_;
@@ -53,6 +54,8 @@ data mri_external_(drop=usubjid);
 	subnum=strip(usubjid);
 
 	moseqn=input(strip(moseq),best.);
+
+	if moseq in ('10','20','30','40','50','60','70','80','90') and moloc^='LIVER' then put "ER" "ROR: update MRI_build.sas for location of average record." SUBNUM=;
 
 	proc sort;
 		by subnum moseqn;
@@ -129,6 +132,8 @@ data mri_external(drop=evalcom:);
 	if 1<=moseq_n<=10 then moseq=moseq_n;
 		else if 11<=moseq_n<=20 then moseq=moseq_n-10;
 		else if 21<=moseq_n<=30 then moseq=moseq_n-20;
+		else if 31<=moseq_n<=40 then moseq=moseq_n-30;
+		else put "ER" "ROR: update MRI_build.sas for more reads." SUBNUM=;
 
 	length moseqc $2;
 	if moseq>.z then moseqc=strip(put(moseq,best.));

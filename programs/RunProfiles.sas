@@ -868,13 +868,24 @@ options mprint mlogic symbolgen;
 						<span class='footnote-num'>SUPER1 From BioTel transfer on &biotel..</span><br>
 					 </p>");
 
+				** DA - Study Drug Dispensing / Drug Accountability **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">da-footnote</span> </p>',
+					"<p><span class='footnote-num'>SUPER1 &convfoot.</span>
+					</p>");
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">dadate-footnote</span> </p>',
+					"<p><span class='footnote'>Note: <span class='yellow-footnote'>yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
+					    <span class='footnote-num'>SUPER1 &convfoot.</span>
+					</p>");
+					*<span class='footnote-num'>SUPER1 For 2021, DST was from 2021-03-14 to 2021-11-07.  For 2022, DST was from 2022-03-13 to 2022-11-06.</span><br>;
+						
+
 				** EOT - End of Treatment **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">eot-footnote</span> </p>',
 					'<p><span class="footnote-num">SUPER1 Will include any additional detail fields entered regarding Subject Withdrawal, Physician Decision, COVID Related, and Other.</span><br>
 					 </p>');
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">eotdate-footnote</span> </p>',
 					'<p><span class="footnote">Note: <span class="yellow-footnote">yellow</span> highlighted dates indicate those not matching the Visit Date CRF.</span><br>
-					 <p><span class="footnote-num">SUPER1 Will include any additional detail fields entered regarding Subject Withdrawal, Physician Decision, COVID Related, and Other.</span><br>
+					    <span class="footnote-num">SUPER1 Will include any additional detail fields entered regarding Subject Withdrawal, Physician Decision, COVID Related, and Other.</span><br>
 					 </p>');
 
 				** VS - Vital Signs **;
@@ -1030,6 +1041,12 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (>500 msec)</span>
 					  </p>');
 
+				** QSS - Menstrual Summary **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">qss-footnote</span> </p>'
+					,'<p><span class="footnote-num">SUPER1 Answered only on Day 1 visit.</span><br>
+						 <span class="footnote-num">SUPER2 Answered only on Day 85 or Day 113/Early Termination visits.</span>
+					  </p>');
+
 				****************************;
 				** LAB DROPDOWN SELECTORS **;
 				****************************;
@@ -1097,11 +1114,11 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				input;
 
 				** old site **;
-				*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
 				** new site **;
-				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+				*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 
 				_infile_=tranwrd(_infile_,'.html','.aspx');	
@@ -1131,7 +1148,8 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=92,ept=92,spn=25,epn=25);
+*%patients_domains(spt=1,ept=16,spn=1,epn=&num_domains.);
+*%patients_domains(spt=27,ept=27,spn=9,epn=9);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1161,11 +1179,11 @@ data _null_;
 	input;
 
 	** old site **;
-	*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
 	** new site **;
-	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+	*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 
 	_infile_=tranwrd(_infile_,'.html','.aspx');	
@@ -1250,7 +1268,7 @@ data listing_links(keep=listing_link_html);
 	length listing_link_html $5000;
 	if num=1 then listing_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(listing_link)||"</a></li>";
 		else if eof then listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Report: &today.</p></li>
-		<li><br><a href='https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_MRI_tracking.xlsx' target='_blank'>
+		<li><br><a href='https://bostonpharmaceuticals.sharepoint.com/:x:/r/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_MRI_tracking.xlsx' target='_blank'>
 		MRI Tracking<br><img src='..\programs\assets\images\Excel_64x64.png' alt='Excel'></a></li><br><li><a href='#top'>Return to Top</a></li>";
 		else listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li>";
 run;
@@ -1590,11 +1608,11 @@ options mprint mlogic symbolgen;
 		input;
 
 		** old site **;
-		*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
 		** new site **;
-		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+		*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 
 		_infile_=tranwrd(_infile_,'.html','.aspx');	

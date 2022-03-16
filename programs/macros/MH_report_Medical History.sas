@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-06 Mark Woodruff coding removed from DB.
 * 2021-10-22 Mark Woodruff add pageseq;
+* 2022-03-11 Mark Woodruff add coding.
 ******************************************************************************************;
 
 data domain_data;
@@ -38,13 +39,13 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column visitid visname mhnd_c pageseq_c mhterm dates ongoing mhsev_dec;
+			column visitid visname mhnd_c pageseq_c mhterm coding dates ongoing mhsev_dec;
 			define visitid   /order order=internal noprint;
 			define visname   /display "Visit";
 			define mhnd_c    /display "No Relevant|Medical History";
 			define pageseq_c /display "Medical|History No.";
 			define mhterm    /display "Diagnosis/Procedure";
-			*define coding    /display "System Organ Class/|Preferred Term";
+			define coding    /display "System Organ Class/|Preferred Term" style=[htmlclass='max-width-3-0'];
 			define dates     /display "Start Date/|Stop Date" style=[htmlclass='min-width-1-25'];
 			define ongoing   /display "Ongoing?";
 			define mhsev_dec /display "CTCAE Grade";

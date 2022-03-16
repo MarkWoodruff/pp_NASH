@@ -8,6 +8,7 @@
 * Revision History
 * Date       By            Description of Change
 * 2021-12-09 Mark Woodruff update comment.
+* 2022-03-11 Mark Woodruff add PD number.
 ******************************************************************************************;
 
 data _null_;
@@ -20,7 +21,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update PD_build.sas to handle PD.DELETED var appropriately.";
 run;
 
-data pp_final_pd(keep=subnum visitid visname visname dvnone cat_ dviddat_c dvstdat: dvterm dvirbna dvirbdat_c);
+data pp_final_pd(keep=subnum visitid visname visname dvnone cat_ dviddat_c dvstdat: dvterm dvirbna dvirbdat_c pdnum);
 	set crf.dv(encoding=utf8 where=(pagename='Protocol Deviations' and deleted='f'));
 
 	length cat_ $1000;
@@ -34,6 +35,9 @@ data pp_final_pd(keep=subnum visitid visname visname dvnone cat_ dviddat_c dvstd
 
 	length dvirbdat_c $10;
 	if dvirbdat>.z then dvirbdat_c=strip(put(dvirbdat,yymmdd10.));
+
+	length pdnum $20;
+	if pageseq>.z then pdnum=strip(put(pageseq,best.));
 
 	proc sort;
 		by subnum dvstdat;

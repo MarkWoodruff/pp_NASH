@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2022-01-05 Mark Woodruff handle sorting of records with missing dates.
+* 2022-03-11 Mark Woodruff edit sort order for those with lots of missing visits.
 ******************************************************************************************;
 
 data domain_data;
@@ -39,8 +40,8 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column vsdat_sort vsdat visname vsdat_c vsperf_n vsreasnd vsdat_cflag waist weight height ("Auto-calculated in DB" height_bmi vsbmi_c);
-			define vsdat_sort  /order order=internal noprint;
+			column sortvar vsdat visname vsdat_c vsperf_n vsreasnd vsdat_cflag waist weight height ("Auto-calculated in DB" height_bmi vsbmi_c);
+			define sortvar     /order order=internal noprint;
 			define vsdat       /order order=internal noprint;
 			define visname     /display "Visit";
 			define vsdat_c     /display "Date|Assessed" style=[htmlclass='min-width-1-0'];

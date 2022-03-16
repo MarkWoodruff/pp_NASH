@@ -11,6 +11,8 @@
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2022-01-05 Mark Woodruff handle sorting of records with missing dates.
 * 2022-02-14 Mark Woodruff add VISITSEQ to missing dates call.
+* 2022-03-07 Mark Woodruff add dt_and to missing dates call.
+* 2022-03-11 Mark Woodruff edit sort order for those with lots of missing visits.
 ******************************************************************************************;
 
 data _null_;
@@ -24,9 +26,9 @@ data body;
 	set crf.vs(encoding=any where=(pagename='Body Measurements' and deleted='f'));
 run;
 
-%missing_dates(dsn=body,date=vsdat,pgmname=BODY_build);
+%missing_dates(dsn=body,date=vsdat,pgmname=BODY_build,dt_and=%str(and vsperf_n^='X'));
 
-data pp_final_body(keep=subnum visitid visname visitseq vsperf_n vsreasnd vsdat_sort vsdat vsdat_c waist weight height height_bmi vsbmi_c);
+data pp_final_body(keep=subnum visitid visname visitseq vsperf_n vsreasnd vsdat_sort vsdat vsdat_c waist weight height height_bmi vsbmi_c sortvar);
 	set body;
 
 	length vsdat_c $20;
@@ -44,6 +46,10 @@ data pp_final_body(keep=subnum visitid visname visitseq vsperf_n vsreasnd vsdat_
 	if vsheight_c>.z then height_bmi=strip(put(vsheight_c,best.))||' CM';
 	if vsbmi>.z then vsbmi_c=strip(put(vsbmi,best.));
 
+	if subnum in ('104-003','115-001') then sortvar=visitid;
+		else sortvar=vsdat_sort;
+	if sortvar=. then put "ER" "ROR: update sorting for body measurements for " SUBNUM=;
+
 	proc sort;
-		by subnum vsdat_sort vsdat;
+		by subnum sortvar vsdat visitid visitseq;
 run;

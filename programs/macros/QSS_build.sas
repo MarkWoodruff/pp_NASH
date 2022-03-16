@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2022-03-16 Mark Woodruff blank out qs16/qs17 depending on visit per AC.
 ******************************************************************************************;
 
 data _null_;
@@ -24,6 +25,9 @@ data pp_final_qss(keep=subnum visitid visname qsyn_nomc qs16_dec qs17_dec);
 
 	length qsyn_nomc $700;
 	qsyn_nomc=catx(': ',qsyn_dec,qsnomc_dec_);
+
+	if qs16_dec^='' and visname^='Day 1' then put "ER" "ROR: update QSS_build.sas for 'At Study Start...' blanking out." SUBNUM=;
+	if qs17_dec^='' and visname not in ('Day 85','Day 113/Early Termination') then put "ER" "ROR: update QSS_build.sas for 'Compare menstrual...' blanking out." SUBNUM=;
 
 	proc sort;
 		by subnum visitid visname;

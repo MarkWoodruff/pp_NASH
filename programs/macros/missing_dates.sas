@@ -8,9 +8,10 @@
 * Revision History
 * Date       By            Description of Change
 * 2022-02-14 Mark Woodruff also merge by visitseq so can populate unscheduleds.
+* 2022-03-07 Mark Woodruff add dt_and condition to control when message is printed to log.
 ******************************************************************************************;
 
-%macro missing_dates(dsn=,date=,date2=,pgmname=);
+%macro missing_dates(dsn=,date=,date2=,pgmname=,dt_and=);
 
 	data sv(keep=subnum visitid visname visitseq svstdt);
 		set crf.sv(encoding=any where=(pagename='Visit Date' and deleted='f' and svstdt>.z));* and visitid^=777));
@@ -54,7 +55,7 @@
 		end;
 			else if innodate then &date._sort=svstdt;
 
-		if &date._sort=. and subnum^='115-001' then put "ER" "ROR: update &pgmname..sas for missing dates for sorting purposes." SUBNUM=;
+		if &date._sort=. and subnum^='115-001' &dt_and. then put "ER" "ROR: update &pgmname..sas for missing dates for sorting purposes." SUBNUM=;
 
 		proc sort;
 			by subnum &date._sort;

@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2022-03-11 Mark Woodruff add PD number.
 ******************************************************************************************;
 
 data domain_data;
@@ -36,9 +37,10 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column dvstdat dvnone cat_ dviddat_c dvstdat_c dvterm dvirbna dvirbdat_c;
+			column dvstdat dvnone pdnum cat_ dviddat_c dvstdat_c dvterm dvirbna dvirbdat_c;
 			define dvstdat    /order order=internal noprint;
 			define dvnone     /display "Check if no|Deviations";
+			define pdnum      /display "PD|Number";
 			define cat_       /display "Category: Subcategory" style=[htmlclass='max-width-3-0'];
 			define dviddat_c  /display "Date|Identified" style=[htmlclass='min-width-1-0'];
 			define dvstdat_c  /display "Deviation|Date" style=[htmlclass='min-width-1-0'];

@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2022-03-16 Mark Woodruff blank out qs16/qs17 depending on visit per AC.
 ******************************************************************************************;
 
 data domain_data;
@@ -37,21 +38,21 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column visname qsyn_nomc qs16_dec qs17_dec;
+			column visitid visname qsyn_nomc qs16_dec qs17_dec;
+			define visitid   /order order=internal noprint;
 			define visname   /display group "Visit";
 			define qsyn_nomc /display group "Of Menstrual Potential?|If no, reason" style=[htmlclass='max-width-3-0'];
-			define qs16_dec  /display group "At study start, menstrual|cycle best described as" style=[htmlclass='max-width-4-5'];
-			define qs17_dec  /display group "Compare menstrual cycle|from study start to today" style=[htmlclass='max-width-4-5'];
+			define qs16_dec  /display group "At study start, menstrual|cycle best described asSUPER1" style=[htmlclass='max-width-4-0'];
+			define qs17_dec  /display group "Compare menstrual cycle|from study start to todaySUPER2" style=[htmlclass='max-width-4-0'];
 
-			*compute foldername;
-				*if foldername='Unscheduled' then call define(_col_,"style","style=[background=yellow]");
-			*endcomp;
+			compute qs16_dec;
+				if visname^='Day 1' then call define(_col_,"style","style=[background=black]");
+			endcomp;
+			compute qs17_dec;
+				if visname not in ('Day 85','Day 113/Early Termination') then call define(_col_,"style","style=[background=black]");
+			endcomp;
 
-			*compute age_raw;
-				*if .z<input(age_raw,best.)<18 then call define(_col_,"style","style=[background=lightred]");
-			*endcomp;
-
-			*footnote "dm-footnote";
+			footnote "qss-footnote";
 		%end;
 
 		compute before _page_ / style=[just=l htmlclass="fixed-domain-title domain-title"];
