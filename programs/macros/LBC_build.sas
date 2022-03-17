@@ -14,6 +14,7 @@
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-11-22 Mark Woodruff evolve Cortisol flagging.  Add visits to note to log.
 * 2021-12-09 Mark Woodruff create visname_ to use in check_dates, more standardized.
+* 2022-03-17 Mark Woodruff keep lbstrescn lbstnrlon lbstnrhin lbstresu lbstresc
 ******************************************************************************************;
 
 data _null_;
@@ -26,7 +27,8 @@ data _null_;
 run;	
 
 data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_c lbfast_dec lbcat lbtestcd lbtest lborres_lborresu nr lbstresc_lbstresu nrst
-					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag_lbnrind labflag_tanja lborresn lbornrhin lborresu);
+					   lbnrind lbstat_lbreasnd lbspec lbcoval labflag_lbnrind labflag_tanja lborresn lbornrhin lborresu lbstrescn lbstnrlon lbstnrhin lbstresu
+					   lbstresc);
 	set crf.lbx(encoding=any where=(pagename='Lab Results' and deleted='f') rename=(lbstresn=lbstresn_theirs));
 
 	if lbdat=. then put "ER" "ROR: update LBC_build.sas to handle Unscheduled visits and/or missing dates correctly.";

@@ -14,6 +14,7 @@
 * 2022-02-09 Mark Woodruff fix the way 12- is changed to avoid break, and to now avoid messing up site 112 patient links.
 * 2022-02-09 Mark Woodruff add link for MRI Tracking spreadsheet.
 * 2022-02-22 Mark Woodruff add local lab domain.
+* 2022-03-17 Mark Woodruff write to both old site and new site
 ******************************************************************************************;
 dm 'output' clear;
 dm 'log' clear;
@@ -58,6 +59,7 @@ ods listing close;
 %include "&macros.\AE_build.sas"       / nosource2;
 %include "&macros.\CM_build.sas"       / nosource2;
 %include "&macros.\LBC_build.sas"      / nosource2;
+%include "&macros.\LBCPLOT_build.sas"  / nosource2;
 %include "&macros.\LB_build.sas"       / nosource2;
 %include "&macros.\LLB_build.sas"      / nosource2;
 %include "&macros.\VCTE_build.sas"     / nosource2;
@@ -386,24 +388,27 @@ proc format;
 	"CM_report_Concomitant Medications.sas"   =20
 	"LB_report_Central Lab.sas"               =21
 	"LBCC_report_Central Lab - Chemistry.sas" =22
-	"LBCH_report_Central Lab - Hematology.sas"=23
-	"LBCO_report_Central Lab - Others.sas"    =24
-	"LLB_report_Local Lab.sas"                =25
+	"LBCPLOTC_report_Central Lab - Chemistry Plots.sas"=23
+	"LBCH_report_Central Lab - Hematology.sas"=24
+	"LBCPLOTH_report_Central Lab - Hematology Plots.sas"=25
+	"LBCO_report_Central Lab - Others.sas"    =26
+	"LBCPLOTO_report_Central Lab - Other Plots.sas"=27
+	"LLB_report_Local Lab.sas"                =28
 
-	"VCTE_report_Fibroscan (VCTE).sas"        =26
-	"ULTRA_report_Ultrasound.sas"             =27
-	"MRI_report_MRI.sas"                      =28
-	"FPG_report_Fasting Plasma Glucose.sas"   =29
-	"ADA_report_ADA Sample.sas"               =30
-	"BIO_report_Exploratory Biomarkers.sas"   =31
+	"VCTE_report_Fibroscan (VCTE).sas"        =29
+	"ULTRA_report_Ultrasound.sas"             =30
+	"MRI_report_MRI.sas"                      =31
+	"FPG_report_Fasting Plasma Glucose.sas"   =32
+	"ADA_report_ADA Sample.sas"               =33
+	"BIO_report_Exploratory Biomarkers.sas"   =34
 
-	"QS_report_Monthly Questionnaire.sas"     =32
-	"QSM_report_Menstrual Cycles.sas"         =33
-	"QSS_report_Menstrual Summary.sas"        =34
-	"EOT_report_End of Treatment.sas"         =35
-	"EOS_report_End of Study.sas"             =36
-	"PD_report_Protocol Deviations.sas"       =37
-	"IP_report_MORE IN PROGRESS.sas"          =38;
+	"QS_report_Monthly Questionnaire.sas"     =35
+	"QSM_report_Menstrual Cycles.sas"         =36
+	"QSS_report_Menstrual Summary.sas"        =37
+	"EOT_report_End of Treatment.sas"         =38
+	"EOS_report_End of Study.sas"             =39
+	"PD_report_Protocol Deviations.sas"       =40
+	"IP_report_MORE IN PROGRESS.sas"          =41;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -482,7 +487,7 @@ data report_links(keep=report_link_html);
 
 	if num=1 then report_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(report_link)||"</a></li>";
 		else if eof then report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>MRI Data: &biotel.</p></li><li><p>Profile: &today.</p></li><br><li><a href='#top'>Return to Top</a></li>";
-		else if num in (9,12,26,32,35) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
+		else if num in (9,12,29,35,38) then report_link_html="<li><a class='domain-sidebar-border' href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 		else report_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(report_link)||"</a></li>";
 run;
 
@@ -1041,6 +1046,10 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 							<span class="red-footnote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;red</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Grade 3 (>500 msec)</span>
 					  </p>');
 
+				** LBPLOTC - Labs - Chem Plots **;
+				_infile_=tranwrd(_infile_,'<p><span class="footnote">lbplotc-footnote</span> </p>',
+					'<p><span class="footnote">Note:</span> <span class="footnote" style="color: #add8e6">Blue bands</span> <span class="footnote" style="color: #ffffff">indicate normal ranges.  Values outside those ranges are <span class="yellow-footnote">yellow</span>.</span></p>');
+
 				** QSS - Menstrual Summary **;
 				_infile_=tranwrd(_infile_,'<p><span class="footnote">qss-footnote</span> </p>'
 					,'<p><span class="footnote-num">SUPER1 Answered only on Day 1 visit.</span><br>
@@ -1107,7 +1116,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				put _infile_;
 			run;
 
-			** Need .aspx files for Sharepoint **;
+			** Need .aspx files for Sharepoint, OLD SITE **;
 			data _null_;
 				infile "&output.\&PTN..htm" sharebuffers;
 				file "&output.\aspx\&PTN..aspx";
@@ -1117,8 +1126,20 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
+				_infile_=tranwrd(_infile_,'.html','.aspx');	
+				_infile_=tranwrd(_infile_,'.htm','.aspx');	
+
+				put _infile_;
+			run;
+
+			** Need .aspx files for Sharepoint, NEW SITE **;
+			data _null_;
+				infile "&output.\&PTN..htm" sharebuffers;
+				file "&output.\aspx\new_site\&PTN..aspx";
+				input;
+
 				** new site **;
-				*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 
 				_infile_=tranwrd(_infile_,'.html','.aspx');	
@@ -1147,8 +1168,8 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 	%patients;
 	ods listing;
 %mend patients_domains;
-%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=1,ept=16,spn=1,epn=&num_domains.);
+*%patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
+%patients_domains(spt=1,ept=16,spn=1,epn=&num_domains.);
 *%patients_domains(spt=27,ept=27,spn=9,epn=9);
 
 *******************************************;
@@ -1170,9 +1191,9 @@ data _null_;
 	put _infile_;
 run;
 
-*******************************************;
-** create patient list dashboard in ASPX **;
-*******************************************;
+*****************************************************;
+** create patient list dashboard in ASPX, OLD SITE **;
+*****************************************************;
 data _null_;
 	infile "&output.\patients-BOS-580-201.html" sharebuffers;
 	file "&output.\aspx\patients-BOS-580-201.aspx";
@@ -1182,8 +1203,23 @@ data _null_;
 	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
+	_infile_=tranwrd(_infile_,'.html','.aspx');	
+	_infile_=tranwrd(_infile_,'.htm','.aspx');	
+	_infile_=tranwrd(_infile_,' – ',' &#8209; ');
+
+	put _infile_;
+run;
+
+*****************************************************;
+** create patient list dashboard in ASPX, NEW SITE **;
+*****************************************************;
+data _null_;
+	infile "&output.\patients-BOS-580-201.html" sharebuffers;
+	file "&output.\aspx\new_site\patients-BOS-580-201.aspx";
+	input;
+
 	** new site **;
-	*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 
 	_infile_=tranwrd(_infile_,'.html','.aspx');	
@@ -1268,7 +1304,7 @@ data listing_links(keep=listing_link_html);
 	length listing_link_html $5000;
 	if num=1 then listing_link_html="<li><a href='#top'>Return to Top</a></li><br><li><a href='#IDX'>"||strip(listing_link)||"</a></li>";
 		else if eof then listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li><br><li><p>Data: &data_dt.</p></li><li><p>Report: &today.</p></li>
-		<li><br><a href='https://bostonpharmaceuticals.sharepoint.com/:x:/r/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_MRI_tracking.xlsx' target='_blank'>
+		<li><br><a href='./BOS-580-201_MRI_tracking.xlsx' target='_blank'>
 		MRI Tracking<br><img src='..\programs\assets\images\Excel_64x64.png' alt='Excel'></a></li><br><li><a href='#top'>Return to Top</a></li>";
 		else listing_link_html="<li><a href='#IDX"||strip(put((num-1),best.))||"'>"||strip(listing_link)||"</a></li>";
 run;
@@ -1601,7 +1637,7 @@ options mprint mlogic symbolgen;
 		put _infile_;
 	run;
 
-	** if need .aspx files for Sharepoint, do so here **;
+	** need .aspx files for Sharepoint, OLD SITE **;
 	data _null_;
 		infile "&output.\listings.htm" sharebuffers;
 		file "&output.\aspx\listings.aspx";
@@ -1611,8 +1647,20 @@ options mprint mlogic symbolgen;
 		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
+		_infile_=tranwrd(_infile_,'.html','.aspx');	
+		_infile_=tranwrd(_infile_,'.htm','.aspx');	
+
+		put _infile_;
+	run;
+
+	** need .aspx files for Sharepoint, NEW SITE **;
+	data _null_;
+		infile "&output.\listings.htm" sharebuffers;
+		file "&output.\aspx\new_site\listings.aspx";
+		input;
+
 		** new site **;
-		*_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
+		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 
 		_infile_=tranwrd(_infile_,'.html','.aspx');	
