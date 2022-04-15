@@ -1,24 +1,35 @@
 
+Questions
+1) For IA link at top of profiles, just Alicia/Tanja/me?
+2) Disposition shell defines time on study as EOS - randdt, but SAP defines it as EOS - infcondt.  Which?  Followed shell in SRT.
+3) Compliance mean for Cohort 5 is below 80%, due to site entering dose incorrectly for one patient.  Did 0.03 instead of 0.3.
+4) lots of uncoded AEs
+5) Cohort 5 has no post-baseline vitals.
 
-***********
-** TO-DO **
-*********** 
+Tanja data visualizations about Week 6 vs Week 12
+1) DONE MRI CFB at Week 6 and latest point they have, per patient basis.  By cohort.  Leave patient number off.
+2) Alicia stated 'do you wnat a graph of their mri average in profiles'?  She said yes that would be good.  Do this after Powerpoint.
+3) DONE Do Powerpoint spider plots of average, use same scale on Y and X-axis.  Only plot patients with at least one post-baseline value.  Only plot their average. Keep it blinded, by cohort. 
+4) DONE X-axis should be actual study day, not nominal.  
+5) CANNOT Also put where they had last treatment, via symbol on line.
+5) DONE Have arrow on line for ongoing patients.
+6) DONE Future ability for active vs placebo.  Red placebo, active is a color.
 
-*************
-** DOMAINS **
-*************
--PI Signature (WILL ALERT)
+***********************
+** NEXT SRT SCHEDULE **
+***********************
+TLF to Tanja: EOD 4/7
+TLF to SRT:   EOD 4/12
+Meeting:      Wed 4/20
 
-**************
-** SCHEDULE **
-**************
--first IA is 6 weeks after 90% of patients have completed week 6 assessment.
-	-quicker, expedited version
-		-CATO gets all data by 5/9.  I get CRF data 4/28.
-		-delivery needed 5/24 for sponsor review of draft 1 TLFs.
-	-later version
-		-CATO gets all data by 5/30.  I get CRF data 4/28.
-		-delivery needed 6/14 for sponsor review of draft 1 TLFs.
+**********************
+** NEXT IA SCHEDULE **
+**********************
+data-cut: 5/12 (was 4/28)
+TLF first draft:
+	preferred: 5/26 (was 5/12)
+	absolute: ?? (was 5/24)
+final TLF: ?? (was 6/7)
 
 Study Setup
 	Part A: 5 cohorts (A1 - A4, A5 randomized separately) - approximately 75 subjects.
@@ -42,39 +53,9 @@ Study Setup
 -ECGs Tanya seems to be thinking on what she wants to see.  
 -SRT Charter is a starting point, not a firm concrete guidance.
 
-gen_t_disp
-	t_disp_html_srt - A1 300mg Q4W, A2 150mg Q2W, A3 75mg Q2W, A4 75mg Q4W, A5 30mg Q4W, Overall(for BL tables)
-	t_disp_rtf_srt  - A1 300mg Q4W, A2 150mg Q2W, A3 75mg Q2W, A4 75mg Q4W, A5 30mg Q4W, Overall(for BL tables)
-	t_disp_html_ia - Placebo, A1, A2, A3, A4, A5, Overall(for BL tables)
-	t_disp_rtf_ia  - Placebo, A1, A2, A3, A4, A5, Overall(for BL tables)
-
-DONE -need to add T2DM somewhere
-DONE - BOTH - Disposition
-DONE - BOTH - Demographics - T2D is from FGF form at baseline, checkbox if doesn't have
-IA - Exposure - weight compliance by last visit completed
-SRT - ECG - markedly abnormal table
-BOTH - Vitals - markedly abnormal 14.3.6.2.x
-BOTH - AE Summary
-BOTH - AE by SOC/PT
-	-related
-	-by max sev
-	-sae
-SRT - Labs (hema, chem, coag) - shift of grades, add Grade 0
-SRT - Cortisol - observed and CFB
-Listing of
-	disposition
-	eligibility
-	ECG - include flag for markedly abnormal
-	Ultrasound
-Listing of AEs - Excel
-Listing of Labs - Excel, interactive.  Include CFB.  Include Cortisol.
-	-Cortisol - include CFB.  Either alone or separate.
-Listing of Vitals - Excel, interactive, include flag for markedly abnormal, add QTCF CFB from table.
-
-
 
 **********************
-** INTERIM ANALYSIS - data-cut March at earliest.  IA sometime 1Q 2022 (maybe even later).  Readout in May or June. **
+** INTERIM ANALYSIS **
 **********************
 -FDA asked for this.  Cato may do interim, currently 5w, trying to get it to 4w.  
 -some of my tables, Cato could do others.  Craig was OK with that.  Regulatory weighing in too.  
@@ -95,7 +76,7 @@ on part b tables, have A Overall, B Overall, Overall Overall
 ** EXTERNAL DATA **
 *******************
 	1) MRI data from BioTel Research - comes monthly, first should have been end of September.
-	2) lab data from LabConnect - look in DMP, it specifies each lab test they will do.  They are taking external data and putting that in LB.
+	2) lab data from LabConnect - look in DMP, it specifies each lab test they will do.  They are taking external data and putting that in LBX.
 	3) Nordic Biosciences (Pro-C3) - Biomarker.  DTA not done yet.
 	4) PPD (Biomarkers).  DTA not done yet.
 	5) LGC - PK and ADA.  DTA not done yet.
