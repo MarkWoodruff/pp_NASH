@@ -12,6 +12,7 @@
 * 2021-11-22 Mark Woodruff do not print note to log if dose missing.
 * 2021-12-06 Mark Woodruff expand dose handling.
 * 2021-12-30 Mark Woodruff expand dose handling for 1 Spray.
+* 2022-04-25 Mark Woodruff CMENDAT is now character, so adjust accordingly.
 ******************************************************************************************;
 
 data _null_;
@@ -49,8 +50,8 @@ data pp_final_cm(keep=subnum visitid visname pageseq pageseq_c cmtrt_c cmindc_c 
 	frequency=catx(': ',cmdosfrq_dec,cmfrqot);
 	
 	length dates $100;
-	if cmendat>.z and cmongo^='' then put "ER" "ROR: update CM_build.sas to handle both a stop date and ongoing.";
-	if cmendat>.z then dates=strip(cmstdat)||'/frcbrk'||strip(put(cmendat,yymmdd10.));
+	if cmendat^='' and cmongo^='' then put "ER" "ROR: update CM_build.sas to handle both a stop date and ongoing.";
+	if cmendat^='' then dates=strip(cmstdat)||'/frcbrk'||strip(cmendat);
 		else if cmongo^='' then dates=strip(cmstdat)||'/frcbrk'||'Ongoing';
 
 	length coding $3100;
