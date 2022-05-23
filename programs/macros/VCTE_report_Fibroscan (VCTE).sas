@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2022-05-23 Mark Woodruff order by visit since only Screening and Day 85.
 ******************************************************************************************;
 
 data domain_data;
@@ -40,8 +41,7 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column fadat visitid visname fadat_cflag fadat_c faperf_reas fafast8_dec fafast_c faorres_cap_c faorres_lsm_c facoval;
-			define fadat         /order order=internal noprint;
+			column visitid visname fadat_cflag fadat_c faperf_reas fafast8_dec fafast_c faorres_cap_c faorres_lsm_c facoval;
 			define visitid       /order order=internal noprint;
 			define visname       /display "Visit";
 			define fadat_cflag   /display noprint;

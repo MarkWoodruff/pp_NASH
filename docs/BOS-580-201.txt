@@ -1,26 +1,30 @@
 
-Questions
+**********************************;
+** INTERIM ANALYSIS IN PROGRESS **;
+**********************************;
+QUESTIONS FOR ALICIA
 1) For IA link at top of profiles, just Alicia/Tanja/me?
 2) Disposition shell defines time on study as EOS - randdt, but SAP defines it as EOS - infcondt.  Which?  Followed shell in SRT.
 3) Compliance mean for Cohort 5 is below 80%, due to site entering dose incorrectly for one patient.  Did 0.03 instead of 0.3.
-4) lots of uncoded AEs
-5) Cohort 5 has no post-baseline vitals.
+4) Listings all unblinded or leave as blinded like SRT?
 
-Tanja data visualizations about Week 6 vs Week 12
-1) DONE MRI CFB at Week 6 and latest point they have, per patient basis.  By cohort.  Leave patient number off.
-2) Alicia stated 'do you wnat a graph of their mri average in profiles'?  She said yes that would be good.  Do this after Powerpoint.
-3) DONE Do Powerpoint spider plots of average, use same scale on Y and X-axis.  Only plot patients with at least one post-baseline value.  Only plot their average. Keep it blinded, by cohort. 
-4) DONE X-axis should be actual study day, not nominal.  
-5) CANNOT Also put where they had last treatment, via symbol on line.
-5) DONE Have arrow on line for ongoing patients.
-6) DONE Future ability for active vs placebo.  Red placebo, active is a color.
+FINISHING INTERIM ANALYSIS
+	-DONE build all versions
+	-DONE fix Cohort 5 headers
+	-DONE make sure percentages are in correct format
+	-DONE set up restricted area 
+	-DONE make IA link in regular areas go to new IA site.
+	-DONE fix SRT->SRT link that has output/output/
+	-verify results against normal SRT.
+	-spend a whole day checking hema table.
+	-switch IA link in SRT/Profiles live when ready.  Code is in SRT prog.
 
 ***********************
 ** NEXT SRT SCHEDULE **
 ***********************
-TLF to Tanja: EOD 4/7
-TLF to SRT:   EOD 4/12
-Meeting:      Wed 4/20
+DONE TLF to Tanja: EOD 4/7
+DONE TLF to SRT:   EOD 4/12
+DONE Meeting:      Wed 4/20
 
 **********************
 ** NEXT IA SCHEDULE **

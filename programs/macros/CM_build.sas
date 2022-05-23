@@ -13,6 +13,8 @@
 * 2021-12-06 Mark Woodruff expand dose handling.
 * 2021-12-30 Mark Woodruff expand dose handling for 1 Spray.
 * 2022-04-25 Mark Woodruff CMENDAT is now character, so adjust accordingly.
+* 2022-05-16 Mark Woodruff CMENDAT is now numeric (?), so adjust accordingly.
+* 2022-05-23 Mark Woodruff CMENDAT is now character again, so adjust accordingly.
 ******************************************************************************************;
 
 data _null_;

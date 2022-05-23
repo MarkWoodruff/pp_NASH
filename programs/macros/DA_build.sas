@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2022-05-16 Mark Woodruff avoid ops on miss!ng values.
 ******************************************************************************************;
 
 data _null_;
@@ -72,6 +73,7 @@ data pp_final_da(keep=subnum visitid visname dareplac_dec dadisdat_c dadistim_c 
 			adjust_dst=-7;
 			adjust=-7;
 		end;
+		else if sitenum>.z then put "ER" "ROR: add site.";
 
 	if dst=1 then newdttm=(dadisdattim+(adjust_dst*60*60));
 		else if dst=0 then newdttm=(dadisdattim+(adjust*60*60));
@@ -83,7 +85,7 @@ data pp_final_da(keep=subnum visitid visname dareplac_dec dadisdat_c dadistim_c 
 		else if dst=0 then dstc='No';
 
 	*format diff time5.;
-	diff=floor((dadisdattim2-newdttm)/60);
+	if dadisdattim2>.z and newdttm>.z then diff=floor((dadisdattim2-newdttm)/60);
 
 	length diffc $10;
 	if diff>.z then diffc=strip(put(diff,best.));

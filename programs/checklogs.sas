@@ -7,6 +7,7 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2022-05-02 Mark Woodruff exclude warnings for expiring SAS license.
 ******************************************************************************************;
 
 %macro checklogs(seq=,study=,pipe=,progdir=,prog=);
@@ -53,9 +54,11 @@
  	   	    index(upcase(line), "??") or
  	   	    index(upcase(line), "QUESTIONABLE"))
 
-		AND
-
-		index(upcase(line),"WARNING: UNABLE TO COPY SASUSER REGISTRY TO WORK REGISTRY. BECAUSE OF THIS, YOU WILL NOT SEE REGISTRY CUSTOMIZATIONS")=0;
+		AND	index(upcase(line),"WARNING: UNABLE TO COPY SASUSER REGISTRY TO WORK REGISTRY. BECAUSE OF THIS, YOU WILL NOT SEE REGISTRY CUSTOMIZATIONS")=0
+		AND index(upcase(line),"WARNING: THE BASE SAS SOFTWARE PRODUCT WITH WHICH DATASETS IS ASSOCIATED WILL BE EXPIRING SOON")=0
+		AND index(upcase(line),"WARNING: YOUR SYSTEM IS SCHEDULED TO EXPIRE ON")=0
+		AND index(upcase(line),"IS CURRENTLY IN WARNING MODE TO INDICATE THIS UPCOMING EXPIRATION. PLEASE RUN PROC SETINIT")=0
+		AND index(upcase(line),"TO OBTAIN MORE INFORMATION ON YOUR WARNING PERIOD.")=0;
 
 		length study date time $100;
 		study="&study.";
