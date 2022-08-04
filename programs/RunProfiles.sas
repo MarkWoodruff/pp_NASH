@@ -15,6 +15,8 @@
 * 2022-02-09 Mark Woodruff add link for MRI Tracking spreadsheet.
 * 2022-02-22 Mark Woodruff add local lab domain.
 * 2022-03-17 Mark Woodruff write to both old site and new site
+* 2022-05-26 Mark Woodruff add unblinded IA links.
+* 2022-07-11 Mark Woodruff remove IP_build.sas now that have last domain PI_build.sas.
 ******************************************************************************************;
 dm 'output' clear;
 dm 'log' clear;
@@ -63,7 +65,6 @@ ods listing close;
 %include "&macros.\LB_build.sas"       / nosource2;
 %include "&macros.\LLB_build.sas"      / nosource2;
 %include "&macros.\VCTE_build.sas"     / nosource2;
-%include "&macros.\IP_build.sas"       / nosource2;
 %include "&macros.\ULTRA_build.sas"    / nosource2;
 %include "&macros.\MRI_build.sas"      / nosource2;
 %include "&macros.\FPG_build.sas"      / nosource2;
@@ -408,7 +409,7 @@ proc format;
 	"EOT_report_End of Treatment.sas"         =38
 	"EOS_report_End of Study.sas"             =39
 	"PD_report_Protocol Deviations.sas"       =40
-	"IP_report_MORE IN PROGRESS.sas"          =41;
+	"PI_report_PI Signature.sas"              =41;
 run;
 
 filename tmp pipe "dir ""&macros.\*.sas"" /b /s";
@@ -630,8 +631,8 @@ options mprint mlogic symbolgen;
 						<nav class="header-outnav">                     
 							<a href=".\index.html">studies</a>                                    
 							<a href=".\patients-bos-580-201.html">patients</a>   
-							<a href=".\BOS-580-201_SRT.htm">srt</a>    
-							<a href="#" class="dead-link">ia</a>    
+							<a href=".\BOS-580-201_SRT.htm">srt</a>   
+							<a href="C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_IA.htm">ia</a>   
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FProtocols" target="_blank">protocol</a> 
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FData%5FMgmt%2FCRFs" target="_blank">crf</a>                          
 						</nav>
@@ -1100,7 +1101,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				end;
 
 				** insert MORE IN PROGRESS domain **;
-				_infile_=tranwrd(_infile_,">MORE IN PROGRESS","id='red-domain'>MORE IN PROGRESS");
+				*_infile_=tranwrd(_infile_,">MORE IN PROGRESS","id='red-domain'>MORE IN PROGRESS");
 				
 				** fix some special characters **;
 				_infile_=tranwrd(_infile_,'GEGEGE','&#8805;');
@@ -1123,8 +1124,10 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				input;
 
 				** old site **;
+				_infile_=tranwrd(_infile_,'"C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_IA.htm"',
+								          'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580201%20IA/output/BOS-580-201_IA.aspx');
 				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
-							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
+							              'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
 				_infile_=tranwrd(_infile_,'.html','.aspx');	
 				_infile_=tranwrd(_infile_,'.htm','.aspx');	
@@ -1139,8 +1142,10 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 				input;
 
 				** new site **;
+				_infile_=tranwrd(_infile_,'"C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_IA.htm"',
+								          'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580201%20IA/output/BOS-580-201_IA.aspx');
 				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
-							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
+							              'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 
 				_infile_=tranwrd(_infile_,'.html','.aspx');	
 				_infile_=tranwrd(_infile_,'.htm','.aspx');	
@@ -1169,7 +1174,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=15,ept=16,spn=1,epn=&num_domains.);
+*%patients_domains(spt=1,ept=6,spn=1,epn=&num_domains.);
 *%patients_domains(spt=27,ept=27,spn=9,epn=9);
 
 *******************************************;
@@ -1200,6 +1205,8 @@ data _null_;
 	input;
 
 	** old site **;
+	_infile_=tranwrd(_infile_,'"C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_IA.htm"',
+							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580201%20IA/output/BOS-580-201_IA.aspx');
 	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
 
@@ -1219,6 +1226,8 @@ data _null_;
 	input;
 
 	** new site **;
+	_infile_=tranwrd(_infile_,'"C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_IA.htm"',
+							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580201%20IA/output/BOS-580-201_IA.aspx');
 	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
 

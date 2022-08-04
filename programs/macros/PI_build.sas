@@ -7,12 +7,11 @@
 *
 * Revision History
 * Date       By            Description of Change
+* 2022-07-11 Mark Woodruff finish domain now that it is populated.
 ******************************************************************************************;
 
 data _null_;
 	set crf.pi(encoding=any);
-
-	put "ER" "ROR: there are now records in PI Signature domain.";
 	
 	** ensure only ECG records are present in crf.eg **;
 	if ^(pagename='PI Signature') then put "ER" "ROR: update PI_build.sas to read in only PI records from crf.PI.";
@@ -20,20 +19,10 @@ data _null_;
 	** ensure DELETED var is being handled correctly **;
 	if deleted^='f' then put "ER" "ROR: update PI_build.sas to handle PI.DELETED var appropriately.";
 run;
-/*
-data pp_final_pi(keep=subnum visitid visname peperf_reas peperf_reas2 peres_desc peae pemh);
-	set crf.pi(encoding=any where=(pagename='Physical Exam' and deleted='f'));
 
-	length peperf_reas $700;
-	peperf_reas=catx(': ',peperf_dec,pereasnd);
-
-	length peperf_reas2 $700;
-	peperf_reas2=catx(': ',peperf2_dec,pereasnd2);
-
-	length peres_desc $700;
-	if peres_abd_dec^='' or pedesc_abd^='' then peres_desc=catx(': ',peres_abd_dec,pedesc_abd);
+data pp_final_pi(keep=subnum visitid visname pisign);
+	set crf.pi(encoding=any where=(pagename='PI Signature' and deleted='f'));
 
 	proc sort;
 		by subnum visitid;
 run;
-*/

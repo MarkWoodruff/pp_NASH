@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-12-09 Mark Woodruff update comment.
 * 2022-03-16 Mark Woodruff add visit day flagging against protocol specified window.
+* 2022-08-01 Mark Woodruff do not flag visits if they did not occur and have no date.
 ******************************************************************************************;
 
 data _null_;
@@ -81,14 +82,16 @@ data sv;
 				end;
 		end;
 			else if visname not in ('Screening','Day 113/Early Termination','Day 1') then do;
-				if ^(visday_m3<=diff<=visday_p3) then do;
-					visflag=1;
-					vistext='Ocurred on day '||strip(put(diff,best.))||', outside window of day '||strip(put(visday,best.))||' +/- 3 days (day '||strip(put(visday_m3,best.))||' to '||strip(put(visday_p3,best.))||').';
-				end;
-					else if (visday_m3<=diff<=visday_p3) then do;
-						visflag=0;
-						vistext='In window';
+				if svstdt>.z and svnd^='X' then do;
+					if ^(visday_m3<=diff<=visday_p3) then do;
+						visflag=1;
+						vistext='Ocurred on day '||strip(put(diff,best.))||', outside window of day '||strip(put(visday,best.))||' +/- 3 days (day '||strip(put(visday_m3,best.))||' to '||strip(put(visday_p3,best.))||').';
 					end;
+						else if (visday_m3<=diff<=visday_p3) then do;
+							visflag=0;
+							vistext='In window';
+						end;
+				end;
 			end;
 			else if visname='Day 113/Early Termination' then do;
 				if dscomp_dec='Yes' then do;

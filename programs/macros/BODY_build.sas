@@ -13,6 +13,7 @@
 * 2022-02-14 Mark Woodruff add VISITSEQ to missing dates call.
 * 2022-03-07 Mark Woodruff add dt_and to missing dates call.
 * 2022-03-11 Mark Woodruff edit sort order for those with lots of missing visits.
+* 2022-08-01 Mark Woodruff handle sorting of records with missing dates.
 ******************************************************************************************;
 
 data _null_;
@@ -46,7 +47,7 @@ data pp_final_body(keep=subnum visitid visname visitseq vsperf_n vsreasnd vsdat_
 	if vsheight_c>.z then height_bmi=strip(put(vsheight_c,best.))||' CM';
 	if vsbmi>.z then vsbmi_c=strip(put(vsbmi,best.));
 
-	if subnum in ('104-003','115-001') then sortvar=visitid;
+	if subnum in ('104-003','115-001','110-030') then sortvar=visitid;
 		else sortvar=vsdat_sort;
 	if sortvar=. then put "ER" "ROR: update sorting for body measurements for " SUBNUM=;
 

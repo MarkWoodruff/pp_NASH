@@ -26,3 +26,5 @@ programs/checklogs.lst
 *.xlsx
 
 *.html
+
+*.csv

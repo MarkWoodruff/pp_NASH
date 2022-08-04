@@ -1,23 +1,63 @@
+-SSRG on 7/22nd, maybe 25th.
+-will let me know when to take data-cut, maybe 11th when I'm back, maybe 13th, etc.
+-Elizabeth needs 2 weeks slot to contact Pockros, etc.
+-look at non-responders, ones who moved down then up, or vice-versa.  She's interested in Pro-C3, Adiponectin.  Send her HFF patient annotated one.
+-they talked about a quick and dirty analysis in July/August, will be me re-running figures whenever XX data is transfered.  biomarkers?
+-painful.  Etienne, quality assessment of study.  Tanja wants to do minimum, what can we do ourselves.  prosciento expensive.  Week 6, patients that missed MRI, lab or ECG, same WEek 12.
+
+
 
 **********************************;
 ** INTERIM ANALYSIS IN PROGRESS **;
 **********************************;
 QUESTIONS FOR ALICIA
-1) For IA link at top of profiles, just Alicia/Tanja/me?
-2) Disposition shell defines time on study as EOS - randdt, but SAP defines it as EOS - infcondt.  Which?  Followed shell in SRT.
-3) Compliance mean for Cohort 5 is below 80%, due to site entering dose incorrectly for one patient.  Did 0.03 instead of 0.3.
-4) Listings all unblinded or leave as blinded like SRT?
+1) DONE For ALT, AST, AlkPhos, was incorrectly grading baseline as grade 0 rather than grade 1 for around 20 patients. TOLD AC.
+2) DONE For labshifts, when multiple visits per lab per patient, use worst or last?  LAST.
+3) DONE Listings all unblinded or leave as blinded like SRT? Unblinded.
+4) DONE For IA link at top of profiles, just Alicia/Tanja/me? Yes
+5) DONE Do I need to add 'time from diagnosis to study entry' to demographics table for IA?  Had that in old notes.  ALICIA SAID NO.
+6) DONE - Disp. shell defines time on study as EOS - randdt, but SAP defines it as EOS - infcondt.  Which?  Followed shell in SRT.  INF.
+7) DONE - Compliance mean for Cohort 5 is below 80%, due to site entering dose incorrectly for one patient.  Did 0.03 instead of 0.3.
 
 FINISHING INTERIM ANALYSIS
+	-DONE rerun everything on same datacut, but with treatment fixed.
 	-DONE build all versions
 	-DONE fix Cohort 5 headers
 	-DONE make sure percentages are in correct format
 	-DONE set up restricted area 
 	-DONE make IA link in regular areas go to new IA site.
 	-DONE fix SRT->SRT link that has output/output/
-	-verify results against normal SRT.
-	-spend a whole day checking hema table.
-	-switch IA link in SRT/Profiles live when ready.  Code is in SRT prog.
+	-DONE verify results against normal SRT.
+	-DONE fix compliance for cohort 5 (30mg/150mg)
+	-DONE fix ADSL for Cohort 5 TRTU
+	-DONE make listings unblinded
+	-DONE remove Etienne
+	-DONE rerun/upload SRT for labs consistency
+	-DONE check ECG biggest and smallest values versus table
+	-DONE check Albumin is graded correctly as all are grade 0.
+	-DONE check Bilirubin grading (especially baseline), as no G1 baseline.
+	-DONE check Creatinine grading (especially baseline), as no G1 baseline.
+	-DONE check Lymphocytes grading, as there are tons of grade 0.
+	-DONE re-check Nancy's ADS programs
+	-DONE re-check all my table output
+	-DONE switch IA link in SRT/Profiles live when ready.  Code is in SRT prog.
+	-DONE upload all and test
+		-NEW SITE
+			-GOOD 580 regular dashboard
+			-GOOD 580 regular patients
+			-GOOD 580 regular SRT
+			-GOOD 580 frozen dashboard
+			-GOOD 580 frozen patients
+			-GOOD 580 frozen SRT
+		-OLD SITE
+			-GOOD regular dashboard
+			-GOOD regular patients
+			-GOOD regular SRT
+			-GOOD 580 frozen dashboard
+			-GOOD 580 frozen patients
+			-GOOD 580 frozen SRT
+	-DONE add Pro-C3 to demographics, now that have data.
+
 
 ***********************
 ** NEXT SRT SCHEDULE **
