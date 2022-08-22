@@ -13,6 +13,7 @@
 * 2021-11-10 Mark Woodruff keep vsnd.  add tempn_std.
 * 2021-12-05 Mark Woodruff update buildvar macro for lengths.
 * 2022-01-05 Mark Woodruff add note to log for missing dates.
+* 2022-08-22 Mark Woodruff remove note to log for HR vars, working correctly.
 ******************************************************************************************;
 
 data _null_;
@@ -22,7 +23,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update VS_build.sas to handle VS.DELETED var appropriately.";
 
 	** ensure HR vars entered correctly **;
-	if (vsnd7^='' or vsreasnd7^='') and (vshr>.z or vshru^='') then put "ER" "ROR: update VS_build.sas to handle HR vars appropriately.";
+	*if (vsnd7^='' or vsreasnd7^='') and (vshr>.z or vshru^='') then put "ER" "ROR: update VS_build.sas to handle HR vars appropriately.";
 
 	** catch cases where blood pressure units needs to be moved out of header **;
 	if vsbpu not in ('','mmHg') then put "ER" "ROR: update vs_build.sas to handle VSBPU units correctly.";

@@ -10,6 +10,7 @@
 * 2021-12-09 Mark Woodruff update comment.
 * 2022-03-16 Mark Woodruff add visit day flagging against protocol specified window.
 * 2022-08-01 Mark Woodruff do not flag visits if they did not occur and have no date.
+* 2022-08-08 Mark Woodruff keep SVND
 ******************************************************************************************;
 
 data _null_;
@@ -22,7 +23,7 @@ data _null_;
 	if deleted^='f' then put "ER" "ROR: update SV_build.sas to handle SV.DELETED var appropriately.";
 run;
 
-data sv(keep=subnum visitid visname svnd_c svreasnd svstdt_c svstdt);
+data sv(keep=subnum visitid visname svnd svnd_c svreasnd svstdt_c svstdt);
 	set crf.sv(encoding=any where=(pagename='Visit Date' and deleted='f' and visname^='Unscheduled'));
 
 	length svnd_c $3;
