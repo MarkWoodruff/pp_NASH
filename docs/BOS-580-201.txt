@@ -1,16 +1,17 @@
--SSRG on 7/22nd, maybe 25th.
--will let me know when to take data-cut, maybe 11th when I'm back, maybe 13th, etc.
--Elizabeth needs 2 weeks slot to contact Pockros, etc.
--look at non-responders, ones who moved down then up, or vice-versa.  She's interested in Pro-C3, Adiponectin.  Send her HFF patient annotated one.
--they talked about a quick and dirty analysis in July/August, will be me re-running figures whenever XX data is transfered.  biomarkers?
--painful.  Etienne, quality assessment of study.  Tanja wants to do minimum, what can we do ourselves.  prosciento expensive.  Week 6, patients that missed MRI, lab or ECG, same WEek 12.
 
 
+-SSRG October 17th, and would cut data before vacation.
+	-Run blinded version: 10/3 data-cut (or whatever I need to get stuff out on 10/6)
 
-**********************************;
-** INTERIM ANALYSIS IN PROGRESS **;
-**********************************;
-QUESTIONS FOR ALICIA
+-Ran Cohort 5 stuff a week or so ago.  We need to update for newer AEs.
+	-We will cut 10/18 or 10/19 (my 1st day back), MRI data comes 10/21-10/24.
+	-Run another Interim Package, along with HFF graphs (_CFB, _PCFB, _reduct)
+
+
+*****************************;
+** DONE - INTERIM ANALYSIS **;
+*****************************;
+DONE QUESTIONS FOR ALICIA
 1) DONE For ALT, AST, AlkPhos, was incorrectly grading baseline as grade 0 rather than grade 1 for around 20 patients. TOLD AC.
 2) DONE For labshifts, when multiple visits per lab per patient, use worst or last?  LAST.
 3) DONE Listings all unblinded or leave as blinded like SRT? Unblinded.
