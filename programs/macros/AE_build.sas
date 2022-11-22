@@ -14,6 +14,8 @@
 * 2022-01-18 Mark Woodruff increase length of aeacn_.
 * 2022-02-28 Mark Woodruff remove note to log, working correctly.
 * 2022-09-26 Mark Woodruff remove note to log for both stop time and ongoing populated, printing both now.
+* 2022-10-06 Mark Woodruff update ae stop date for just time unknown.
+* 2022-10-18 Mark Woodruff fix previous - update ae stop date for just time unknown.
 ******************************************************************************************;
 
 data _null_;
@@ -49,6 +51,7 @@ data pp_final_ae;*(keep=subnum aespid aenone_aespid aeterm aesi_aeisr aestdat ae
 		else if aeendat>.z and aeentmun^='' and aeongo^='' then stop=catx('/frcbrk',put(aeendat,yymmdd10.),'Unknown-Ongoing');
 		else if aeendat>.z and aeentmun^='' then stop=catx('/frcbrk',put(aeendat,yymmdd10.),'Unknown');
 		else if aeendat=. and aeentim=. and aeongo='' and aeentmun='' then stop='';
+		else if aeendat=. and aeentmun='X' then stop='/frcbrkUnknown';
 		else put "ER" "ROR: update AE_build.sas for stop date/time algorithm." subnum= aeendat= aeentim= aeentmun= aeongo=;
 	
 	length aeout_aesev $100;

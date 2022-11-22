@@ -1174,7 +1174,7 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=317,ept=317,spn=1,epn=&num_domains.);
+*%patients_domains(spt=332,ept=332,spn=1,epn=&num_domains.);
 *%patients_domains(spt=317,ept=317,spn=9,epn=9);
 
 *******************************************;
