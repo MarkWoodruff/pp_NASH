@@ -12,6 +12,7 @@
 * 2021-11-05 Mark Woodruff added Cortisol flagging
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
 * 2021-12-09 Mark Woodruff use newly created visname_ for check_dates.
+* 2023-01-17 Mark Woodruff order by visitid after date.
 ******************************************************************************************;
 
 data domain_data;
@@ -95,11 +96,12 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column lbdat visit lbdat_cflag lbdat_c lbcat lbtest labflag_tanja
+			column lbdat visitid visit lbdat_cflag lbdat_c lbcat lbtest labflag_tanja
 				("Original UnitsSPNHDRFRCCNTR" lborres_lborresu nr) space 
 				("Standard UnitsSPNHDRFRCCNTR" lbstresc_lbstresu nrst) labflag_lbnrind lbnrind 
 				 lbrefid yob_sex lbfast_dec lbstat_lbreasnd lbspec lbcoval;* lbcat;
 			define lbdat             /order order=internal noprint;
+			define visitid           /order order=internal noprint;
 			define visit             /display "Visit|Name";
 			define lbdat_cflag       /display noprint;
 			define lbdat_c           /display "Lab Date" style=[htmlclass='min-width-1-0'];

@@ -12,6 +12,7 @@
 * 2021-12-30 Mark Woodruff only trigger note to log if actual lab tests were done, using *_dec vars.
 * 2022-01-05 Mark Woodruff handle sorting of missing dates using both regular date and cortisol date.
 * 2022-02-14 Mark Woodruff add VISITSEQ to missing dates call.
+* 2023-01-17 Mark Woodruff remove note to log.
 ******************************************************************************************;
 
 data _null_;
@@ -31,7 +32,7 @@ data pp_final_lb(keep=subnum visitid visname visitseq lbhem_dec lbchem_dec lbser
 					  lbcortsl_dec lbdatcort_c lbtimcort_c lbfast_dec lbcoval);
 	set lb;
 
-	if lbdat=. and (lbhem_dec not in ('No','') or lbchem_dec not in ('No','')) then put "ER" "ROR: update LB_build.sas to handle Unscheduled visits and/or missing dates correctly." SUBNUM= lbdat= lbhem= lbchem=;
+	*if lbdat=. and (lbhem_dec not in ('No','') or lbchem_dec not in ('No','')) then put "ER" "ROR: update LB_build.sas to handle Unscheduled visits and/or missing dates correctly." SUBNUM= lbdat= lbhem= lbchem=;
 
 	length lbdat_c $12;
 	if lbdat>.z then lbdat_c=strip(put(lbdat,yymmdd10.));

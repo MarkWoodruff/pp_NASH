@@ -542,14 +542,14 @@ a {
 	color: black;
 }
 
-.ready-for-review {
-	width: 100%;
+.clean-or-not {
 	position: absolute;
 	right: 6px;
 	bottom: -16px;
 	text-align: right;
-	font: 400 13pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	color: cyan;
+	font: 500 10pt "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	/*color: cyan;*/
+	color: green;
 }
 
 .active-patient {

@@ -17,6 +17,9 @@
 * 2022-03-17 Mark Woodruff write to both old site and new site
 * 2022-05-26 Mark Woodruff add unblinded IA links.
 * 2022-07-11 Mark Woodruff remove IP_build.sas now that have last domain PI_build.sas.
+* 2022-12-08 Mark Woodruff only keep patients that actually enrolled.
+* 2022-12-13 Mark Woodruff hardcoe 112-008 to not be included.
+* 2023-01-10 Mark Woodruff add CLEAN tag to patient cards using spreadsheet on Sharepoint.
 ******************************************************************************************;
 dm 'output' clear;
 dm 'log' clear;
@@ -237,13 +240,49 @@ data latest_visit(keep=subnum latest_visit);
 	latest_visit=strip(visname);
 run;
 
-data patient_cards(keep=subnum part_cohort latest_visit patient_status);
+** CLEAN? **;
+proc import datafile="&docs.\DRP Master Log.xlsx"
+	out=clean_or_not
+	dbms=xlsx
+	replace;
+	sheet='Subject Status';
+	getnames=yes;
+run;
+
+data clean(keep=subnum clean_or_not);
+	set clean_or_not(where=(subject^='' and notes='' and index(upcase(bp_clean),'REMAINING')=0 and index(upcase(bp_clean),'PROSCIENTO')=0));
+
+	format bp_clean_ yymmdd10.;
+	bp_clean_=input(bp_clean,best.)-21916;
+
+	length clean_or_not $20;
+	clean_or_not='Clean';
+
+	length subnum $100;
+	subnum=strip(subject);
+
+	proc sort;
+		by subnum;
+run;
+
+** bring together for cards **;
+data patient_cards(keep=subnum part_cohort latest_visit patient_status clean_or_not);
 	merge latest_visit
 		  part_cohort
+		  clean
 		  patient_status;
 	by subnum;
 
 	if index(part_cohort,': Cohort TBD')>0 and patient_status='Not Eligible' then part_cohort=strip(scan(part_cohort,1,':'));
+
+	** Need to find a way to NOT include patients that were eligible to enroll, but, after a period of X months, still had not enrolled.  
+		112-008 is an example.  They need to be excluded from both the patient list, and the patient dashboard, and their card colored in grey,
+		even though the algorithm says they should be included in all. **;
+run;
+
+data patient_cards;
+	set patient_cards;
+	if lowcase(patient_status)='not eligible' or subnum='112-008' then delete;
 run;
 
 data patient_cards_code;*(keep=patient_cards_code);
@@ -255,13 +294,17 @@ data patient_cards_code;*(keep=patient_cards_code);
 		else if lowcase(patient_status)='not yet rand.' then status_tag='active-patient';
 		else if lowcase(patient_status)='not eligible' then status_tag='screen-failure';
 		else status_tag='discontinued-patient';
+	if status_tag='active-patient' and subnum='112-008' then status_tag='screen-failure';
 
 	length patient_cards_code $32767;
 	patient_cards_code="<section class='patient-card-grid-item "||strip(status_tag)||"'><a href='.\"||
 	strip(subnum)||".htm'><p class='part-cohort'>"||strip(part_cohort)||"</p>
 						  <p class='patient-visit'>"||strip(latest_visit)||"</p>
 						  <p class='patient-status'>"||strip(patient_status)||"</p>
+						  <p class='clean-or-not'>"||strip(clean_or_not)||"</p>
 	<h1 class='patient-number'>"||strip(subnum)||"</h1></a></section>";
+
+	length_1=length(patient_cards_code);
 run;
 
 data _null_;
@@ -270,32 +313,36 @@ data _null_;
 	retain num;
 	num+1;
 
-	length big_patient_cards_list1 big_patient_cards_list2 big_patient_cards_list3 big_patient_cards_list4 $32767;
-	retain big_patient_cards_list1 big_patient_cards_list2 big_patient_cards_list3 big_patient_cards_list4;
+	length big_patient_cards_list1 big_patient_cards_list2 big_patient_cards_list3 big_patient_cards_list4 big_patient_cards_list5 $32767;
+	retain big_patient_cards_list1 big_patient_cards_list2 big_patient_cards_list3 big_patient_cards_list4 big_patient_cards_list5;
 
-	if num<=100 then 			  big_patient_cards_list1=catx(' ',big_patient_cards_list1,patient_cards_code);
-		else if 100<num<=200 then big_patient_cards_list2=catx(' ',big_patient_cards_list2,patient_cards_code);
-		else if 200<num<=300 then big_patient_cards_list3=catx(' ',big_patient_cards_list3,patient_cards_code);
-		else if 300<num<=400 then big_patient_cards_list4=catx(' ',big_patient_cards_list4,patient_cards_code);
+	if num<=80 then 			  big_patient_cards_list1=catx(' ',big_patient_cards_list1,patient_cards_code);
+		else if 80<num<=160  then big_patient_cards_list2=catx(' ',big_patient_cards_list2,patient_cards_code);
+		else if 160<num<=240 then big_patient_cards_list3=catx(' ',big_patient_cards_list3,patient_cards_code);
+		else if 240<num<=320 then big_patient_cards_list4=catx(' ',big_patient_cards_list4,patient_cards_code);
+		else if 320<num<=400 then big_patient_cards_list5=catx(' ',big_patient_cards_list5,patient_cards_code);
 
 	bpcl1_length=length(strip(big_patient_cards_list1));
 	bpcl2_length=length(strip(big_patient_cards_list2));
 	bpcl3_length=length(strip(big_patient_cards_list3));
 	bpcl4_length=length(strip(big_patient_cards_list4));
+	bpcl5_length=length(strip(big_patient_cards_list5));
 
 	if eof then do;
 		call symput('big_patient_cards_list1',strip(big_patient_cards_list1));
 		call symput('big_patient_cards_list2',strip(big_patient_cards_list2));
 		call symput('big_patient_cards_list3',strip(big_patient_cards_list3));
 		call symput('big_patient_cards_list4',strip(big_patient_cards_list4));
+		call symput('big_patient_cards_list5',strip(big_patient_cards_list5));
 		call symput('bpcl1_length',strip(put(length(strip(big_patient_cards_list1)),best.)));
 		call symput('bpcl2_length',strip(put(length(strip(big_patient_cards_list2)),best.)));
 		call symput('bpcl3_length',strip(put(length(strip(big_patient_cards_list3)),best.)));
 		call symput('bpcl4_length',strip(put(length(strip(big_patient_cards_list4)),best.)));
+		call symput('bpcl5_length',strip(put(length(strip(big_patient_cards_list5)),best.)));
 	end;
 run;
 
-%put &big_patient_cards_list2.;
+%put &big_patient_cards_list1.;
 
 data _null_;
 	** throw warn1ng to log if patient list is about to run out of room inside variable **;
@@ -303,13 +350,14 @@ data _null_;
 	%if %eval(&bpcl2_length.)>32000 %then %do; put "ER" "ROR: big_patient_cards_list2 is about to be GT 32,000 characters and will cause fail."; %end;
 	%if %eval(&bpcl3_length.)>32000 %then %do; put "ER" "ROR: big_patient_cards_list3 is about to be GT 32,000 characters and will cause fail."; %end;
 	%if %eval(&bpcl4_length.)>32000 %then %do; put "ER" "ROR: big_patient_cards_list4 is about to be GT 32,000 characters and will cause fail."; %end;
+	%if %eval(&bpcl5_length.)>32000 %then %do; put "ER" "ROR: big_patient_cards_list5 is about to be GT 32,000 characters and will cause fail."; %end;
 run;
 
 ********************************************;
 ** get list of patients for sidebar links **;
 ********************************************;
 data patient_list(keep=subnum);
-	set patient_cards;
+	set patient_cards(where=(lowcase(patient_status)^='not eligible'));
 	
 	proc sort nodupkey;
 		by subnum;
@@ -703,6 +751,7 @@ options mprint mlogic symbolgen;
 				_infile_=tranwrd(_infile_,'Non-CR / Non-PD','Non&#8209;CR / Non&#8209;PD');
 				_infile_=tranwrd(_infile_,'PARA-HILAR','PARA&#8209;HILAR');
 				_infile_=tranwrd(_infile_,'T-WAVE','T&#8209;WAVE');
+				_infile_=tranwrd(_infile_,'EOS-ET','EOS&#8209;ET');
 				_infile_=tranwrd(_infile_,' – ',' &#8209; ');
 				if index(_infile_,'RPLCSBJ')>0 then do;
 					_infile_=tranwrd(_infile_,'100-','100&#8209;');
@@ -1174,8 +1223,8 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 	ods listing;
 %mend patients_domains;
 %patients_domains(spt=1,ept=&num_patients.,spn=1,epn=&num_domains.);
-*%patients_domains(spt=332,ept=332,spn=1,epn=&num_domains.);
-*%patients_domains(spt=317,ept=317,spn=9,epn=9);
+*%patients_domains(spt=102,ept=102,spn=24,epn=24);
+*%patients_domains(spt=102,ept=102,spn=1,epn=&num_domains.);
 
 *******************************************;
 ** create patient list dashboard in HTML **;
@@ -1189,6 +1238,7 @@ data _null_;
 	_infile_=tranwrd(_infile_,'DUMMYPATIENTCARDLIST2',"&big_patient_cards_list2.");
 	_infile_=tranwrd(_infile_,'DUMMYPATIENTCARDLIST3',"&big_patient_cards_list3.");
 	_infile_=tranwrd(_infile_,'DUMMYPATIENTCARDLIST4',"&big_patient_cards_list4."); 
+	_infile_=tranwrd(_infile_,'DUMMYPATIENTCARDLIST5',"&big_patient_cards_list5."); 
 	_infile_=tranwrd(_infile_,'<h1>BOS-580-201 Patients</h1>',"<h1>BOS-580-201 Patients - Data as of &data_dt.</h1>");	
 	_infile_=tranwrd(_infile_,'stylesheets\main.css',"stylesheets\main.css?Rev=&now.");
 	_infile_=tranwrd(_infile_,' – ',' &#8209; ');
@@ -1237,7 +1287,6 @@ data _null_;
 
 	put _infile_;
 run;
-
 
 
 

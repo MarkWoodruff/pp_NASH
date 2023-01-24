@@ -15,6 +15,7 @@
 * 2021-11-22 Mark Woodruff evolve Cortisol flagging.  Add visits to note to log.
 * 2021-12-09 Mark Woodruff create visname_ to use in check_dates, more standardized.
 * 2022-03-17 Mark Woodruff keep lbstrescn lbstnrlon lbstnrhin lbstresu lbstresc
+* 2023-01-17 Mark Woodruff sort by visitid after date.
 ******************************************************************************************;
 
 data _null_;
@@ -110,6 +111,56 @@ data pp_final_lbc(keep=subnum visitid visname lbrefid yob_sex visit lbdat lbdat_
 		by subnum lbdat lbcat lbtest;
 run;
 
+** COHORT **;
+data cohort(keep=subnum cohort);
+	set crf.ds(encoding=any where=(pagename='Randomization' and deleted='f') rename=(cohort=cohort_));
+
+	length cohort $13;
+	cohort=strip(cohort_dec);
+	%remove_sc;
+
+	proc sort;
+		by subnum;
+run;
+
+data pp_final_lbc;
+	merge cohort
+		  pp_final_lbc(in=inp);
+	by subnum;
+	if inp;
+
+	if visname='Screening' then visitid=1;
+		else if visname='Screening Retest' then visitid=1;
+		else if visname='Day 1' then visitid=2;
+		else if visname='Day 1 Retest' then visitid=2;
+		else if visname='Day 8' then visitid=3;
+		else if visname='Day 8 Retest' then visitid=3.1;
+		else if visname='Day 15' then visitid=4;
+		else if visname='Day 15 bi-weekly' or (visname='Day 15 Retest' and cohort in ('Part A - A2','Part A - A3')) then visitid=4;
+		else if visname='Day 15 monthly' or (visname='Day 15 Retest' and cohort in ('Part A - A1','Part A - A4','Part A - A5')) then visitid=5;
+		else if visname='Day 15 Retest' then visitid=5.1;
+		else if visname='Day 29' then visitid=6;
+		else if visname='Day 29 Retest' then visitid=6;
+		else if visname='Day 43' then visitid=7;
+		else if visname='Day 43 bi-weekly' or (visname='Day 43 Retest' and cohort in ('Part A - A2','Part A - A3')) then visitid=7;
+		else if visname='Day 43 monthly' or (visname='Day 43 Retest' and cohort in ('Part A - A1','Part A - A4','Part A - A5')) then visitid=8;
+		else if visname='Day 57' then visitid=9;
+		else if visname='Day 71' then visitid=10;
+		else if visname='Day 71 bi-weekly' then visitid=10;
+		else if visname='Day 71 monthly' then visitid=11;
+		else if visname='Day 85' then visitid=12;
+		else if visname='Day 85 Retest' then visitid=12.1;
+		else if visname='Day 113/EOS-ET' then do;
+			visname='Day 113/Early Termination';
+			visitid=13;
+		end;
+		else if visname='Day 113/EOS-ET Retest' then do;
+			visname='Day 113/Early Termination Retest';
+			visitid=13;
+		end;
+		else if visname='Unscheduled' then visitid=777;
+run;
+
 ** get first dose date **;
 data ex;
 	set crf.ex(encoding=any where=(pagename='Study Drug Administration' and exyn_dec='Yes' and deleted='f'));
@@ -189,7 +240,7 @@ data pp_final_lbc;
 run;
 
 proc sort data=pp_final_lbc;
-	by subnum lbdat lbcat lbtest;
+	by subnum lbdat visitid lbcat lbtest;
 run;
 
 ** standardize visits for merging with check_dates **;
