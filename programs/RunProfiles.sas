@@ -20,6 +20,7 @@
 * 2022-12-08 Mark Woodruff only keep patients that actually enrolled.
 * 2022-12-13 Mark Woodruff hardcoe 112-008 to not be included.
 * 2023-01-10 Mark Woodruff add CLEAN tag to patient cards using spreadsheet on Sharepoint.
+* 2023-02-10 Mark Woodruff integrate lab viewer
 ******************************************************************************************;
 dm 'output' clear;
 dm 'log' clear;
@@ -250,10 +251,10 @@ proc import datafile="&docs.\DRP Master Log.xlsx"
 run;
 
 data clean(keep=subnum clean_or_not);
-	set clean_or_not(where=(subject^='' and notes='' and index(upcase(bp_clean),'REMAINING')=0 and index(upcase(bp_clean),'PROSCIENTO')=0));
+	set clean_or_not(where=(subject^='' and notes=''));* and index(upcase(bp_clean),'REMAINING')=0 and index(upcase(bp_clean),'PROSCIENTO')=0));
 
 	format bp_clean_ yymmdd10.;
-	bp_clean_=input(bp_clean,best.)-21916;
+	bp_clean_=bp_clean-21916;
 
 	length clean_or_not $20;
 	clean_or_not='Clean';
@@ -678,7 +679,8 @@ options mprint mlogic symbolgen;
 					<!------------>          
 						<nav class="header-outnav">                     
 							<a href=".\index.html">studies</a>                                    
-							<a href=".\patients-bos-580-201.html">patients</a>   
+							<a href=".\patients-bos-580-201.html">patients</a>                     
+							<a href="C:\Users\markw.consultant\_projects\BOS-580-201\lab_viewer\test-page\index.html">labs</a>  
 							<a href=".\BOS-580-201_SRT.htm">srt</a>   
 							<a href="C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_IA.htm">ia</a>   
 							<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FProtocols" target="_blank">protocol</a> 
@@ -1177,6 +1179,8 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 								          'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580201%20IA/output/BOS-580-201_IA.aspx');
 				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							              'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
+				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\lab_viewer\test-page\index.html',
+										  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/labview/test-page/index.aspx');
 
 				_infile_=tranwrd(_infile_,'.html','.aspx');	
 				_infile_=tranwrd(_infile_,'.htm','.aspx');	
@@ -1195,6 +1199,8 @@ For blood pressure, colors flag CTCAE Grades of Hypertension: <br>
 								          'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580201%20IA/output/BOS-580-201_IA.aspx');
 				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							              'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
+				_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\lab_viewer\test-page\index.html',
+										  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/labview/test-page/index.aspx');
 
 				_infile_=tranwrd(_infile_,'.html','.aspx');	
 				_infile_=tranwrd(_infile_,'.htm','.aspx');	
@@ -1259,6 +1265,8 @@ data _null_;
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580201%20IA/output/BOS-580-201_IA.aspx');
 	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
+	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\lab_viewer\test-page\index.html',
+							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/labview/test-page/index.aspx');
 
 	_infile_=tranwrd(_infile_,'.html','.aspx');	
 	_infile_=tranwrd(_infile_,'.htm','.aspx');	
@@ -1280,6 +1288,8 @@ data _null_;
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580201%20IA/output/BOS-580-201_IA.aspx');
 	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
 							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
+	_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\lab_viewer\test-page\index.html',
+							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/labview/test-page/index.aspx');
 
 	_infile_=tranwrd(_infile_,'.html','.aspx');	
 	_infile_=tranwrd(_infile_,'.htm','.aspx');	
@@ -1448,6 +1458,7 @@ options mprint mlogic symbolgen;
 			<nav class="header-outnav">                     
 				<a href=".\index.html">studies</a>                                    
 				<a href=".\patients-bos-580-201.html">patients</a> 
+				<a href="C:\Users\markw.consultant\_projects\BOS-580-201\lab_viewer\test-page\index.html">labs</a>  
 				<a href=".\BOS-580-201_SRT.htm">srt</a>    
 				<a href="#" class="dead-link">ia</a>    
 				<a href="https://bostonpharmaceuticals.sharepoint.com/580/AL/Forms/AllItems.aspx?FolderCTID=0x0120003DD49E81655FF240BC77BC321704F50F&viewid=a7471443%2De483%2D4894%2D8e59%2D2a205d9d319a&id=%2F580%2FAL%2FClinical%2FStudy%20BOS580%2D201%2FProtocols" target="_blank">protocol</a> 
@@ -1703,7 +1714,9 @@ options mprint mlogic symbolgen;
 
 		** old site **;
 		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
-							  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
+							  	  'https://bostonpharmaceuticals.sharepoint.com/580/AL/Clinical/Study%20BOS580-201/Data_Mgmt/Patient%20Profiles/output/BOS-580-201_SRT.aspx');
+		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\lab_viewer\test-page\index.html',
+								  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/labview/test-page/index.aspx');
 
 		_infile_=tranwrd(_infile_,'.html','.aspx');	
 		_infile_=tranwrd(_infile_,'.htm','.aspx');	
@@ -1719,7 +1732,9 @@ options mprint mlogic symbolgen;
 
 		** new site **;
 		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\adhoc\output\BOS-580-201_SRT.htm',
-							  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
+							  	  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/BOS-580-201_SRT.aspx');
+		_infile_=tranwrd(_infile_,'C:\Users\markw.consultant\_projects\BOS-580-201\lab_viewer\test-page\index.html',
+								  'https://bostonpharmaceuticals.sharepoint.com/sites/PatientProfiles/BOS580/output/labview/test-page/index.aspx');
 
 		_infile_=tranwrd(_infile_,'.html','.aspx');	
 		_infile_=tranwrd(_infile_,'.htm','.aspx');	
