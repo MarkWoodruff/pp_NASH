@@ -9,6 +9,7 @@
 * Date       By            Description of Change
 * 2021-10-26 Mark Woodruff add flagging for dates not matching SV.
 * 2021-11-09 Mark Woodruff move call to check_dates to report program from build program.
+* 2023-04-20 Mark Woodruff add highlighting to increases in consumption.
 ******************************************************************************************;
 
 data domain_data;
@@ -45,7 +46,7 @@ run;
 			footnote "No data for this patient/domain as of &data_dt..";
 		%end;
 		%else %do;
-			column qsdat_sort visname_ visname qsperf_reas qsdat_cflag qsdat_c c1 c2;*
+			column qsdat_sort visname_ visname qsperf_reas qsdat_cflag qsdat_c flag c1 c2;*
 				   ("In the last month, on averageSPNHDRFRCNDRLNCNTR" 
 				   ("Juice/Soda (pop)SPNHDRFRCCNTR" qs01_dec qs02_dec qs03_dec qs04_dec qs05_dec) space
 				   ("AlcoholSPNHDRFRCCNTR" qs06_dec qs07_dec qs08_dec qs09_dec) space
@@ -56,6 +57,7 @@ run;
 			define qsperf_reas /display group "Completed?|Reason";
 			define qsdat_cflag /display noprint;
 			define qsdat_c     /display group "Date of|Assessment" style=[htmlclass='min-width-1-0'];
+			define flag        /display noprint;
 			define c1          /display "Question" style=[htmlclass='max-width-7-0'];
 			define c2          /display "In the last month, on average" style=[htmlclass='max-width-7-0'];
 			/*
@@ -94,6 +96,9 @@ run;
 					call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
 				visname_lag=lag(visname_);
 				if visname_^=visname_lag and visname_^='Day 1' then call define(_col_,"style/merge","style=[bordertopcolor=black bordertopstyle=solid bordertopwidth=1px]");
+				if flag='yellow' then call define(_col_,"style/merge","style=[background=yellow]");
+				if flag='orange' then call define(_col_,"style/merge","style=[background=orange]");
+				if flag='red' then call define(_col_,"style/merge","style=[background=red]");
 			endcomp;
 
 			compute qsdat_c;

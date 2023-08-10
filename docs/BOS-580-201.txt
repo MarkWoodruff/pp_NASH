@@ -1,13 +1,4 @@
-
-
--SSRG October 17th, and would cut data before vacation.
-	-Run blinded version: 10/3 data-cut (or whatever I need to get stuff out on 10/6)
-
--Ran Cohort 5 stuff a week or so ago.  We need to update for newer AEs.
-	-We will cut 10/18 or 10/19 (my 1st day back), MRI data comes 10/21-10/24.
-	-Run another Interim Package, along with HFF graphs (_CFB, _PCFB, _reduct)
-
-
+	
 *****************************;
 ** DONE - INTERIM ANALYSIS **;
 *****************************;

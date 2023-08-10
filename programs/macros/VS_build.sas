@@ -14,6 +14,7 @@
 * 2021-12-05 Mark Woodruff update buildvar macro for lengths.
 * 2022-01-05 Mark Woodruff add note to log for missing dates.
 * 2022-08-22 Mark Woodruff remove note to log for HR vars, working correctly.
+* 2023-04-26 Mark Woodruff replace bad degree symbol with unicode so will render correctly in HTML.
 ******************************************************************************************;
 
 data _null_;
@@ -31,6 +32,9 @@ data _null_;
 	** ensure missing dates are sorted correctly **;
 	if vsdat=. and subnum^='115-001' then put "ER" "ROR: update vs_build.sas to handle missing dates in sorting correctly." SUBNUM=;
 run;
+
+** for degree symbol **;
+%let degr=%bquote(@{unicode 00B0});
 
 data pp_final_vs(keep=subnum visitid visname vsnd_reas vsdat vsdat_c vspos vstimp_c vstim1_c hr hrn rr rrn temp tempn vstempl_dec bp1_sysn bp1_sys bp1_dian 
 	bp1_dia vstim2 vstim2_c bp2_sysn bp2_sys bp2_dian bp2_dia vstim3_c bp3_sysn bp3_sys bp3_dian bp3_dia bp_avg_sysn bp_avg_sys bp_avg_dian bp_avg_dia vsnd
@@ -60,8 +64,8 @@ data pp_final_vs(keep=subnum visitid visname vsnd_reas vsdat vsdat_c vspos vstim
 		if &val.>.z then &outvar.n=&val.;
 		&outvar.=tranwrd(&outvar.,'beats per minute','bpm');
 		&outvar.=tranwrd(&outvar.,'breaths per minute','brpm');
-		&outvar.=tranwrd(&outvar.,'degrees Celsius','°C');
-		&outvar.=tranwrd(&outvar.,'degrees Fahrenheit','°F');
+		&outvar.=tranwrd(&outvar.,'degrees Celsius',"&degr.C");
+		&outvar.=tranwrd(&outvar.,'degrees Fahrenheit',"&degr.F");
 	%mend build_var;
 	%build_var(outvar=hr,  nd=vsnd7,reas=vsreasnd7,val=vshr,  unit=vshru);
 	%build_var(outvar=rr,  nd=vsnd2,reas=vsreasnd, val=vsrr,  unit=vsrru);
