@@ -1,4 +1,22 @@
 	
+Gerard inflammatory biomarker tasks
+	-on INF gamma, IL-1beta, IL-10, IL-6, IL-8, TNF-Alpha
+	-DONE spaghetti plots for all of them, color coded by treatment cohort, include normal ranges (he will provide)
+	-for top and bottom quartiles at baseline for each (using treated pop, excluding 75mg Q4W)
+		-DONE PCFB at W12 for HFF for those quartiles
+		-DONE HFF responder rates for those quartiles
+		-ALT observed, CFB, and PCFB levels for those quartiles
+	-To Gerard
+		-not possible for IL-10 and IL-1beta.  Too few values.  See notes.
+		-note other quartiles will not always be divided into perfect quarters, due to multiple patients having same value.
+
+HFF PCFB Week 12 for top/bottom quartiles for each of 6 biomarkers
+	-baseline
+	-week 12
+	-week 12 pcfb and stats
+HFF responder tables for those quartiles
+ALT PCFB Week 12 for those quartiles
+
 *****************************;
 ** DONE - INTERIM ANALYSIS **;
 *****************************;
